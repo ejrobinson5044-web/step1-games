@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DISSECTION DOJO — Step 1 Anatomy</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Cormorant+Garamond:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-deep: #0a0604;
+  --bg-mid: #1a0f08;
+  --bg-card: #2a1810;
+  --crimson: #c8324a;
+  --burgundy: #7a2238;
+  --ivory: #f5e6d3;
+  --cream: #e8d4b0;
+  --parchment: #d4b896;
+  --vein-blue: #4a6f8a;
+  --gold: #c9a961;
+  --warning: #d65a31;
+  --sepia: #8b6f47;
+  --text: #f0e4d0;
+  --text-dim: #8a7560;
+  --grid: rgba(201, 169, 97, 0.05);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body {
+  background:
+    radial-gradient(ellipse at 25% 15%, rgba(200, 50, 74, 0.10), transparent 50%),
+    radial-gradient(ellipse at 75% 80%, rgba(201, 169, 97, 0.08), transparent 50%),
+    linear-gradient(180deg, #0a0604 0%, #1a0f08 100%);
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(0,0,0,0.10) 0px, rgba(0,0,0,0.10) 1px,
+      transparent 1px, transparent 4px),
+    radial-gradient(ellipse at 30% 70%, rgba(139, 111, 71, 0.03), transparent 60%);
+  pointer-events: none;
+  z-index: 1000;
+  mix-blend-mode: multiply;
+}
+#app {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* HEADER — vintage atlas */
+.title-bar {
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 16px 0 24px;
+  border-bottom: 2px double var(--gold);
+  position: relative;
+}
+.title-bar::before, .title-bar::after {
+  content: '✦';
+  color: var(--gold);
+  font-size: 18px;
+  position: absolute;
+  bottom: -10px;
+  background: var(--bg-deep);
+  padding: 0 8px;
+}
+.title-bar::before { left: 30%; }
+.title-bar::after { right: 30%; }
+h1.game-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px;
+  font-weight: 600;
+  font-variant: small-caps;
+  letter-spacing: 8px;
+  background: linear-gradient(180deg, var(--gold), var(--crimson));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 20px rgba(201, 169, 97, 0.3);
+}
+.subtitle {
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-style: italic;
+  margin-top: 4px;
+  letter-spacing: 3px;
+}
+.subtitle::before, .subtitle::after { content: '· '; color: var(--gold); }
+.subtitle::after { content: ' ·'; }
+
+/* HUD */
+.hud { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.hud-cell {
+  background: linear-gradient(180deg, rgba(42, 24, 16, 0.85), rgba(26, 15, 8, 0.85));
+  border: 1px solid var(--burgundy);
+  border-radius: 2px;
+  padding: 10px 14px;
+  position: relative;
+  box-shadow: inset 0 0 12px rgba(122, 34, 56, 0.20);
+}
+.hud-label {
+  font-size: 12px;
+  color: var(--sepia);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+}
+.hud-value { font-size: 28px; margin-top: 4px; font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+.hud-value.hp { color: var(--crimson); }
+.hud-value.xp { color: var(--gold); }
+.hud-value.streak { color: var(--warning); }
+.hud-value.lvl { color: var(--cream); }
+.hearts { display: inline-flex; gap: 4px; }
+.heart { font-size: 24px; filter: drop-shadow(0 0 4px var(--crimson)); }
+.heart.lost { filter: grayscale(1) brightness(0.3); }
+
+/* PANEL — parchment scroll feel */
+.panel {
+  background:
+    linear-gradient(180deg, rgba(42, 24, 16, 0.92), rgba(26, 15, 8, 0.92));
+  border: 2px solid var(--gold);
+  border-radius: 3px;
+  padding: 32px;
+  position: relative;
+  box-shadow:
+    0 0 30px rgba(201, 169, 97, 0.12),
+    inset 0 0 40px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  min-height: 400px;
+}
+.panel::before {
+  content: '❦';
+  position: absolute;
+  top: 8px; left: 16px;
+  color: var(--gold);
+  font-size: 18px;
+  opacity: 0.5;
+}
+.panel::after {
+  content: '❦';
+  position: absolute;
+  top: 8px; right: 16px;
+  color: var(--gold);
+  font-size: 18px;
+  opacity: 0.5;
+}
+
+/* MENU */
+.menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.menu-card {
+  background:
+    linear-gradient(135deg, rgba(122, 34, 56, 0.10), rgba(201, 169, 97, 0.06)),
+    rgba(26, 15, 8, 0.6);
+  border: 1px solid var(--burgundy);
+  border-radius: 2px;
+  padding: 24px 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.menu-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(200, 50, 74, 0.30);
+  border-color: var(--gold);
+}
+.menu-card:hover::after {
+  content: '';
+  position: absolute;
+  top: -100%; left: -100%;
+  width: 300%; height: 300%;
+  background: linear-gradient(45deg, transparent 30%, rgba(201, 169, 97, 0.12) 50%, transparent 70%);
+  animation: shimmer 1s linear;
+}
+@keyframes shimmer { to { transform: translate(50%, 50%); } }
+.menu-icon { font-size: 36px; margin-bottom: 12px; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.menu-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 18px;
+  font-variant: small-caps;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.menu-desc { color: var(--text-dim); font-size: 16px; line-height: 1.4; }
+
+/* QUESTION */
+.question-area { animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.q-tag {
+  display: inline-block;
+  background: var(--burgundy);
+  color: var(--cream);
+  padding: 4px 14px;
+  border-radius: 2px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px;
+  font-variant: small-caps;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  border: 1px solid var(--gold);
+}
+.q-text {
+  font-size: 22px;
+  line-height: 1.55;
+  margin-bottom: 24px;
+  color: var(--text);
+  padding: 18px 22px;
+  background: rgba(0, 0, 0, 0.35);
+  border-left: 3px solid var(--crimson);
+  border-radius: 2px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 21px;
+}
+.choices { display: flex; flex-direction: column; gap: 10px; }
+.choice {
+  background: rgba(26, 15, 8, 0.85);
+  border: 1px solid var(--sepia);
+  color: var(--text);
+  padding: 14px 18px;
+  border-radius: 2px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.choice:hover:not(.disabled) {
+  border-color: var(--gold);
+  background: rgba(201, 169, 97, 0.08);
+  transform: translateX(4px);
+}
+.choice .key {
+  background: var(--gold);
+  color: var(--bg-deep);
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 4px 11px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.choice.correct {
+  background: rgba(122, 34, 56, 0.22);
+  border-color: var(--crimson);
+  animation: pulseRed 0.5s;
+}
+.choice.correct .key { background: var(--crimson); color: white; }
+.choice.wrong {
+  background: rgba(214, 90, 49, 0.18);
+  border-color: var(--warning);
+  animation: shake 0.4s;
+}
+.choice.wrong .key { background: var(--warning); color: white; }
+.choice.disabled { cursor: default; opacity: 0.55; }
+@keyframes pulseRed {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200, 50, 74, 0); }
+  50% { box-shadow: 0 0 30px 4px rgba(200, 50, 74, 0.4); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+/* PEARL */
+.pearl-box {
+  margin-top: 24px;
+  background: linear-gradient(135deg, rgba(201, 169, 97, 0.06), rgba(122, 34, 56, 0.10));
+  border: 1px solid var(--gold);
+  border-left: 4px solid var(--gold);
+  padding: 20px;
+  border-radius: 2px;
+  animation: fadeIn 0.5s 0.2s both;
+}
+.pearl-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-variant: small-caps;
+  font-size: 15px;
+  color: var(--gold);
+  letter-spacing: 3px;
+  margin-bottom: 10px;
+}
+.pearl-text { font-size: 19px; line-height: 1.55; color: var(--ivory); font-family: 'Cormorant Garamond', serif; font-size: 20px; }
+.pearl-text strong { color: var(--crimson); font-weight: 700; }
+.pearl-text em { color: var(--gold); font-style: normal; font-weight: 600; }
+
+/* CONTROLS */
+.controls { display: flex; justify-content: space-between; margin-top: 24px; gap: 12px; flex-wrap: wrap; }
+.btn {
+  background: var(--crimson);
+  color: var(--ivory);
+  border: 1px solid var(--gold);
+  padding: 12px 24px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 15px;
+  font-variant: small-caps;
+  letter-spacing: 3px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+}
+.btn:hover {
+  background: var(--burgundy);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(200, 50, 74, 0.4);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+}
+.btn-secondary:hover { background: var(--gold); color: var(--bg-deep); }
+.btn-danger { background: var(--warning); color: white; border-color: var(--warning); }
+
+/* PROGRESS */
+.system-progress { margin-top: 24px; }
+.system-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.system-name {
+  width: 200px;
+  font-size: 17px;
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', serif;
+  font-variant: small-caps;
+  letter-spacing: 1px;
+}
+.bar-track {
+  flex: 1;
+  background: rgba(0,0,0,0.4);
+  height: 18px;
+  border-radius: 1px;
+  overflow: hidden;
+  border: 1px solid var(--sepia);
+}
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--burgundy), var(--gold));
+  transition: width 0.5s ease;
+  position: relative;
+}
+.bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 230, 200, 0.20), transparent);
+  animation: barShine 2.5s linear infinite;
+}
+@keyframes barShine { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+.system-pct {
+  width: 80px;
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--gold);
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-200%);
+  background: var(--gold);
+  color: var(--bg-deep);
+  padding: 12px 30px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-variant: small-caps;
+  font-size: 16px;
+  letter-spacing: 2px;
+  border-radius: 2px;
+  box-shadow: 0 4px 20px rgba(201, 169, 97, 0.4);
+  z-index: 9999;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.error { background: var(--warning); color: white; }
+.toast.xp { background: var(--cream); color: var(--bg-deep); }
+
+/* DECORATIVE — anatomical bone/organ icons */
+.anat-bar {
+  height: 50px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 12px;
+}
+.anat-icon {
+  font-size: 28px;
+  color: var(--gold);
+  filter: drop-shadow(0 0 6px var(--gold));
+  animation: anatFloat 3.5s ease-in-out infinite;
+  opacity: 0.7;
+}
+.anat-icon:nth-child(2n) { color: var(--crimson); animation-delay: 0.5s; filter: drop-shadow(0 0 6px var(--crimson)); }
+.anat-icon:nth-child(3n) { color: var(--cream); animation-delay: 1s; filter: drop-shadow(0 0 6px var(--cream)); }
+@keyframes anatFloat {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(-6px); opacity: 1; }
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(10, 6, 4, 0.85);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1001;
+  backdrop-filter: blur(6px);
+  animation: fadeIn 0.3s;
+}
+.modal {
+  background: var(--bg-mid);
+  border: 2px solid var(--gold);
+  padding: 32px;
+  border-radius: 3px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(201, 169, 97, 0.3);
+}
+.modal h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: 26px;
+  color: var(--gold);
+  margin-bottom: 16px;
+  letter-spacing: 3px;
+}
+.modal p { font-size: 18px; line-height: 1.55; margin-bottom: 12px; font-family: 'Cormorant Garamond', serif; font-size: 19px; }
+.achievement-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 16px 0; }
+.achievement {
+  padding: 10px;
+  border: 1px solid var(--sepia);
+  border-radius: 2px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+}
+.achievement.unlocked {
+  border-color: var(--gold);
+  background: rgba(201, 169, 97, 0.08);
+  color: var(--gold);
+}
+.achievement.locked { opacity: 0.4; }
+.ach-icon { font-size: 22px; }
+
+/* RESULTS */
+.results-screen { text-align: center; padding: 20px; }
+.results-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-variant: small-caps;
+  font-size: 36px;
+  color: var(--gold);
+  margin-bottom: 24px;
+  letter-spacing: 5px;
+  text-shadow: 0 0 20px var(--gold);
+}
+.results-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
+.stat-block {
+  padding: 16px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--burgundy);
+  border-radius: 2px;
+}
+.stat-num {
+  font-size: 36px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  color: var(--gold);
+  display: block;
+}
+.stat-label {
+  font-size: 13px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  font-family: 'Cormorant Garamond', serif;
+  font-variant: small-caps;
+}
+.rank-badge {
+  display: inline-block;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-variant: small-caps;
+  font-size: 36px;
+  padding: 16px 32px;
+  margin: 16px 0;
+  border: 2px solid;
+  border-radius: 3px;
+  letter-spacing: 6px;
+}
+
+@media (max-width: 700px) {
+  h1.game-title { font-size: 28px; letter-spacing: 4px; }
+  .hud { grid-template-columns: repeat(2, 1fr); }
+  .menu-grid { grid-template-columns: 1fr; }
+  .system-name { width: 130px; font-size: 14px; }
+  .results-stats { grid-template-columns: 1fr; }
+  .panel { padding: 18px; }
+  .q-text { font-size: 19px; }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div id="app">
+  <div class="title-bar">
+    <h1 class="game-title">Dissection Dojo</h1>
+    <div class="subtitle">Anatomy of the Examinable Body</div>
+    <div class="anat-bar">
+      <span class="anat-icon">⚱</span>
+      <span class="anat-icon">✥</span>
+      <span class="anat-icon">⚕</span>
+      <span class="anat-icon">☘</span>
+      <span class="anat-icon">⚱</span>
+      <span class="anat-icon">✥</span>
+      <span class="anat-icon">⚕</span>
+      <span class="anat-icon">☘</span>
+      <span class="anat-icon">⚱</span>
+      <span class="anat-icon">✥</span>
+    </div>
+  </div>
+
+  <div class="hud">
+    <div class="hud-cell"><div class="hud-label">Vitality</div><div class="hud-value hp"><span class="hearts" id="hearts"></span></div></div>
+    <div class="hud-cell"><div class="hud-label">Knowledge</div><div class="hud-value xp" id="xp-display">0</div></div>
+    <div class="hud-cell"><div class="hud-label">Rank</div><div class="hud-value lvl" id="lvl-display">1</div></div>
+    <div class="hud-cell"><div class="hud-label">Streak</div><div class="hud-value streak" id="streak-display">0🔥</div></div>
+  </div>
+
+  <div class="panel" id="panel"></div>
+</div>
+
+<script>
+// ============================================================================
+// QUESTION BANK — Anatomy with HEAVY hernia / abdominal wall focus
+// (your historical 0% topic)
+// ============================================================================
+const QBANK = [
+  // ── HERNIAS — YOUR HISTORICAL WEAK SPOT (DOUBLE WEIGHTED) ───────────
+  { topic:"Hernia", tag:"BOUNDARIES", q:"Hesselbach's triangle is bordered by which 3 structures?",
+    c:["Inguinal ligament, rectus abdominis, inferior epigastric vessels","Inguinal ligament, sartorius, femoral vessels","Pectineal ligament, lacunar ligament, inguinal ligament","External oblique, internal oblique, transversus abdominis"], a:0,
+    p:"<strong>Hesselbach's triangle</strong> = inguinal ligament (inferior) + rectus abdominis (medial) + inferior epigastric vessels (lateral). <em>This is the territory of DIRECT inguinal hernias</em>. Memorize this triangle — it's THE foundational fact for distinguishing direct from indirect inguinal hernias on USMLE." },
+  { topic:"Hernia", tag:"DIRECT_VS_INDIRECT", q:"Direct vs indirect inguinal hernia — what's the key anatomical distinction?",
+    c:["Indirect = medial to inferior epigastrics; direct = lateral","Direct = MEDIAL to inferior epigastric vessels (Hesselbach's); indirect = LATERAL","Both go through the deep ring","Direct is congenital"], a:1,
+    p:"<strong>MD's go LIE — Medial = Direct; Lateral (to inferior epigastrics) = Indirect</strong>.<br>• <strong>Direct</strong>: weak abdominal wall, OLDER men, goes through Hesselbach's triangle, MEDIAL to epigastrics. Acquired.<br>• <strong>Indirect</strong>: patent processus vaginalis (CONGENITAL), through deep ring → inguinal canal → can enter scrotum, LATERAL to epigastrics. Younger." },
+  { topic:"Hernia", tag:"INDIRECT_PATH", q:"Indirect inguinal hernia follows the path of?",
+    c:["Femoral canal","Inguinal canal (through deep ring → superficial ring → into scrotum)","Direct through abdominal wall","Through obturator foramen"], a:1,
+    p:"<strong>Indirect path</strong>: deep (internal) ring → inguinal canal → superficial (external) ring → scrotum. <em>Follows path of testicular descent through patent processus vaginalis</em>. Covered by ALL 3 layers of spermatic fascia (internal spermatic, cremasteric, external spermatic). Direct hernia is only covered by external spermatic fascia (since it pushes straight through the wall)." },
+  { topic:"Hernia", tag:"FEMORAL", q:"Older woman + groin bulge BELOW inguinal ligament. Diagnosis?",
+    c:["Direct inguinal hernia","Indirect inguinal hernia","Femoral hernia","Umbilical hernia"], a:2,
+    p:"<strong>Femoral hernia: BELOW inguinal ligament, MEDIAL to femoral vein</strong>, in the femoral canal. <em>More common in WOMEN</em> (wider pelvis). <strong>Highest incarceration/strangulation risk of all hernias</strong> — narrow neck. Boundaries of femoral canal: inguinal ligament (sup), pectineal ligament (post), lacunar ligament (medial), femoral vein (lateral)." },
+  { topic:"Hernia", tag:"FEMORAL_TRIANGLE", q:"Femoral triangle contents (lateral to medial)?",
+    c:["NAVL (Nerve, Artery, Vein, Lymphatics)","VAN (Vein, Artery, Nerve)","Artery, Vein, Nerve","Nerve, Vein, Artery, Lymphatics"], a:0,
+    p:"<strong>Femoral triangle, lateral → medial: NAVeL</strong> = Nerve, Artery, Vein, Lymphatics. <em>Femoral hernia is in the canal MEDIAL to the femoral vein</em> (in the lymphatic compartment). Femoral artery pulse is felt at the midpoint of the inguinal ligament — useful surgical landmark." },
+  { topic:"Hernia", tag:"ABDOMINAL_LAYERS", q:"Order of layers an indirect inguinal hernia traverses (superficial → deep, in scrotum)?",
+    c:["Skin → Camper's → Scarpa's → external oblique aponeurosis","Skin → external spermatic → cremasteric → internal spermatic fascia","Skin → tunica vaginalis only","Skin → dartos → tunica albuginea"], a:1,
+    p:"<strong>Indirect hernia in scrotum, layers (superficial → deep)</strong>: Skin → Dartos → External spermatic fascia (from external oblique) → Cremasteric fascia (from internal oblique) → Internal spermatic fascia (from transversalis fascia). <em>Mnemonic: 'Some Damn Englishmen Called It Internal'</em>. Direct hernia only gets external spermatic fascia covering." },
+  { topic:"Hernia", tag:"ABDOMINAL_LAYERS", q:"Layers of the anterior abdominal wall (superficial → deep) below the umbilicus?",
+    c:["Skin → external oblique → internal oblique → transversus abdominis → transversalis fascia → peritoneum","Skin → rectus → peritoneum directly","Skin → Camper's only","Skin → fascia → muscle (single layer)"], a:0,
+    p:"<strong>Abdominal wall layers (skin → peritoneum)</strong>:<br>1. Skin<br>2. Camper's fascia (fatty)<br>3. Scarpa's fascia (membranous — important: continuous with Colles' fascia of perineum)<br>4. External oblique → internal oblique → transversus abdominis<br>5. Transversalis fascia<br>6. Extraperitoneal fat<br>7. Peritoneum<br><em>Below arcuate line, NO posterior rectus sheath</em> — all aponeuroses pass anterior to rectus." },
+  { topic:"Hernia", tag:"HIATAL", q:"GERD + chest pain + barium swallow shows stomach above diaphragm. Most common type?",
+    c:["Sliding hiatal hernia (95%)","Paraesophageal (rolling)","Mixed","Diaphragmatic"], a:0,
+    p:"<strong>Sliding hiatal hernia = 95% of cases</strong>. GE junction slides up through esophageal hiatus → reflux. <em>Paraesophageal (rolling) hernia</em>: stomach fundus herniates BESIDE intact GE junction — less common but more dangerous (strangulation risk → surgical repair). <em>Congenital diaphragmatic hernia</em>: failure of pleuroperitoneal membrane → bowel in chest → pulmonary hypoplasia." },
+  { topic:"Hernia", tag:"SURGICAL_RISK", q:"During inguinal hernia repair, the surgeon must be careful not to injure which nerve (causes loss of cremasteric reflex + scrotal numbness)?",
+    c:["Femoral nerve","Ilioinguinal nerve","Obturator nerve","Pudendal nerve"], a:1,
+    p:"<strong>Ilioinguinal nerve (L1) runs through the inguinal canal</strong> → at risk during hernia repair. Innervates: <em>cremaster muscle + sensation to medial thigh, anterior scrotum/labia majora</em>. Injury → loss of cremasteric reflex + paresthesia. <em>Genitofemoral nerve</em> also at risk — its genital branch innervates cremaster too." },
+  { topic:"Hernia", tag:"COMPLICATIONS", q:"Hernia patient with severe pain, vomiting, hernia non-reducible. Next concern?",
+    c:["Direct vs indirect","Strangulation (compromised blood supply → necrosis)","Femoral location","Sliding component"], a:1,
+    p:"<strong>Hernia danger ladder</strong>: Reducible → Incarcerated (stuck but viable) → Strangulated (blood supply cut → necrosis → SURGICAL EMERGENCY). <em>Femoral hernias have highest strangulation rate</em> (narrow neck). Sx: severe pain, NV, no bowel sounds in hernia, fever, leukocytosis. Tx: <em>emergent surgical repair</em>." },
+
+  // ── PHARYNGEAL POUCHES & EMBRYO ────────────────────────────────────
+  { topic:"Embryo", tag:"POUCH", q:"3rd pharyngeal pouch becomes?",
+    c:["Superior parathyroids","Inferior parathyroids + thymus","Thyroid C cells","Maxillary artery"], a:1,
+    p:"<strong>3rd pouch = INFERIOR parathyroids + thymus</strong>.<br><em>4th pouch = SUPERIOR parathyroids + ultimobranchial body (becomes C cells of thyroid)</em>.<br><strong>Counterintuitive trick</strong>: 3rd is anatomically BELOW 4th in adults despite being numerically lower. <em>DiGeorge (22q11) = 3rd + 4th pouch failure → no thymus (T cell deficiency) + no parathyroids (hypoCa)</em>." },
+  { topic:"Embryo", tag:"ARCHES", q:"Failure of fusion of maxillary + medial nasal prominences causes?",
+    c:["Cleft palate","Cleft lip","Tracheoesophageal fistula","Holoprosencephaly"], a:1,
+    p:"<strong>Cleft LIP = failure of fusion of MAXILLARY + medial NASAL prominences</strong>. <em>Cleft PALATE = failure of fusion of LATERAL palatine processes (palatal shelves)</em>. Polygenic etiology. Can occur together or separately. <em>Note</em>: cleft palate alone is also associated with 22q11 (Pierre Robin sequence)." },
+  { topic:"Embryo", tag:"DUCTS", q:"Bicornuate uterus mechanism?",
+    c:["Wolffian duct failure","Mullerian (paramesonephric) duct fusion failure","SRY mutation","Urogenital sinus failure"], a:1,
+    p:"<strong>Bicornuate/didelphys = failure of Mullerian duct fusion</strong>. Mullerian = paramesonephric → Fallopian tubes, uterus, cervix, upper vagina. <em>Wolffian = mesonephric → male structures (epididymis, vas deferens, seminal vesicles, ejaculatory duct)</em>. Visualized on hysterosalpingogram (HSG)." },
+  { topic:"Embryo", tag:"GERM_LAYER", q:"Tracheoesophageal fistula — what germ layer is involved?",
+    c:["Mesoderm","Ectoderm","Endoderm","Neural crest"], a:2,
+    p:"<strong>TEF = endoderm</strong> (esophagus = epithelial lining of gut tube). <em>NBME wants 'endoderm' as the embryologic answer</em>. Most common type: proximal esophageal atresia + distal esophagus connects to trachea (H-type). Presents as: neonate coughs/chokes with first feeding, NG tube can't be fully inserted, polyhydramnios in utero." },
+  { topic:"Embryo", tag:"EMBRYO", q:"Patent processus vaginalis can cause which two scrotal conditions?",
+    c:["Varicocele + spermatocele","Hydrocele (in neonate) + indirect inguinal hernia","Testicular torsion + epididymitis","Hypospadias + epispadias"], a:1,
+    p:"<strong>Patent processus vaginalis → hydrocele OR indirect inguinal hernia</strong>. The processus vaginalis is an outpouching of peritoneum that descends with the testis. Normally obliterates after birth. <em>Hydrocele transilluminates (light passes through fluid); varicocele does NOT transilluminate (bag of worms, left-sided)</em>." },
+
+  // ── BRACHIAL PLEXUS & UPPER EXTREMITY ──────────────────────────────
+  { topic:"Upper", tag:"FRACTURE", q:"Surgical neck of humerus fracture. Which nerve is injured?",
+    c:["Radial","Median","Axillary (C5-C6)","Ulnar"], a:2,
+    p:"<strong>Surgical neck of humerus → AXILLARY nerve</strong>. Sx: <em>flattened deltoid + loss of sensation over lateral upper arm</em>. Loss of arm abduction 15°-90° (deltoid). <strong>Fracture-nerve cheat sheet</strong>:<br>• Surgical neck humerus → axillary<br>• Midshaft humerus → radial (wrist drop)<br>• Supracondylar humerus → median<br>• Medial epicondyle → ulnar<br>• Hook of hamate → ulnar (Guyon's canal)" },
+  { topic:"Upper", tag:"FRACTURE", q:"Midshaft humerus fracture causes which deficit?",
+    c:["Wrist flexion loss","Wrist drop + pronated forearm + loss of finger extension (RADIAL nerve)","Claw hand","Ape hand"], a:1,
+    p:"<strong>Midshaft humerus → RADIAL nerve (radial groove)</strong>. <em>Wrist drop + pronated forearm</em>. Radial innervates <em>BEST</em>: Brachioradialis, Extensors, Supinator, Triceps. Sensation: posterior arm + dorsum of lateral hand. <em>'Saturday night palsy'</em> = radial nerve compression from sleeping with arm over chair." },
+  { topic:"Upper", tag:"PLEXUS", q:"Newborn after difficult breech delivery: arm adducted, internally rotated, pronated, wrist flexed ('waiter's tip'). Diagnosis?",
+    c:["Klumpke palsy","Erb-Duchenne palsy (UPPER brachial plexus, C5-C6)","Radial nerve injury","Cerebral palsy"], a:1,
+    p:"<strong>Erb-Duchenne = UPPER plexus (C5-C6) = 'waiter's tip'</strong>. Affects deltoid, biceps, supraspinatus/infraspinatus. <em>Causes: shoulder dystocia in delivery; falling on shoulder / grabbing tree branch</em>. <strong>Klumpke = LOWER plexus (C8-T1) = 'claw hand'</strong> (intrinsic hand muscles). Mnemonic: <em>'High point falls fast = upper; low grab = lower'</em>." },
+  { topic:"Upper", tag:"NERVE", q:"Patient cannot adduct thumb (Froment sign positive). Which nerve?",
+    c:["Median","Radial","Ulnar","Musculocutaneous"], a:2,
+    p:"<strong>Ulnar nerve = thumb ADduction (interosseous + adductor pollicis)</strong>. Froment sign: patient can't pinch paper between thumb + index without bending the index. <em>Median nerve = thumb ABduction + opposition (thenar)</em>. Mnemonic: 'Median = thumb away from palm; Ulnar = thumb toward index.' Cubital tunnel syndrome (proximal compression at elbow) > Guyon's canal (distal at wrist, hook of hamate)." },
+  { topic:"Upper", tag:"COMPRESSION", q:"Hypothyroid patient with bilateral hand paresthesias in thumb + index + middle fingers. Mechanism + initial Tx?",
+    c:["Cubital tunnel; surgery","Carpal tunnel from GAG deposition; wrist splint or wrist pad","TOS; physical therapy","Raynaud's; CCB"], a:1,
+    p:"<strong>Carpal tunnel = MEDIAN nerve compression</strong>. Causes: <em>hypothyroidism (GAG deposits), acromegaly (tendon growth), pregnancy (edema), repetitive use</em>. Sx: paresthesia of lateral 3.5 fingers, thenar atrophy late. <em>Tx ladder: wrist splint/pad → triamcinolone injection → surgery (always wrong on USMLE first-line)</em>. <em>Dx: electromyography + nerve conduction studies</em>." },
+  { topic:"Upper", tag:"NERVE", q:"Post-mastectomy: winged scapula. Nerve injured?",
+    c:["Axillary","Long thoracic nerve (innervates serratus anterior)","Spinal accessory","Suprascapular"], a:1,
+    p:"<strong>Long thoracic nerve → serratus anterior → winged scapula</strong>. Damaged in: <em>mastectomy (axillary lymph node dissection)</em>, stab wounds, blunt trauma. Serratus anterior holds scapula against thoracic wall during arm protraction. Without it, scapula 'wings out' when patient pushes against a wall." },
+
+  // ── LOWER EXTREMITY ────────────────────────────────────────────────
+  { topic:"Lower", tag:"NERVE", q:"Foot drop (loss of dorsiflexion + eversion). Nerve?",
+    c:["Tibial","Common peroneal (fibular) at fibular neck","Femoral","Obturator"], a:1,
+    p:"<strong>Common peroneal/fibular nerve → foot drop</strong>. Wraps around fibular neck → most commonly injured lower-limb nerve (lateral leg trauma, prolonged crossing legs, casts). <em>Loses both dorsiflexion AND eversion</em>. Splits into: <em>deep peroneal (Dorsiflexion) + superficial peroneal (Eversion)</em>. High-steppage gait." },
+  { topic:"Lower", tag:"NERVE", q:"Patient cannot stand on tippy-toes (loss of plantarflexion). Nerve?",
+    c:["Common peroneal","Tibial nerve","Femoral","Sciatic only"], a:1,
+    p:"<strong>Tibial nerve = plantarflexion + inversion + sole sensation</strong>. <em>'Tip Toe Tibial'</em>. Tarsal tunnel syndrome = tibial compression at medial ankle (similar to carpal tunnel of foot). <em>Sciatic = tibial + common peroneal combined</em>. Sciatic injury (e.g., posterior hip dislocation) causes both deficits." },
+  { topic:"Lower", tag:"NERVE", q:"Posterior hip dislocation: which nerve is at greatest risk?",
+    c:["Femoral","Sciatic nerve","Obturator","Pudendal"], a:1,
+    p:"<strong>Posterior hip dislocation → SCIATIC nerve injury</strong>. Most common direction of dislocation (90%). Sx: hip flexed, adducted, internally rotated. <em>Anterior hip dislocation = femoral nerve at risk</em>. Sciatic injury → loss of all motor below knee + sensation lateral leg + foot. Hamstrings spared if injury distal." },
+  { topic:"Lower", tag:"GAIT", q:"Trendelenburg gait — which nerve/muscle?",
+    c:["Inferior gluteal","Superior gluteal nerve (gluteus medius + minimus)","Femoral","Pudendal"], a:1,
+    p:"<strong>Trendelenburg gait = SUPERIOR gluteal nerve injury → gluteus medius/minimus weakness</strong>. <em>Pelvis drops to OPPOSITE side when standing on affected leg</em> (the unsupported side). Patient compensates by tilting trunk TOWARD the lesion. Cause: posterior dislocation of hip, IM gluteal injection in wrong quadrant. <em>Inferior gluteal = gluteus maximus = can't climb stairs / rise from chair</em>." },
+  { topic:"Lower", tag:"RADICULOPATHY", q:"Patient lost knee jerk + weakened knee extension. Disc level?",
+    c:["L2-L3","L3-L4 → L4 radiculopathy","L4-L5","L5-S1"], a:1,
+    p:"<strong>Disc → radicular nerve cheat sheet</strong> (the disc PUSHES on the nerve named for the LOWER vertebra above it):<br>• <em>L3-L4 → L4 root → knee reflex lost + weakened knee extension</em><br>• <em>L4-L5 → L5 root → loss of dorsiflexion (foot drop)</em><br>• <em>L5-S1 → S1 root → ankle reflex lost + weakened plantarflexion</em><br><strong>SALT mnemonic for S1</strong>: S1, Achilles, Lateral leg dermatome, Tibial motor (plantarflexion)." },
+
+  // ── SPINAL CORD SYNDROMES ──────────────────────────────────────────
+  { topic:"Spinal", tag:"TRACTS", q:"Brown-Sequard syndrome (hemisection): the deficits are?",
+    c:["Bilateral motor + sensory loss","Ipsilateral motor + dorsal column loss; CONTRALATERAL pain/temperature loss","Bilateral pain/temp only","Anterior cord deficits"], a:1,
+    p:"<strong>Brown-Sequard (hemisection)</strong>:<br>• <em>Ipsilateral</em> loss of motor (corticospinal) + vibration/proprioception (dorsal columns)<br>• <em>Contralateral</em> loss of pain/temperature (spinothalamic — already crossed at the spinal cord)<br><strong>Why?</strong> Spinothalamic crosses near entry; corticospinal crosses at medulla; dorsal columns cross at medulla. Causes: <em>SLE, viral transverse myelitis, MS, trauma</em>." },
+  { topic:"Spinal", tag:"SYNDROME", q:"Bilateral loss of pain + temperature in 'cape' distribution (shoulders/arms) but normal touch/proprioception. Diagnosis?",
+    c:["Brown-Sequard","Syringomyelia (central cord cavitation)","Anterior cord syndrome","Tabes dorsalis"], a:1,
+    p:"<strong>Syringomyelia = central cord cavity → damages crossing spinothalamic fibers at anterior white commissure</strong>. <em>'Cape distribution'</em> bilateral loss of pain/temp. Often associated with <em>Chiari I malformation</em>. C8-T1 segments most affected. <em>Tabes dorsalis (neurosyphilis) = dorsal column degeneration → loss of vibration/proprioception + Argyll-Robertson pupil</em> (opposite of syringo)." },
+  { topic:"Spinal", tag:"SYNDROME", q:"Whiplash injury → upper limbs more weak than lower limbs. Diagnosis?",
+    c:["Anterior cord","Central cord syndrome","Brown-Sequard","Cauda equina"], a:1,
+    p:"<strong>Central cord syndrome = arms > legs weakness</strong>. Mechanism: <em>hyperextension injury (whiplash, MVA)</em>. Why? <em>Corticospinal arm fibers are MEDIAL, leg fibers are LATERAL</em>; central cord lesion hits arm fibers preferentially. Most common in elderly with cervical spondylosis." },
+  { topic:"Spinal", tag:"SYNDROME", q:"Anterior spinal artery occlusion preserves which sense?",
+    c:["Pain","Temperature","Vibration + proprioception (dorsal columns spared)","Motor"], a:2,
+    p:"<strong>Anterior cord syndrome = anterior spinal artery occlusion</strong>. Affects: motor (corticospinal) + pain/temp (spinothalamic). <em>SPARES dorsal columns (vibration + proprioception)</em> — they have separate posterior spinal artery supply. Classic in: aortic dissection, AAA repair complication. Watershed area at T8 (artery of Adamkiewicz)." },
+
+  // ── GI / ABDOMINAL ANATOMY ─────────────────────────────────────────
+  { topic:"GI_anat", tag:"VESSELS", q:"Vertebral level of celiac trunk + structures it supplies?",
+    c:["L1 — midgut","T12 — foregut (esophagus → 1st duodenum, liver, gallbladder, spleen)","L3 — hindgut","L4 — bifurcation"], a:1,
+    p:"<strong>Aortic levels mnemonic</strong>:<br>• <em>T12 = Celiac → FOREGUT</em> (esophagus to mid-2nd duodenum, liver, GB, spleen, pancreas)<br>• <em>L1 = SMA → MIDGUT</em> (mid-2nd duodenum to proximal 2/3 transverse colon)<br>• <em>L2 = Renal + gonadal arteries</em><br>• <em>L3 = IMA → HINDGUT</em> (distal 1/3 transverse colon to upper rectum)<br>• <em>L4 = Aortic bifurcation</em>" },
+  { topic:"GI_anat", tag:"VESSELS", q:"AAA repair: graft from L2 to bifurcation. Which artery is sacrificed → which structure suffers?",
+    c:["SMA → small bowel","IMA at L3 → DESCENDING colon ischemia","Celiac → liver","Renal → kidney"], a:1,
+    p:"<strong>Classic NBME Q</strong>: graft inserted between renal arteries (L2) and aortic bifurcation (L4) → IMA at L3 gets sacrificed → <em>descending colon (hindgut) at risk</em>. Watershed area at splenic flexure (between SMA and IMA territories) — most vulnerable to ischemia. Sx: post-op bloody diarrhea + LLQ pain." },
+  { topic:"GI_anat", tag:"RETROPERITONEAL", q:"Which structure is RETROPERITONEAL?",
+    c:["Stomach","Transverse colon","Pancreas (except tail) + 2nd-4th duodenum + ascending/descending colon + kidneys","Sigmoid colon"], a:2,
+    p:"<strong>Retroperitoneal organs = SAD PUCKER</strong>: Suprarenal (adrenal), Aorta + IVC, Duodenum (2nd-4th), Pancreas (except tail), Ureters, Colon (ascending + descending), Kidneys, Esophagus (lower), Rectum (lower 1/3). <em>Tail of pancreas is intraperitoneal</em> — sits in splenorenal ligament with splenic vessels." },
+  { topic:"GI_anat", tag:"PORTOSYSTEMIC", q:"Esophageal varices represent which portosystemic anastomosis?",
+    c:["Superior rectal–middle/inferior rectal","Left gastric–azygos","Paraumbilical–epigastric","Splenic–renal"], a:1,
+    p:"<strong>Portosystemic anastomoses (HY in cirrhosis)</strong>:<br>• <em>Esophageal varices = LEFT GASTRIC vein ↔ AZYGOS vein</em><br>• <em>Caput medusae = PARAUMBILICAL ↔ small epigastric veins</em><br>• <em>Anorectal varices = SUPERIOR rectal (portal) ↔ middle/inferior rectal (systemic)</em><br>Hemorrhoids ≠ varices — they're vascular cushions, not from portal HTN." },
+  { topic:"GI_anat", tag:"LANDMARK", q:"McBurney's point is located at?",
+    c:["Midpoint of inguinal ligament","1/3 distance from anterior superior iliac spine to umbilicus (RLQ — appendix)","Below umbilicus midline","LLQ"], a:1,
+    p:"<strong>McBurney's point = 1/3 from ASIS to umbilicus = surface anatomy of appendix</strong>. Tenderness here = appendicitis. <em>Pain migrates from epigastrium → RLQ</em>: starts as visceral pain (T10 dermatome, periumbilical) → becomes parietal/somatic pain (localized to RLQ) when peritoneum involved. <em>Rovsing sign = LLQ palpation causes RLQ pain</em>." },
+  { topic:"GI_anat", tag:"LIGAMENT", q:"Pringle maneuver compresses which structures (during liver bleed control)?",
+    c:["Common bile duct, hepatic artery, portal vein in hepatoduodenal ligament","Splenic artery alone","IVC","Aorta"], a:0,
+    p:"<strong>Pringle maneuver = clamp HEPATODUODENAL ligament</strong> (free edge of lesser omentum) = contains <em>portal triad: common bile duct (lateral), hepatic artery proper (medial), portal vein (posterior)</em>. Used to control bleeding during liver surgery. If bleeding continues after Pringle → IVC or hepatic vein source." },
+
+  // ── PELVIS / PERINEUM ──────────────────────────────────────────────
+  { topic:"Pelvis", tag:"NERVE", q:"Pudendal nerve provides voluntary motor to which 'pelvic floor' structures?",
+    c:["Detrusor muscle","External urethral + anal sphincters; Kegel muscles","Internal urethral sphincter","Smooth muscle of bladder"], a:1,
+    p:"<strong>Pudendal nerve (S2-S4) = somatic, voluntary</strong>. Supplies: <em>external urethral sphincter, external anal sphincter, perineal muscles for Kegels, sensation to external genitalia/perineum</em>. <em>Pudendal nerve block during labor</em> for episiotomy. <strong>'2,3,4 keeps the penis off the floor'</strong> — also for erection (pelvic splanchnic) and ejaculation (pudendal)." },
+  { topic:"Pelvis", tag:"AUTONOMIC", q:"Erection is mediated by?",
+    c:["Hypogastric (sympathetic, T11-L2)","Pelvic splanchnic (parasympathetic, S2-S4)","Pudendal","Vagus"], a:1,
+    p:"<strong>'Point and Shoot'</strong>:<br>• <em>POINT (erection)</em> = parasympathetic (pelvic splanchnic, S2-S4) → NO release → smooth muscle relaxation → blood fills corpora<br>• <em>SHOOT (ejaculation)</em> = sympathetic (hypogastric, T11-L2) for emission, then somatic (pudendal) for expulsion<br><em>Diabetic neuropathy → ED via parasympathetic damage. Sildenafil = PDE-5 inhibitor → potentiates NO/cGMP</em>." },
+  { topic:"Pelvis", tag:"VENOUS", q:"Why does varicocele almost always occur on the LEFT?",
+    c:["Left testicular vein drains directly into IVC","Left testicular vein drains into LEFT renal vein at 90° → backup","Right testicular has more valves","Anatomic variant"], a:1,
+    p:"<strong>Left varicocele = left testicular vein drains into LEFT RENAL vein at 90°</strong> (high resistance to flow) → hydrostatic backup → pampiniform plexus dilation. <em>Right testicular drains directly into IVC</em> — lower resistance, less backup. <em>Sudden RIGHT varicocele in adult = think renal cell carcinoma compressing IVC</em>." },
+  { topic:"Pelvis", tag:"LIGAMENT", q:"Suspensory ligament of ovary contains?",
+    c:["Round ligament","Ovarian vessels (artery, vein, lymphatics)","Ureter","Uterine artery"], a:1,
+    p:"<strong>Suspensory ligament of ovary (infundibulopelvic) = ovarian vessels</strong>. <em>Risk during oophorectomy: injury to ureter</em> (runs nearby). <strong>Cardinal ligament</strong> = uterine vessels — risk of ureter injury during hysterectomy ('water under the bridge': ureter runs UNDER uterine artery). <strong>Round ligament</strong> = uterine horn to labia majora (through inguinal canal). <strong>Broad ligament</strong> = uterus + tubes + ovaries to pelvic wall." },
+
+  // ── CRANIAL NERVES & HEAD/NECK ─────────────────────────────────────
+  { topic:"Cranial", tag:"FORAMEN", q:"CN II (optic nerve) exits skull through which foramen?",
+    c:["Foramen ovale","Optic canal","Foramen rotundum","Superior orbital fissure"], a:1,
+    p:"<strong>Skull foramina cheat</strong>:<br>• <em>Optic canal</em>: CN II + ophthalmic artery<br>• <em>Superior orbital fissure</em>: CN III, IV, V1, VI + superior ophthalmic vein<br>• <em>Foramen rotundum</em>: V2 (maxillary) — 'rotundum=2'<br>• <em>Foramen ovale</em>: V3 (mandibular) — 'ovale=3'<br>• <em>Internal acoustic meatus</em>: CN VII + VIII<br>• <em>Jugular foramen</em>: CN IX, X, XI + IJV" },
+  { topic:"Cranial", tag:"LESION", q:"Patient cannot protrude tongue and tongue deviates to LEFT. Which CN + which side lesion?",
+    c:["CN XII left LMN lesion (deviates TOWARD lesion)","CN XII right UMN lesion","CN VII","CN X"], a:0,
+    p:"<strong>CN XII (hypoglossal): tongue deviates TOWARD side of LMN lesion</strong> (weak side can't push). UMN lesion → deviates AWAY from lesion (stroke). <em>'Lick your wounds'</em> mnemonic: tongue deviates toward the wound. Common cause of LMN: <em>internal carotid dissection</em> (CN XII runs near ICA)." },
+  { topic:"Cranial", tag:"LESION", q:"Bell's palsy (peripheral CN VII lesion): forehead is?",
+    c:["Spared (UMN lesion)","Affected — entire half of face droops (LMN lesion)","Both forehead + eyes spared","Only mouth affected"], a:1,
+    p:"<strong>Bell's palsy = LMN CN VII → ENTIRE half of face droops including forehead</strong>. <em>UMN CN VII (cortical stroke) SPARES forehead</em> — bilateral cortical input to forehead nucleus. Causes: idiopathic, HSV, Lyme, sarcoidosis, Ramsay Hunt (VZV). Tx: prednisone + acyclovir." },
+
+  // ── MISC HY SURGICAL ANATOMY ───────────────────────────────────────
+  { topic:"Misc", tag:"BREAST", q:"Where do most breast cancers metastasize first via lymphatic drainage?",
+    c:["Internal mammary nodes","Axillary lymph nodes","Supraclavicular","Cervical"], a:1,
+    p:"<strong>Breast cancer → AXILLARY nodes first (75% of drainage)</strong>. <em>Sentinel lymph node biopsy</em> = first axillary node receiving drainage from tumor. <em>Internal mammary nodes</em> drain medial breast (~25%). <em>Sister Mary Joseph nodule</em> = umbilical metastasis (gastric CA). <em>Virchow node</em> = left supraclavicular = visceral malignancy (gastric)." },
+  { topic:"Misc", tag:"LYMPH", q:"Testicular cancer first metastasizes to which lymph nodes?",
+    c:["Inguinal","Para-aortic (testes drain to where they originated embryologically)","External iliac","Pelvic"], a:1,
+    p:"<strong>Testes + ovaries → PARA-AORTIC nodes</strong> (followed embryologic descent). <em>Don't pick inguinal — that's scrotal SKIN drainage</em>. <strong>Lymph drainage cheat</strong>:<br>• Testes/ovaries → para-aortic<br>• Cervix/body of uterus → external iliac<br>• Anal canal ABOVE pectinate line + bladder → internal iliac<br>• Anal canal BELOW pectinate + scrotum → superficial inguinal<br>• Foot/lateral leg → popliteal" },
+  { topic:"Misc", tag:"VESSEL", q:"Carotid sinus baroreceptors are innervated by which nerve?",
+    c:["Vagus alone","Glossopharyngeal (CN IX)","Sympathetic","Phrenic"], a:1,
+    p:"<strong>Carotid sinus = CN IX (glossopharyngeal)</strong>. <em>Aortic arch baroreceptors = CN X (vagus)</em>. Both feed into solitary nucleus of medulla. <em>Carotid sinus massage stimulates CN IX → ↑ parasympathetic → slows heart rate</em> — used to break SVT. <em>Chemoreceptors</em>: carotid body = CN IX; aortic body = CN X." },
+  { topic:"Misc", tag:"DERMATOME", q:"T4 dermatome corresponds to?",
+    c:["Umbilicus","Nipple line","Inguinal","Knee"], a:1,
+    p:"<strong>Dermatome landmarks</strong>:<br>• <em>C2</em> = back of head<br>• <em>C6</em> = thumb<br>• <em>C7</em> = middle finger<br>• <em>C8</em> = pinky<br>• <em>T4</em> = nipple<br>• <em>T7</em> = xiphoid<br>• <em>T10</em> = umbilicus ('belly butTEN')<br>• <em>L1</em> = inguinal ligament<br>• <em>L4</em> = knee + medial leg<br>• <em>S2-S4</em> = perineum/genitals" },
+  { topic:"Misc", tag:"VESSEL", q:"Middle meningeal artery (epidural hematoma source) is a branch of?",
+    c:["Internal carotid","External carotid → maxillary → middle meningeal","Vertebral","Facial"], a:1,
+    p:"<strong>Middle meningeal artery = branch of MAXILLARY artery (from external carotid)</strong>. Runs through <em>foramen spinosum</em>. Damaged in <em>pterion fracture (thinnest part of skull, where frontal/parietal/temporal/sphenoid meet)</em> → epidural hematoma → 'lucid interval' → herniation. <em>Bridging veins (subdural hematoma) = drain into dural venous sinuses</em>." },
+  { topic:"Misc", tag:"LANDMARK", q:"Lumbar puncture: needle enters which space, between which vertebrae?",
+    c:["Subarachnoid space at L1-L2","Subarachnoid space at L3-L4 or L4-L5 (below conus medullaris which ends at L1-L2 in adults)","Epidural at T12","Subdural at L5-S1"], a:1,
+    p:"<strong>LP = L3-L4 or L4-L5</strong> (iliac crest = L4 landmark). <em>Conus medullaris ends at L1-L2 in adults</em> — going below avoids cord injury. <strong>Layers needle traverses</strong>: skin → supraspinous lig → interspinous lig → ligamentum flavum → epidural space (fat + venous plexus) → dura → arachnoid → subarachnoid (CSF). <em>Increased ICP / focal neuro signs = CT first to avoid herniation</em>." }
+];
+
+// ============================================================================
+// SYSTEMS
+// ============================================================================
+const SYSTEMS = ["Hernia","Embryo","Upper","Lower","Spinal","GI_anat","Pelvis","Cranial","Misc"];
+
+const STATE = {
+  hp: 3, maxHp: 3, xp: 0, level: 1, streak: 0, bestStreak: 0,
+  mode: 'menu', currentQ: null, modeQs: [], modeIdx: 0,
+  modeStats: { correct: 0, total: 0 },
+  systemMastery: {}, achievements: {},
+  totalAnswered: 0, totalCorrect: 0
+};
+SYSTEMS.forEach(s => { STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
+
+const ACHIEVEMENTS = [
+  { id: 'first_cut', name: 'First Incision', desc: 'Answer your first question', icon: '🗡' },
+  { id: 'streak_5', name: 'Steady Hand', desc: '5-question streak', icon: '🔥' },
+  { id: 'streak_10', name: 'Master Dissector', desc: '10-question streak', icon: '⚜' },
+  { id: 'level_5', name: 'Apprentice', desc: 'Reach Level 5', icon: '✥' },
+  { id: 'level_10', name: 'Anatomist', desc: 'Reach Level 10', icon: '⚕' },
+  { id: 'master_hernia', name: 'Hernia Hunter', desc: 'Master Hernias (90%+, 5+ seen)', icon: '⚔' },
+  { id: 'master_upper', name: 'Plexus Pro', desc: 'Master Upper Limb (90%+, 4+ seen)', icon: '☘' },
+  { id: 'master_lower', name: 'Lower Limb Master', desc: 'Master Lower Limb (90%+, 4+ seen)', icon: '⚱' },
+  { id: 'perfect_round', name: 'Perfect Specimen', desc: 'Perfect 10/10 round', icon: '✦' },
+  { id: 'survivor', name: 'Iron Constitution', desc: 'Endless: 20 in a row', icon: '⚜' }
+];
+
+// ============================================================================
+// PERSISTENCE
+// ============================================================================
+function loadSave() {
+  try {
+    const v = localStorage.getItem('dissection_dojo_save');
+    if (v) {
+      const data = JSON.parse(v);
+      Object.assign(STATE, data);
+      SYSTEMS.forEach(s => { if (!STATE.systemMastery[s]) STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
+      toast('SAVE LOADED', 'xp');
+    }
+  } catch (e) {}
+}
+function save() {
+  try {
+    const data = {
+      hp: STATE.hp, maxHp: STATE.maxHp, xp: STATE.xp, level: STATE.level,
+      bestStreak: STATE.bestStreak, systemMastery: STATE.systemMastery,
+      achievements: STATE.achievements, totalAnswered: STATE.totalAnswered,
+      totalCorrect: STATE.totalCorrect
+    };
+    localStorage.setItem('dissection_dojo_save', JSON.stringify(data));
+  } catch (e) {}
+}
+
+// ============================================================================
+// UTILS
+// ============================================================================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function pickRandom(arr, n) { return shuffle(arr).slice(0, n); }
+function toast(msg, cls='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + cls;
+  setTimeout(() => t.className = 'toast ' + cls, 1800);
+}
+function unlock(id) {
+  if (STATE.achievements[id]) return;
+  const ach = ACHIEVEMENTS.find(a => a.id === id);
+  if (!ach) return;
+  STATE.achievements[id] = true;
+  toast(`✦ ${ach.name}!`, 'xp');
+  save();
+}
+function checkAchievements() {
+  if (STATE.totalAnswered >= 1) unlock('first_cut');
+  if (STATE.streak >= 5) unlock('streak_5');
+  if (STATE.streak >= 10) unlock('streak_10');
+  if (STATE.level >= 5) unlock('level_5');
+  if (STATE.level >= 10) unlock('level_10');
+  ['Hernia','Upper','Lower'].forEach((sys, i) => {
+    const m = STATE.systemMastery[sys];
+    const threshold = i === 0 ? 5 : 4;
+    if (m.seen >= threshold && (m.correct/m.seen) >= 0.9) {
+      unlock(['master_hernia','master_upper','master_lower'][i]);
+    }
+  });
+}
+
+// ============================================================================
+// HUD
+// ============================================================================
+function renderHUD() {
+  let hearts = '';
+  for (let i = 0; i < STATE.maxHp; i++) {
+    hearts += `<span class="heart ${i < STATE.hp ? '' : 'lost'}">♥</span>`;
+  }
+  document.getElementById('hearts').innerHTML = hearts;
+  document.getElementById('xp-display').textContent = STATE.xp;
+  document.getElementById('lvl-display').textContent = STATE.level;
+  document.getElementById('streak-display').textContent = STATE.streak + '🔥';
+}
+function gainXP(amt) {
+  STATE.xp += amt;
+  const needed = STATE.level * 50;
+  if (STATE.xp >= needed) {
+    STATE.xp -= needed;
+    STATE.level++;
+    STATE.maxHp = Math.min(5, 3 + Math.floor(STATE.level / 5));
+    STATE.hp = STATE.maxHp;
+    toast(`RANK UP! Lvl ${STATE.level}`, 'xp');
+  }
+  renderHUD();
+}
+
+// ============================================================================
+// SCREENS
+// ============================================================================
+const panel = document.getElementById('panel');
+
+function renderMenu() {
+  STATE.mode = 'menu';
+  renderHUD();
+  panel.innerHTML = `
+    <h2 style="font-family:'Cormorant Garamond',serif; font-variant:small-caps; font-size:24px; color:var(--gold); margin-bottom:6px; text-align:center; letter-spacing:4px;">✦ Choose Your Study ✦</h2>
+    <p style="text-align:center; color:var(--text-dim); margin-bottom:20px; font-family:'Cormorant Garamond',serif; font-size:18px; font-style:italic;">— "Hernia Hall" is your priority. Drill it to mastery first. —</p>
+    <div class="menu-grid">
+      <div class="menu-card" onclick="startMode('daily')">
+        <span class="menu-icon">⚱</span>
+        <div class="menu-title">Daily Cadaver</div>
+        <div class="menu-desc">10 mixed Qs across all topics.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('endless')">
+        <span class="menu-icon">⚔</span>
+        <div class="menu-title">Endless Dissection</div>
+        <div class="menu-desc">Survival mode. No mercy.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('hernia')" style="border-color:var(--crimson); background:linear-gradient(135deg, rgba(200,50,74,0.18), rgba(201,169,97,0.08));">
+        <span class="menu-icon">⚕</span>
+        <div class="menu-title" style="color:var(--crimson);">★ Hernia Hall ★</div>
+        <div class="menu-desc">PRIORITY. Drill until S-rank.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('upper')">
+        <span class="menu-icon">✥</span>
+        <div class="menu-title">Upper Limb Lab</div>
+        <div class="menu-desc">Plexus, fractures, nerves.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('lower')">
+        <span class="menu-icon">☘</span>
+        <div class="menu-title">Lower Limb Lab</div>
+        <div class="menu-desc">Foot drop, sciatic, gait.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('spinal')">
+        <span class="menu-icon">⚜</span>
+        <div class="menu-title">Spinal Studies</div>
+        <div class="menu-desc">Tracts, syndromes, radiculo.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('gi')">
+        <span class="menu-icon">⚱</span>
+        <div class="menu-title">Abdominal Atlas</div>
+        <div class="menu-desc">Vessels, organs, retroperitoneum.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('pelvis')">
+        <span class="menu-icon">⚭</span>
+        <div class="menu-title">Pelvic Plate</div>
+        <div class="menu-desc">Pudendal, autonomics, ligaments.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('headneck')">
+        <span class="menu-icon">⚕</span>
+        <div class="menu-title">Head & Neck</div>
+        <div class="menu-desc">CNs, foramina, embryo, misc.</div>
+      </div>
+    </div>
+    <div class="system-progress">
+      <h3 style="font-family:'Cormorant Garamond',serif; font-variant:small-caps; font-size:18px; color:var(--crimson); margin:24px 0 12px; letter-spacing:3px;">— Mastery Ledger —</h3>
+      ${SYSTEMS.map(sys => {
+        const m = STATE.systemMastery[sys];
+        const pct = m.seen ? Math.round(m.correct / m.seen * 100) : 0;
+        const displayName = {'GI_anat':'Abdominal','Embryo':'Embryology','Upper':'Upper Limb','Lower':'Lower Limb','Spinal':'Spinal Cord','Cranial':'Head & Neck','Misc':'Surgical Misc'}[sys] || sys;
+        return `
+          <div class="system-bar">
+            <div class="system-name">${displayName}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+            <div class="system-pct">${pct}% (${m.correct}/${m.seen})</div>
+          </div>`;
+      }).join('')}
+    </div>
+    <div class="controls">
+      <button class="btn btn-secondary" onclick="showAchievements()">✦ Achievements</button>
+      <button class="btn btn-secondary" onclick="showStats()">⚖ Stats</button>
+      <button class="btn btn-secondary" onclick="showSyncModal()">🔄 Sync</button>
+      <button class="btn btn-danger" onclick="resetSave()">✗ Reset</button>
+    </div>
+  `;
+}
+
+function startMode(mode) {
+  STATE.mode = mode;
+  STATE.modeStats = { correct: 0, total: 0 };
+  STATE.modeIdx = 0;
+  STATE.hp = STATE.maxHp;
+
+  let pool = QBANK;
+  let limit = 10;
+  if (mode === 'hernia') pool = QBANK.filter(q => q.topic === 'Hernia');
+  else if (mode === 'upper') pool = QBANK.filter(q => q.topic === 'Upper');
+  else if (mode === 'lower') pool = QBANK.filter(q => q.topic === 'Lower');
+  else if (mode === 'spinal') pool = QBANK.filter(q => q.topic === 'Spinal');
+  else if (mode === 'gi') pool = QBANK.filter(q => q.topic === 'GI_anat');
+  else if (mode === 'pelvis') pool = QBANK.filter(q => q.topic === 'Pelvis');
+  else if (mode === 'headneck') pool = QBANK.filter(q => ['Cranial','Embryo','Misc'].includes(q.topic));
+  else if (mode === 'endless') { pool = QBANK; limit = 999; }
+
+  STATE.modeQs = mode === 'endless' ? shuffle(pool) : pickRandom(pool, Math.min(limit, pool.length));
+  STATE.modeStats.total = STATE.modeQs.length;
+  renderHUD();
+  nextQuestion();
+}
+
+function nextQuestion() {
+  if (STATE.hp <= 0) return endRound('LIFE LOST');
+  if (STATE.modeIdx >= STATE.modeQs.length) {
+    if (STATE.mode === 'endless') {
+      STATE.modeQs = shuffle(QBANK); STATE.modeIdx = 0;
+    } else return endRound('COMPLETE');
+  }
+  STATE.currentQ = STATE.modeQs[STATE.modeIdx];
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = STATE.currentQ;
+  const progressTxt = STATE.mode === 'endless'
+    ? `Q${STATE.modeStats.correct + 1} • ENDLESS`
+    : `Q${STATE.modeIdx + 1} / ${STATE.modeQs.length}`;
+  panel.innerHTML = `
+    <div class="question-area">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span class="q-tag">${q.tag} • ${q.topic}</span>
+        <span style="font-family:'JetBrains Mono',monospace; color:var(--text-dim); font-size:14px;">${progressTxt}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="choices" id="choices">
+        ${q.c.map((c, i) => `
+          <button class="choice" data-idx="${i}" onclick="answer(${i})">
+            <span class="key">${String.fromCharCode(65 + i)}</span>
+            <span>${c}</span>
+          </button>`).join('')}
+      </div>
+      <div id="feedback"></div>
+    </div>
+  `;
+}
+
+function answer(idx) {
+  const q = STATE.currentQ;
+  const isCorrect = idx === q.a;
+  document.querySelectorAll('.choice').forEach((el, i) => {
+    el.classList.add('disabled');
+    el.onclick = null;
+    if (i === q.a) el.classList.add('correct');
+    else if (i === idx) el.classList.add('wrong');
+  });
+
+  STATE.totalAnswered++;
+  STATE.systemMastery[q.topic].seen++;
+  if (isCorrect) {
+    STATE.totalCorrect++;
+    STATE.systemMastery[q.topic].correct++;
+    STATE.modeStats.correct++;
+    STATE.streak++;
+    if (STATE.streak > STATE.bestStreak) STATE.bestStreak = STATE.streak;
+    const xpGain = 10 + Math.min(STATE.streak * 2, 20);
+    gainXP(xpGain);
+    toast(`+${xpGain} XP`, 'xp');
+    if (STATE.mode === 'endless' && STATE.streak >= 20) unlock('survivor');
+  } else {
+    STATE.streak = 0;
+    STATE.hp--;
+    toast('✗ -1 HP', 'error');
+  }
+  renderHUD();
+  checkAchievements();
+  save();
+
+  document.getElementById('feedback').innerHTML = `
+    <div class="pearl-box">
+      <div class="pearl-label">✦ Mehlman Pearl ✦</div>
+      <div class="pearl-text">${q.p}</div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-secondary" onclick="renderMenu()">◄ Menu</button>
+      <button class="btn" onclick="advance()">${STATE.modeIdx + 1 >= STATE.modeQs.length && STATE.mode !== 'endless' ? 'Conclude ►' : 'Next ►'}</button>
+    </div>
+  `;
+}
+
+function advance() {
+  STATE.modeIdx++;
+  nextQuestion();
+}
+
+function endRound(reason) {
+  const correct = STATE.modeStats.correct;
+  const total = STATE.modeStats.total;
+  const livePct = total > 0 ? Math.round(correct/total*100) : 0;
+
+  let rank, rankColor;
+  if (livePct === 100 && total >= 10) { rank = 'S'; rankColor = 'var(--gold)'; unlock('perfect_round'); }
+  else if (livePct >= 90) { rank = 'A'; rankColor = 'var(--crimson)'; }
+  else if (livePct >= 75) { rank = 'B'; rankColor = 'var(--cream)'; }
+  else if (livePct >= 60) { rank = 'C'; rankColor = 'var(--sepia)'; }
+  else { rank = 'D'; rankColor = 'var(--warning)'; }
+
+  const reasonMsg = reason === 'LIFE LOST' ? 'Specimen Compromised' : 'Examination Complete';
+  panel.innerHTML = `
+    <div class="results-screen">
+      <div class="results-title">${reasonMsg}</div>
+      <div class="rank-badge" style="color:${rankColor}; border-color:${rankColor}; box-shadow: 0 0 30px ${rankColor};">Rank ${rank}</div>
+      <div class="results-stats">
+        <div class="stat-block"><span class="stat-num">${correct}</span><span class="stat-label">Correct</span></div>
+        <div class="stat-block"><span class="stat-num">${livePct}%</span><span class="stat-label">Accuracy</span></div>
+        <div class="stat-block"><span class="stat-num">${STATE.bestStreak}</span><span class="stat-label">Best Streak</span></div>
+      </div>
+      <div class="controls" style="justify-content:center;">
+        <button class="btn btn-secondary" onclick="renderMenu()">◄ Menu</button>
+        <button class="btn" onclick="startMode('${STATE.mode}')">↻ Repeat</button>
+      </div>
+    </div>
+  `;
+  STATE.streak = 0;
+  renderHUD();
+  save();
+}
+
+
+// ============================================================================
+// SYNC — Export / Import save codes across devices
+// ============================================================================
+function showSyncModal() {
+  const data = {
+    hp: STATE.hp, maxHp: STATE.maxHp, xp: STATE.xp, level: STATE.level,
+    bestStreak: STATE.bestStreak, systemMastery: STATE.systemMastery,
+    achievements: STATE.achievements, totalAnswered: STATE.totalAnswered,
+    totalCorrect: STATE.totalCorrect
+  };
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <h2>🔄 SYNC SAVE</h2>
+        <p style="font-size:14px; opacity:0.75; margin-bottom:18px;">Transfer your progress between devices. Copy code from one, paste on the other.</p>
+
+        <div style="margin-bottom:20px; padding:14px; background:rgba(0,0,0,0.25); border-radius:4px; border:1px solid rgba(128,128,128,0.25);">
+          <h3 style="font-size:15px; margin-bottom:8px; opacity:0.9;">📤 EXPORT &mdash; from this device</h3>
+          <p style="font-size:13px; opacity:0.65; margin-bottom:8px;">Copy this code, then paste it on your other device:</p>
+          <textarea id="sync-export-code" readonly style="width:100%; height:90px; font-family:monospace; font-size:11px; padding:8px; background:rgba(0,0,0,0.45); color:inherit; border:1px solid rgba(128,128,128,0.4); border-radius:3px; resize:none; word-break:break-all;">${code}</textarea>
+          <button class="btn btn-secondary" style="margin-top:10px; width:100%;" onclick="copyExportCode()">📋 Copy to Clipboard</button>
+        </div>
+
+        <div style="margin-bottom:20px; padding:14px; background:rgba(0,0,0,0.25); border-radius:4px; border:1px solid rgba(128,128,128,0.25);">
+          <h3 style="font-size:15px; margin-bottom:8px; opacity:0.9;">📥 IMPORT &mdash; from another device</h3>
+          <p style="font-size:13px; opacity:0.65; margin-bottom:8px;">Paste a save code from your other device:</p>
+          <textarea id="sync-import-code" placeholder="Paste save code here..." style="width:100%; height:90px; font-family:monospace; font-size:11px; padding:8px; background:rgba(0,0,0,0.45); color:inherit; border:1px solid rgba(128,128,128,0.4); border-radius:3px; resize:none;"></textarea>
+          <button class="btn" style="margin-top:10px; width:100%;" onclick="applyImport()">✓ Apply Import</button>
+        </div>
+
+        <div style="text-align:center;">
+          <button class="btn btn-secondary" onclick="closeModal()">CLOSE</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function copyExportCode() {
+  const ta = document.getElementById('sync-export-code');
+  if (!ta) return;
+  ta.select();
+  ta.setSelectionRange(0, 99999);
+  let ok = false;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(ta.value).then(
+      () => toast('COPIED!', 'xp'),
+      () => {
+        try { ok = document.execCommand('copy'); } catch (e) {}
+        if (ok) toast('COPIED!', 'xp');
+        else toast('Select & copy manually', 'error');
+      }
+    );
+  } else {
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    if (ok) toast('COPIED!', 'xp');
+    else toast('Select & copy manually', 'error');
+  }
+}
+
+function applyImport() {
+  const ta = document.getElementById('sync-import-code');
+  if (!ta) return;
+  const code = ta.value.trim();
+  if (!code) { toast('Paste a code first', 'error'); return; }
+  try {
+    let json;
+    try { json = decodeURIComponent(escape(atob(code))); }
+    catch (e) { json = atob(code); }
+    const data = JSON.parse(json);
+    if (typeof data.xp !== 'number' || !data.systemMastery) {
+      throw new Error('Invalid save format');
+    }
+    if (!confirm('This will REPLACE your current progress on this device. Continue?')) return;
+    Object.assign(STATE, data);
+    SYSTEMS.forEach(s => { if (!STATE.systemMastery[s]) STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
+    if (!STATE.achievements) STATE.achievements = {};
+    save();
+    closeModal();
+    toast('SAVE IMPORTED!', 'xp');
+    renderMenu();
+  } catch (e) {
+    toast('Invalid code — try again', 'error');
+  }
+}
+
+function showAchievements() {
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <h2>✦ Achievements</h2>
+        <div class="achievement-list">
+          ${ACHIEVEMENTS.map(a => `
+            <div class="achievement ${STATE.achievements[a.id] ? 'unlocked' : 'locked'}">
+              <span class="ach-icon">${STATE.achievements[a.id] ? a.icon : '⚿'}</span>
+              <div>
+                <strong>${a.name}</strong><br>
+                <span style="font-size:14px; color:var(--text-dim); font-style:italic;">${a.desc}</span>
+              </div>
+            </div>`).join('')}
+        </div>
+        <button class="btn" onclick="closeModal()">Close</button>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function showStats() {
+  const totalPct = STATE.totalAnswered ? Math.round(STATE.totalCorrect/STATE.totalAnswered*100) : 0;
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <h2>⚖ Lifetime Ledger</h2>
+        <p><strong style="color:var(--gold)">Total Answered:</strong> ${STATE.totalAnswered}</p>
+        <p><strong style="color:var(--cream)">Total Correct:</strong> ${STATE.totalCorrect}</p>
+        <p><strong style="color:var(--crimson)">Lifetime Accuracy:</strong> ${totalPct}%</p>
+        <p><strong style="color:var(--warning)">Best Streak:</strong> ${STATE.bestStreak}🔥</p>
+        <p><strong style="color:var(--vein-blue)">Current Rank:</strong> ${STATE.level}</p>
+        <p><strong>Achievements:</strong> ${Object.keys(STATE.achievements).length} / ${ACHIEVEMENTS.length}</p>
+        <button class="btn" onclick="closeModal()">Close</button>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeModal() { document.querySelector('.modal-overlay')?.remove(); }
+
+function resetSave() {
+  if (!confirm('Reset ALL Dissection Dojo progress?')) return;
+  try { localStorage.removeItem('dissection_dojo_save'); } catch (e) {}
+  STATE.hp = 3; STATE.maxHp = 3; STATE.xp = 0; STATE.level = 1;
+  STATE.streak = 0; STATE.bestStreak = 0; STATE.totalAnswered = 0; STATE.totalCorrect = 0;
+  STATE.achievements = {};
+  SYSTEMS.forEach(s => { STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
+  toast('SAVE RESET');
+  renderMenu();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (STATE.mode === 'menu' || !STATE.currentQ) return;
+  const choices = document.querySelectorAll('.choice:not(.disabled)');
+  if (choices.length === 0) {
+    if (e.key === 'Enter') {
+      const nextBtn = document.querySelector('.controls .btn:not(.btn-secondary):not(.btn-danger)');
+      nextBtn?.click();
+    }
+    return;
+  }
+  const keyIdx = ['a','b','c','d','1','2','3','4'].indexOf(e.key.toLowerCase());
+  if (keyIdx >= 0) {
+    const idx = keyIdx >= 4 ? keyIdx - 4 : keyIdx;
+    if (choices[idx]) answer(idx);
+  }
+});
+
+loadSave();
+renderMenu();
+</script>
+</body>
+</html>

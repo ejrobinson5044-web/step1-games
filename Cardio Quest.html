@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CARDIO QUEST — Step 1 Survival</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-deep: #07020d;
+  --bg-mid: #110823;
+  --bg-card: #1a0f2e;
+  --neon-pink: #ff2d95;
+  --neon-cyan: #00f0ff;
+  --neon-green: #39ff14;
+  --neon-yellow: #fff700;
+  --neon-red: #ff3860;
+  --neon-purple: #b537f2;
+  --text: #e8e8ff;
+  --text-dim: #8a8aa8;
+  --grid: rgba(0, 240, 255, 0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body {
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(181, 55, 242, 0.18), transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(255, 45, 149, 0.15), transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(0, 240, 255, 0.05), transparent 60%),
+    linear-gradient(180deg, #07020d 0%, #110823 100%);
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg,
+    rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px,
+    transparent 1px, transparent 3px);
+  pointer-events: none;
+  z-index: 1000;
+  mix-blend-mode: multiply;
+}
+#app {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* HEADER */
+.title-bar {
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 16px 0 24px;
+  border-bottom: 2px solid var(--neon-cyan);
+  box-shadow: 0 4px 20px rgba(0, 240, 255, 0.15);
+}
+h1.game-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 36px;
+  background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(255, 45, 149, 0.5);
+  animation: titleGlow 3s ease-in-out infinite alternate;
+}
+@keyframes titleGlow {
+  from { filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.4)); }
+  to { filter: drop-shadow(0 0 20px rgba(255, 45, 149, 0.6)); }
+}
+.subtitle {
+  color: var(--neon-yellow);
+  font-size: 22px;
+  margin-top: 8px;
+  letter-spacing: 2px;
+}
+
+/* HUD */
+.hud {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.hud-cell {
+  background: rgba(26, 15, 46, 0.7);
+  border: 1px solid var(--neon-purple);
+  border-radius: 4px;
+  padding: 10px 14px;
+  position: relative;
+  box-shadow: inset 0 0 12px rgba(181, 55, 242, 0.15);
+}
+.hud-label {
+  font-size: 13px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: 'Press Start 2P', monospace;
+}
+.hud-value {
+  font-size: 28px;
+  margin-top: 4px;
+  font-weight: bold;
+  font-family: 'JetBrains Mono', monospace;
+}
+.hud-value.hp { color: var(--neon-red); }
+.hud-value.xp { color: var(--neon-cyan); }
+.hud-value.streak { color: var(--neon-yellow); }
+.hud-value.lvl { color: var(--neon-green); }
+
+.hearts {
+  display: inline-flex;
+  gap: 4px;
+}
+.heart {
+  font-size: 24px;
+  filter: drop-shadow(0 0 4px var(--neon-red));
+}
+.heart.lost {
+  filter: grayscale(1) brightness(0.3);
+}
+
+/* MAIN PANEL */
+.panel {
+  background: rgba(26, 15, 46, 0.85);
+  border: 2px solid var(--neon-cyan);
+  border-radius: 6px;
+  padding: 28px;
+  position: relative;
+  box-shadow:
+    0 0 30px rgba(0, 240, 255, 0.2),
+    inset 0 0 20px rgba(0, 240, 255, 0.05);
+  backdrop-filter: blur(4px);
+  min-height: 400px;
+}
+.panel::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: 12px;
+  width: 14px; height: 6px;
+  background: var(--bg-deep);
+  border-left: 2px solid var(--neon-cyan);
+  border-right: 2px solid var(--neon-cyan);
+}
+
+/* MENU GRID */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.menu-card {
+  background: linear-gradient(135deg, rgba(255, 45, 149, 0.08), rgba(0, 240, 255, 0.08));
+  border: 2px solid var(--neon-pink);
+  border-radius: 4px;
+  padding: 24px 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.menu-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(255, 45, 149, 0.4);
+  border-color: var(--neon-cyan);
+}
+.menu-card:hover::after {
+  content: '';
+  position: absolute;
+  top: -100%; left: -100%;
+  width: 300%; height: 300%;
+  background: linear-gradient(45deg, transparent 30%, rgba(0, 240, 255, 0.15) 50%, transparent 70%);
+  animation: shimmer 1s linear;
+}
+@keyframes shimmer {
+  to { transform: translate(50%, 50%); }
+}
+.menu-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  display: block;
+}
+.menu-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  color: var(--neon-yellow);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+.menu-desc {
+  color: var(--text-dim);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+/* QUESTION DISPLAY */
+.question-area { animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.q-tag {
+  display: inline-block;
+  background: var(--neon-purple);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 3px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+.q-text {
+  font-size: 22px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  color: var(--text);
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border-left: 4px solid var(--neon-cyan);
+  border-radius: 2px;
+}
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.choice {
+  background: rgba(26, 15, 46, 0.9);
+  border: 2px solid var(--text-dim);
+  color: var(--text);
+  padding: 14px 18px;
+  border-radius: 4px;
+  font-family: 'VT323', monospace;
+  font-size: 19px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.choice:hover:not(.disabled) {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.08);
+  transform: translateX(4px);
+}
+.choice .key {
+  background: var(--neon-cyan);
+  color: var(--bg-deep);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.choice.correct {
+  background: rgba(57, 255, 20, 0.15);
+  border-color: var(--neon-green);
+  animation: pulseGreen 0.5s;
+}
+.choice.correct .key { background: var(--neon-green); }
+.choice.wrong {
+  background: rgba(255, 56, 96, 0.15);
+  border-color: var(--neon-red);
+  animation: shake 0.4s;
+}
+.choice.wrong .key { background: var(--neon-red); }
+.choice.disabled { cursor: default; opacity: 0.5; }
+@keyframes pulseGreen {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0); }
+  50% { box-shadow: 0 0 30px 4px rgba(57, 255, 20, 0.4); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+/* PEARL BOX */
+.pearl-box {
+  margin-top: 24px;
+  background: linear-gradient(135deg, rgba(255, 247, 0, 0.08), rgba(255, 45, 149, 0.08));
+  border: 2px dashed var(--neon-yellow);
+  padding: 18px;
+  border-radius: 4px;
+  animation: fadeIn 0.5s 0.2s both;
+}
+.pearl-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--neon-yellow);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  text-shadow: 0 0 6px rgba(255, 247, 0, 0.5);
+}
+.pearl-text {
+  font-size: 19px;
+  line-height: 1.5;
+  color: #fff;
+}
+.pearl-text strong { color: var(--neon-pink); }
+
+/* CONTROLS */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.btn {
+  background: var(--neon-cyan);
+  color: var(--bg-deep);
+  border: none;
+  padding: 12px 24px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.15s;
+  text-transform: uppercase;
+}
+.btn:hover {
+  background: var(--neon-pink);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 45, 149, 0.4);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--neon-cyan);
+  border: 2px solid var(--neon-cyan);
+}
+.btn-secondary:hover {
+  background: var(--neon-cyan);
+  color: var(--bg-deep);
+}
+.btn-danger {
+  background: var(--neon-red);
+  color: white;
+}
+
+/* PROGRESS BARS */
+.system-progress { margin-top: 24px; }
+.system-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.system-name {
+  width: 180px;
+  font-size: 16px;
+  color: var(--text-dim);
+}
+.bar-track {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  height: 18px;
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+}
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+  transition: width 0.5s ease;
+  position: relative;
+}
+.bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: barShine 2s linear infinite;
+}
+@keyframes barShine {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+.system-pct {
+  width: 60px;
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--neon-green);
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-200%);
+  background: var(--neon-green);
+  color: var(--bg-deep);
+  padding: 12px 30px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(57, 255, 20, 0.5);
+  z-index: 9999;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.error { background: var(--neon-red); color: white; }
+.toast.xp { background: var(--neon-yellow); color: var(--bg-deep); }
+
+/* ECG WAVEFORM */
+.ecg-bar {
+  height: 50px;
+  margin-bottom: 16px;
+  position: relative;
+}
+.ecg-bar svg { width: 100%; height: 100%; }
+.ecg-line {
+  stroke: var(--neon-green);
+  stroke-width: 2;
+  fill: none;
+  filter: drop-shadow(0 0 4px var(--neon-green));
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: ecgDraw 3s linear infinite;
+}
+@keyframes ecgDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 2, 13, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  backdrop-filter: blur(6px);
+  animation: fadeIn 0.3s;
+}
+.modal {
+  background: var(--bg-mid);
+  border: 2px solid var(--neon-pink);
+  padding: 32px;
+  border-radius: 6px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(255, 45, 149, 0.3);
+}
+.modal h2 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 18px;
+  color: var(--neon-yellow);
+  margin-bottom: 16px;
+}
+.modal p { font-size: 18px; line-height: 1.5; margin-bottom: 12px; }
+.achievement-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+.achievement {
+  padding: 10px;
+  border: 1px solid var(--text-dim);
+  border-radius: 3px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.achievement.unlocked {
+  border-color: var(--neon-yellow);
+  background: rgba(255, 247, 0, 0.08);
+  color: var(--neon-yellow);
+}
+.achievement.locked { opacity: 0.4; }
+.ach-icon { font-size: 22px; }
+
+/* RESULTS SCREEN */
+.results-screen { text-align: center; padding: 20px; }
+.results-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 28px;
+  color: var(--neon-yellow);
+  margin-bottom: 24px;
+  text-shadow: 0 0 20px var(--neon-yellow);
+}
+.results-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+.stat-block {
+  padding: 16px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--neon-cyan);
+  border-radius: 4px;
+}
+.stat-num {
+  font-size: 36px;
+  font-family: 'Press Start 2P', monospace;
+  color: var(--neon-cyan);
+  display: block;
+}
+.stat-label {
+  font-size: 14px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+.rank-badge {
+  display: inline-block;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 32px;
+  padding: 16px 32px;
+  margin: 16px 0;
+  border: 3px solid;
+  border-radius: 6px;
+}
+
+/* MURMUR MODE - special card layout */
+.murmur-stage { text-align: center; }
+.heart-visual {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 20px;
+  position: relative;
+  background: radial-gradient(circle, rgba(255, 45, 149, 0.3) 30%, transparent 70%);
+  border-radius: 50%;
+  animation: heartbeat 1.2s infinite;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  20% { transform: scale(1.15); }
+  40% { transform: scale(0.95); }
+  60% { transform: scale(1.1); }
+}
+.heart-visual::before {
+  content: '♥';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 100px;
+  color: var(--neon-pink);
+  filter: drop-shadow(0 0 20px var(--neon-pink));
+}
+
+@media (max-width: 700px) {
+  h1.game-title { font-size: 22px; letter-spacing: 2px; }
+  .hud { grid-template-columns: repeat(2, 1fr); }
+  .menu-grid { grid-template-columns: 1fr; }
+  .system-name { width: 130px; font-size: 14px; }
+  .results-stats { grid-template-columns: 1fr; }
+  .panel { padding: 18px; }
+  .q-text { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div id="app">
+  <div class="title-bar">
+    <h1 class="game-title">CARDIO QUEST</h1>
+    <div class="subtitle">★ STEP 1 SURVIVAL ★</div>
+    <div class="ecg-bar">
+      <svg viewBox="0 0 1000 50" preserveAspectRatio="none">
+        <polyline class="ecg-line" points="0,25 100,25 110,25 115,10 120,40 125,15 130,25 200,25 210,25 215,5 220,45 225,15 230,25 300,25 310,25 315,10 320,40 325,15 330,25 400,25 410,25 415,5 420,45 425,15 430,25 500,25 510,25 515,10 520,40 525,15 530,25 600,25 610,25 615,5 620,45 625,15 630,25 700,25 710,25 715,10 720,40 725,15 730,25 800,25 810,25 815,5 820,45 825,15 830,25 900,25 910,25 915,10 920,40 925,15 930,25 1000,25" />
+      </svg>
+    </div>
+  </div>
+
+  <div class="hud">
+    <div class="hud-cell">
+      <div class="hud-label">HP</div>
+      <div class="hud-value hp" id="hp-display">
+        <span class="hearts" id="hearts"></span>
+      </div>
+    </div>
+    <div class="hud-cell">
+      <div class="hud-label">XP</div>
+      <div class="hud-value xp" id="xp-display">0</div>
+    </div>
+    <div class="hud-cell">
+      <div class="hud-label">LEVEL</div>
+      <div class="hud-value lvl" id="lvl-display">1</div>
+    </div>
+    <div class="hud-cell">
+      <div class="hud-label">STREAK</div>
+      <div class="hud-value streak" id="streak-display">0🔥</div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel">
+    <!-- dynamically populated -->
+  </div>
+</div>
+
+<script>
+// ============================================================================
+// QUESTION BANK — comprehensive HY Cardio coverage
+// Tagged by system + sub-topic. q = question, c = choices, a = answer index, p = Mehlman pearl
+// ============================================================================
+const QBANK = [
+  // ── VALVES & MURMURS ────────────────────────────────────────────────
+  { topic:"Valves", tag:"MURMUR", q:"22F + young athlete + mid-systolic murmur at LSB that gets LOUDER with Valsalva. Diagnosis?",
+    c:["Aortic stenosis","HOCM","Mitral regurgitation","VSD"], a:1,
+    p:"<strong>HOCM and MVP</strong> are the ONLY murmurs that get worse with LESS volume in the heart. Valsalva ↓ preload → HOCM louder. AS softens or stays same. Sudden death in young athlete = HOCM = β-myosin heavy chain mutation, AD." },
+  { topic:"Valves", tag:"MURMUR", q:"What murmur classically presents with fixed splitting of S2?",
+    c:["VSD","PDA","ASD","Mitral stenosis"], a:2,
+    p:"<strong>Fixed splitting of S2 = ASD</strong>. Constant L→R flow LA→RA dampens respiratory variation. May have systolic flow murmur from ↑ pulmonic flow." },
+  { topic:"Valves", tag:"MURMUR", q:"Continuous machinery-like murmur in a neonate. Mom had rash + arthritis during pregnancy. Dx?",
+    c:["VSD","ASD","PDA","Tetralogy of Fallot"], a:2,
+    p:"<strong>PDA = continuous machinery / pansystolic-pandiastolic / to-and-fro</strong>. Classic association: <strong>congenital rubella</strong>. Close with <strong>indomethacin</strong> (NSAID); keep open with <strong>PGE1</strong>." },
+  { topic:"Valves", tag:"MURMUR", q:"Holosystolic murmur at lower LSB with parasternal heave. Most likely?",
+    c:["Mitral regurgitation","Aortic regurgitation","VSD","Mitral stenosis"], a:2,
+    p:"<strong>Holosystolic at LSB + heave/thrill = VSD</strong>. Parasternal heave reflects RVH. May also have diastolic rumble from ↑ LA volume." },
+  { topic:"Valves", tag:"MURMUR", q:"Elderly man + syncope + angina + dyspnea + slow-rising pulse. Murmur?",
+    c:["Diastolic decrescendo","Mid-systolic crescendo-decrescendo at RUSB","Mid-systolic click","Holosystolic at apex"], a:1,
+    p:"<strong>SAD = Syncope, Angina, Dyspnea = Aortic Stenosis</strong>. Pulsus parvus et tardus. Crescendo-decrescendo at 2nd ICS R sternal border, radiates to carotids. Replace valve if <1.0 cm². Heyde syndrome = AS + GI angiodysplasia." },
+  { topic:"Valves", tag:"MURMUR", q:"Holosystolic murmur 3 days post-MI + new dyspnea. Mechanism?",
+    c:["VSD from septal rupture","Papillary muscle rupture → MR","Free-wall rupture","Dressler syndrome"], a:1,
+    p:"<strong>Post-MI new systolic murmur = papillary muscle rupture → mitral regurgitation</strong>. Posteromedial papillary muscle most vulnerable (single blood supply from PDA). <em>Highest yield Mehlman fact.</em>" },
+  { topic:"Valves", tag:"MURMUR", q:"Pregnant woman, 2nd trimester, new dyspnea + diastolic murmur with opening snap. Cause?",
+    c:["Peripartum cardiomyopathy","Mitral stenosis from prior rheumatic fever","Aortic regurgitation","Mitral valve prolapse"], a:1,
+    p:"<strong>MS = rumbling diastolic murmur with opening snap</strong>. 99% from prior rheumatic heart disease. ↑ Plasma volume in 2nd trimester unmasks subclinical MS. Don't confuse with peripartum cardiomyopathy (3rd trimester, EF↓)." },
+  { topic:"Valves", tag:"MURMUR", q:"Holosystolic murmur that gets LOUDER with inspiration. Most likely cause?",
+    c:["Mitral regurgitation","Tricuspid regurgitation from pulmonary HTN","Aortic stenosis","HOCM"], a:1,
+    p:"<strong>Right-sided murmurs ↑ with inspiration</strong> (↓ intrathoracic P → ↑ venous return). Highest-yield TR cause on USMLE = <strong>pulmonary HTN / cor pulmonale</strong>. IVDU is real-world but rare on exam." },
+  { topic:"Valves", tag:"MURMUR", q:"Pansystolic-pandiastolic murmur. Same condition as?",
+    c:["VSD","Aortic regurgitation","Continuous machinery murmur","Mitral stenosis"], a:2,
+    p:"PDA has 3 names: <strong>continuous machinery, pansystolic-pandiastolic, to-and-fro</strong>. All same thing." },
+  { topic:"Valves", tag:"MURMUR", q:"Mid-systolic click. Diagnosis?",
+    c:["Aortic stenosis","Mitral valve prolapse","HOCM","Pulmonic stenosis"], a:1,
+    p:"<strong>Mid-systolic click = MVP</strong>. Worse with LESS preload (Valsalva, standing) — like HOCM. Don't confuse with AS's <em>late-peaking systolic murmur with ejection click</em>." },
+
+  // ── CONGENITAL DEFECTS ─────────────────────────────────────────────
+  { topic:"Congenital", tag:"CONGENITAL", q:"Newborn with normal APGAR. Becomes cyanotic at 1 week. Why?",
+    c:["VSD enlarging","Closure of ductus arteriosus","Onset of pulmonary HTN","Pulmonary embolism"], a:1,
+    p:"PDA can mask cyanosis in <strong>hypoplastic left heart</strong> or pre-ductal coarctation. When DA closes ~day 7, cyanosis appears. Give <strong>PGE1</strong> to keep open until surgery." },
+  { topic:"Congenital", tag:"CONGENITAL", q:"School-age child squats during play to relieve cyanosis. Diagnosis?",
+    c:["Eisenmenger from ASD","Tetralogy of Fallot","Coarctation","Truncus arteriosus"], a:1,
+    p:"<strong>ToF = PROVe</strong>: Pulmonic stenosis, RVH, Overriding aorta, VSD. Pulmonic stenosis severity determines prognosis. Squatting ↑ afterload → ↑ LV pressure → ↓ R→L gradient → ↓ cyanosis. Strongly associated with <strong>DiGeorge (22q11)</strong>." },
+  { topic:"Congenital", tag:"CONGENITAL", q:"Down syndrome baby with cardiac defect. Most likely?",
+    c:["Tetralogy of Fallot","Atrioventricular septal defect (endocardial cushion)","PDA","Coarctation"], a:1,
+    p:"<strong>Down syndrome → AVSD (endocardial cushion defect)</strong>. ToF goes with DiGeorge; supravalvular AS goes with Williams; coarctation goes with Turner." },
+  { topic:"Congenital", tag:"CONGENITAL", q:"6-year-old: strong radial pulses + cold lower extremities. Diagnosis?",
+    c:["Coarctation of aorta","Takayasu arteritis","PDA","ASD"], a:0,
+    p:"<strong>Coarctation = upper-extremity HTN + weak/cold legs</strong>. Pre-ductal = sick neonate. Post-ductal = older child/adult. Need not be Turner syndrome (though associated)." },
+  { topic:"Congenital", tag:"CONGENITAL", q:"VSD murmur is louder at 7 days than at birth. Why?",
+    c:["VSD enlarged","Decreased pulmonary vascular resistance","Increased LV pressure from age","Baby's heart grew"], a:1,
+    p:"Lungs open after birth → <strong>↓ pulmonary vascular resistance</strong> → ↓ RV pressure → ↑ L→R gradient across VSD → louder murmur. Mehlman loves this Q." },
+  { topic:"Congenital", tag:"CONGENITAL", q:"After VSD repair, what happens to LV/RV/LA pressures?",
+    c:["↑LV, ↑RV, ↑LA","↑LV, ↓RV, ↓LA","↓LV, ↑RV, ↑LA","All decrease"], a:1,
+    p:"<strong>Repair VSD → ↑LV, ↓RV, ↓LA</strong>. Less blood shunting L→R means more stays in LV (↑LV); less reaches RV (↓RV); less returns to LA from lungs (↓LA — this confuses students)." },
+  { topic:"Congenital", tag:"CONGENITAL", q:"Adult with DVT had a stroke. Found to have a heart defect. Most likely?",
+    c:["VSD","ASD enabling paradoxical embolus","HOCM","Mitral valve prolapse"], a:1,
+    p:"<strong>Paradoxical embolus through ASD/PFO</strong>: clot bypasses lungs RA→LA→LV→brain. Indication for ASD repair." },
+
+  // ── CARDIOMYOPATHIES ────────────────────────────────────────────────
+  { topic:"Cardiomyopathy", tag:"CMP", q:"32M with chronic alcohol use + S3 + lateralized PMI + EF 30%. Type of cardiomyopathy?",
+    c:["Hypertrophic","Dilated","Restrictive","HOCM"], a:1,
+    p:"<strong>DCM causes = ABCD</strong>: Alcohol, wet Beriberi (thiamine), Coxsackie B/Cocaine/Chagas, Doxorubicin. Also peripartum, hemochromatosis. Arrows: ↓EF, ↑LVEDV, ↑LVEDP. S3 = volume overload." },
+  { topic:"Cardiomyopathy", tag:"CMP", q:"HOCM: what arrows does USMLE want for EF, LVEDV, LVEDP?",
+    c:["↓EF, ↑LVEDV, ↑LVEDP","↔EF, ↔LVEDV, ↑LVEDP","↑EF, ↓LVEDV, ↓LVEDP","↔EF, ↓LVEDV, ↔LVEDP"], a:1,
+    p:"<strong>HCM/HOCM arrows = ↔EF, ↔LVEDV, ↑LVEDP</strong>. EF normal (pump fine). LVEDV normal (volume reached, just needs more pressure). LVEDP elevated (stiff LV)." },
+  { topic:"Cardiomyopathy", tag:"CMP", q:"55F with breast cancer s/p radiation + JVD + S4 + heart not dilated. CMP type?",
+    c:["Dilated","Hypertrophic","Restrictive","Constrictive pericarditis only"], a:2,
+    p:"<strong>RCM = diastolic dysfunction without HTN</strong>. JVD is HY. Causes: <strong>radiation, amyloidosis, hemochromatosis</strong>. Heart NOT dilated. Don't confuse with constrictive pericarditis." },
+  { topic:"Cardiomyopathy", tag:"CMP", q:"HOCM mechanism of obstruction?",
+    c:["Aortic valve calcification","Asymmetric septal hypertrophy + anterior mitral leaflet blocks LVOT","Mitral leaflet thickening","RVH compresses LV"], a:1,
+    p:"<strong>HOCM</strong>: AD mutation in β-myosin heavy chain → asymmetric septal hypertrophy → <strong>anterior mitral valve leaflet blocks LVOT</strong>. Yes, the mitral valve causes LVOT obstruction. Weird but tested." },
+  { topic:"Cardiomyopathy", tag:"CMP", q:"Treatment for HOCM symptoms?",
+    c:["ACE inhibitor","β-blocker (slow HR, ↑ filling)","Furosemide","Digoxin"], a:1,
+    p:"<strong>β-blocker (propranolol or metoprolol)</strong> slows HR → ↑ diastolic filling → ↑ preload → ↓ LVOT obstruction. ICD if arrhythmia/syncope/wall >30mm. Septal myectomy if gradient >50 mmHg." },
+
+  // ── ECG / ARRHYTHMIA ────────────────────────────────────────────────
+  { topic:"Arrhythmia", tag:"ECG", q:"Stable SVT (narrow complex tachy). First step?",
+    c:["Adenosine","Carotid massage / vagal","Amiodarone","Cardiovert"], a:1,
+    p:"<strong>SVT first step = vagal maneuvers</strong> (carotid massage in adult, ice to face in peds). If fails → adenosine. If unstable (coma, low BP) → shock first." },
+  { topic:"Arrhythmia", tag:"ECG", q:"ST elevations in II, III, aVF. Vessel?",
+    c:["LAD","Left circumflex","PDA (usually right coronary)","Left main"], a:2,
+    p:"Inferior MI = II, III, aVF = <strong>PDA</strong>. PDA arises from RCA in 85% (right-dominant). Anteroseptal V1-V3 = LAD. Lateral V4-V6 = LCx. NITRATES CONTRAINDICATED in inferior/RV MI (preload-dependent)." },
+  { topic:"Arrhythmia", tag:"ECG", q:"Sinusoidal ventricular arrhythmia. Drug to give?",
+    c:["Lidocaine","Magnesium","Adenosine","Verapamil"], a:1,
+    p:"<strong>Torsades de pointes → Mg sulfate</strong>. Caused by long QT (Class IA/III antiarrhythmics, hypoK, hypoMg, macrolides). Class IA ('Queen Proclaims Diso') = Quinidine, Procainamide, Disopyramide ↑ TdP risk." },
+  { topic:"Arrhythmia", tag:"ECG", q:"3rd-degree heart block treatment?",
+    c:["Atropine","Pacemaker","β-blocker","Observation"], a:1,
+    p:"<strong>Pacemaker for: Mobitz II + 3rd-degree</strong>. NOT for 1st-degree or Mobitz I. 3rd-degree = no relationship between P waves and QRS, ventricular escape ~30-40 bpm." },
+  { topic:"Arrhythmia", tag:"ECG", q:"Most common cause of death post-MI?",
+    c:["Cardiogenic shock","Ventricular fibrillation","Free wall rupture","Pulmonary edema"], a:1,
+    p:"<strong>Post-MI death #1 = V-fib</strong>. Q waves on ECG = old MI = ↑ risk of ALL future arrhythmias (AF, SVT, VT). Don't memorize specific arrhythmia, just know risk is up." },
+  { topic:"Arrhythmia", tag:"ECG", q:"Cardiac marker for re-infarction (recent recurrent MI)?",
+    c:["Troponin","CK-MB","Myoglobin","BNP"], a:1,
+    p:"<strong>CK-MB for recurrent MI</strong> — shorter duration (peaks ~24hr, gone by 72hr) makes it useful to detect new event. Troponin stays elevated 7-10 days." },
+  { topic:"Arrhythmia", tag:"ECG", q:"Wolff-Parkinson-White (delta wave) treatment?",
+    c:["Adenosine","Procainamide","Verapamil","β-blocker"], a:1,
+    p:"<strong>WPW → procainamide</strong> (Class IA Na blocker). Avoid AV-nodal blockers (adenosine, verapamil, β-blockers, digoxin) — can paradoxically ↑ accessory pathway conduction." },
+
+  // ── HEART FAILURE & PHARM ──────────────────────────────────────────
+  { topic:"Pharm/HF", tag:"PHARM", q:"Heart failure treatment: which drug do you START with?",
+    c:["β-blocker","ACEi or ARB (or sacubitril/valsartan)","Furosemide","Digoxin"], a:1,
+    p:"<strong>HF order: ACEi/ARB → diuresis if needed → β-blocker → spironolactone → hydralazine+nitrates → digoxin → ICD</strong>. Mortality benefit: ACEi/ARB, β-blocker, spiro, hydralazine+nitrates. NO mortality benefit: digoxin, furosemide." },
+  { topic:"Pharm/HF", tag:"PHARM", q:"Patient on furosemide still volume-overloaded. Add what?",
+    c:["Hydrochlorothiazide","Spironolactone","Mannitol","Acetazolamide"], a:1,
+    p:"<strong>Furosemide + persistent overload → add spironolactone</strong>. Loop wastes K → spiro is K-sparing aldosterone antagonist. Side effects: hyperkalemia, gynecomastia." },
+  { topic:"Pharm/HF", tag:"PHARM", q:"Yellow-tinted vision + nausea + drug overdose. Drug?",
+    c:["Amiodarone","Digoxin","Verapamil","Lidocaine"], a:1,
+    p:"<strong>Digoxin tox = yellow/wavy 'Van Gogh' vision</strong>. MOA: inhibits Na/K-ATPase → ↑ intracellular Ca → ↑ inotropy. <strong>HypoK potentiates toxicity</strong> (less K to compete at binding site). Rx: normalize K, anti-dig Fab, Mg." },
+  { topic:"Pharm/HF", tag:"PHARM", q:"Drug causing pulmonary fibrosis + thyroid dysfunction + corneal deposits + blue-grey skin?",
+    c:["Methotrexate","Amiodarone","Bleomycin","Hydralazine"], a:1,
+    p:"<strong>Amiodarone</strong> = Class III K+ channel blocker. ~40% iodine by weight → thyroid issues. Get PFTs, TFTs, LFTs before starting. Used for VT (stable)." },
+  { topic:"Pharm/HF", tag:"PHARM", q:"β1-selective β-blockers mnemonic?",
+    c:["BAD MAP","A BEAM","PEAR","CALM"], a:1,
+    p:"<strong>A BEAM = Atenolol, Bisoprolol, Esmolol, Acebutolol, Metoprolol</strong>. β1 selective. Propranolol = nonselective (β1+β2). Labetalol/carvedilol block β1+α1." },
+  { topic:"Pharm/HF", tag:"PHARM", q:"Drug causing constipation + used for AF rate control?",
+    c:["Nifedipine","Verapamil","Diltiazem","Metoprolol"], a:1,
+    p:"<strong>Verapamil = non-DHP CCB → constipation (HY)</strong>. Acts on cardiac nodal Ca channels. Nifedipine = DHP, acts on arterioles, causes peripheral edema. Diltiazem = mixed." },
+  { topic:"Pharm/HF", tag:"PHARM", q:"ACE inhibitor side effect not seen with ARB?",
+    c:["Hyperkalemia","Dry cough + angioedema","Renal dysfunction","Hypotension"], a:1,
+    p:"<strong>ACEi → cough + angioedema</strong> (bradykinin buildup). ARBs lack this. Both can cause hyperkalemia, AKI in renal artery stenosis. Avoid in pregnancy (teratogenic)." },
+  { topic:"Pharm/HF", tag:"PHARM", q:"First-line antiarrhythmic for AF in patient with structurally normal heart?",
+    c:["Amiodarone","Flecainide","Lidocaine","Procainamide"], a:1,
+    p:"<strong>Flecainide (IC)</strong> first-line for AF if no structural/coronary disease. <em>Don't use post-MI</em>. ICs don't change AP duration." },
+  { topic:"Pharm/HF", tag:"PHARM", q:"Hypertensive emergency with end-organ damage. Drug?",
+    c:["Hydrochlorothiazide","IV nitroprusside or labetalol","Oral metoprolol","Spironolactone"], a:1,
+    p:"<strong>HTN emergency</strong>: IV nitroprusside, nicardipine, labetalol, or PO captopril. Lower BP <strong>by ≤25% in first hour</strong>; goal <160/100 in 24-48hr. Emergency = >180/120 + end-organ damage." },
+
+  // ── MI / ATHEROSCLEROSIS ────────────────────────────────────────────
+  { topic:"MI", tag:"MI", q:"Coagulative necrosis with preserved cellular architecture occurs when post-MI?",
+    c:["Within first day","Days 3-14","2 weeks onward","Immediately"], a:0,
+    p:"<strong>Post-MI histo timeline</strong>: Day 1 = coagulative necrosis (architecture preserved). Days 1-3 = neutrophils. Days 3-14 = macrophages. Day 14+ = scar (granulation → fibrosis)." },
+  { topic:"MI", tag:"MI", q:"Patient post-PCI develops new arrhythmia from reactive oxygen species. Mechanism?",
+    c:["Stent thrombosis","Reperfusion injury","Vasospasm","Drug-eluting stent reaction"], a:1,
+    p:"<strong>Reperfusion injury</strong> = O2 free radical surge → lipid peroxidation → further necrosis. Outcome still better than no PCI. Adenosine = main coronary autoregulator (↑ in MI from ATP exhaustion)." },
+  { topic:"MI", tag:"MI", q:"22M cocaine user + chest pain + diffuse ST elevations + worse leaning back. Dx?",
+    c:["STEMI","Pericarditis","Aortic dissection","Pneumothorax"], a:1,
+    p:"<strong>Pericarditis</strong>: diffuse ST elevations (all leads, not contiguous), pain better leaning forward. Causes: viral, autoimmune (RA/SLE), cocaine, post-MI fibrinous, Dressler (2-6wk post-MI), uremic. Tx: NSAIDs + colchicine." },
+  { topic:"MI", tag:"MI", q:"Stab wound to chest + JVD + muffled heart sounds + hypotension. Beck triad describes?",
+    c:["Tension pneumothorax","Cardiac tamponade","Hemothorax","Aortic rupture"], a:1,
+    p:"<strong>Beck triad = JVD + muffled S1S2 + hypotension = tamponade</strong>. Pulsus paradoxus (drop SBP >10 mmHg on inspiration). ECG: electrical alternans + low voltage. Tx: pericardiocentesis or window." },
+  { topic:"MI", tag:"MI", q:"Stable angina with normal baseline ECG. Best stress test?",
+    c:["Exercise echo","Exercise ECG","Dobutamine echo","Pharmacologic thallium"], a:1,
+    p:"<strong>Stable angina + normal ECG → exercise ECG</strong>. Abnormal baseline ECG → exercise echo. Can't exercise → dobutamine echo. Severe (angina up 1 flight) → skip stress test, do myocardial perfusion scan." },
+
+  // ── ENDOCARDITIS / VASCULAR ────────────────────────────────────────
+  { topic:"Vascular", tag:"INF", q:"IVDU + fever + new tricuspid murmur. Most likely organism?",
+    c:["Strep viridans","Staph aureus","Strep bovis","HACEK"], a:1,
+    p:"<strong>IVDU endocarditis = S. aureus → tricuspid valve</strong>. Venous blood inoculated → first valve hit = tricuspid. Acute endocarditis (no prior valve dz) = S. aureus. Subacute (damaged valve) = S. viridans." },
+  { topic:"Vascular", tag:"INF", q:"Endocarditis + colon cancer. Organism?",
+    c:["Staph aureus","Strep gallolyticus (bovis)","Enterococcus","HACEK"], a:1,
+    p:"<strong>Strep gallolyticus (bovis) endocarditis → colonoscopy</strong>. Strong association with colorectal cancer. Always colonoscope these patients." },
+  { topic:"Vascular", tag:"VASC", q:"Severe back/abdominal pain + pulsatile mass + hypotension in 70M smoker?",
+    c:["Aortic dissection","Ruptured AAA","Mesenteric ischemia","Renal colic"], a:1,
+    p:"<strong>Ruptured AAA</strong>: pulsatile mass + hypotension + pain. Risk: smoking, age, male, HTN. Screen male 65-75 ever-smokers with US. Repair if >5.5cm or growing >0.5cm/6mo." },
+  { topic:"Vascular", tag:"VASC", q:"Tearing chest pain radiating to back + widened mediastinum. Dx?",
+    c:["MI","Aortic dissection","PE","Pneumothorax"], a:1,
+    p:"<strong>Aortic dissection</strong>: tearing pain to back, widened mediastinum on CXR. Risk: HTN, Marfan, Ehlers-Danlos, bicuspid valve, cocaine. Type A (ascending) = surgery; Type B (descending) = medical (β-blocker first → labetalol)." },
+
+  // ── PERICARDIAL / OTHER ───────────────────────────────────────────
+  { topic:"Pericardial", tag:"PERI", q:"Patient 4 weeks post-MI with friction rub + fever. Dx?",
+    c:["Acute fibrinous pericarditis","Dressler syndrome","Reinfarction","Endocarditis"], a:1,
+    p:"<strong>Dressler = autoimmune fibrinous pericarditis 2-6 weeks post-MI</strong>. Antibody-mediated. Treat with NSAIDs/colchicine. Different from acute post-MI fibrinous pericarditis (within days)." },
+  { topic:"Pericardial", tag:"PERI", q:"Pericardial effusion turning into tamponade depends on?",
+    c:["Volume of fluid","Rate of accumulation","Color of fluid","Patient age"], a:1,
+    p:"<strong>Tamponade = rate, not volume</strong>. Fast (stab wound, free-wall rupture) = tamponade even if small. Slow (malignancy) can be huge but no tamponade. All tamponades are effusions; not all effusions are tamponades." },
+
+  // ── HYPERLIPIDEMIA / RISK ──────────────────────────────────────────
+  { topic:"Vascular", tag:"LIPID", q:"Statin MOA?",
+    c:["Inhibit HMG-CoA reductase + ↑ hepatic LDL receptors","Bile acid sequestration","PCSK9 inhibition","Cholesterol absorption block"], a:0,
+    p:"<strong>Statins: 2 MOAs</strong> — inhibit HMG-CoA reductase + upregulate hepatic LDL receptors. SE: <strong>myopathy</strong> (#1 on NBME) + toxic hepatitis. Combined hydralazine+nitrates → mortality benefit in HF (esp. African Americans)." },
+  { topic:"Vascular", tag:"LIPID", q:"Familial hypercholesterolemia (homozygous): MI in teens. LDL ~?",
+    c:["200","400","700-1000","100"], a:2,
+    p:"<strong>Homozygous FH</strong>: absent LDL receptor → LDL 700-1000 → MI in teens. Heterozygous: 50% receptors → LDL 300-400 → MI in 30s-40s. Both AD." },
+  { topic:"Vascular", tag:"LIPID", q:"Creamy plasma + pancreatitis + xanthomas. Defect?",
+    c:["LDL receptor","Lipoprotein lipase or ApoC-II","ApoB-100","HMG-CoA reductase"], a:1,
+    p:"<strong>Type I familial hyperchylomicronemia</strong> (AR) = LPL or ApoC-II deficiency → ↑ chylomicrons → creamy plasma + pancreatitis (abdominal pain, NOT chest)." }
+];
+
+// ============================================================================
+// SYSTEM CATEGORIZATION
+// ============================================================================
+const SYSTEMS = ["Valves","Congenital","Cardiomyopathy","Arrhythmia","Pharm/HF","MI","Vascular","Pericardial"];
+
+// ============================================================================
+// GAME STATE
+// ============================================================================
+const STATE = {
+  hp: 3, maxHp: 3, xp: 0, level: 1, streak: 0, bestStreak: 0,
+  mode: 'menu',
+  currentQ: null,
+  modeQs: [],
+  modeIdx: 0,
+  modeStats: { correct: 0, total: 0 },
+  systemMastery: {},  // {Valves: {seen: 5, correct: 4}, ...}
+  achievements: {},
+  totalAnswered: 0,
+  totalCorrect: 0
+};
+SYSTEMS.forEach(s => { STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
+
+const ACHIEVEMENTS = [
+  { id: 'first_blood', name: 'First Blood', desc: 'Answer your first question', icon: '🩸' },
+  { id: 'streak_5', name: 'On Fire', desc: '5-question streak', icon: '🔥' },
+  { id: 'streak_10', name: 'Unstoppable', desc: '10-question streak', icon: '⚡' },
+  { id: 'level_5', name: 'Resident', desc: 'Reach Level 5', icon: '🎓' },
+  { id: 'level_10', name: 'Attending', desc: 'Reach Level 10', icon: '👨‍⚕️' },
+  { id: 'master_valves', name: 'Murmur Maestro', desc: 'Master Valves (90%+, 5+ seen)', icon: '🎵' },
+  { id: 'master_pharm', name: 'Pharmacologist', desc: 'Master Pharm (90%+, 5+ seen)', icon: '💊' },
+  { id: 'master_ecg', name: 'ECG Whisperer', desc: 'Master Arrhythmia (90%+, 5+ seen)', icon: '📈' },
+  { id: 'perfect_round', name: 'Flawless', desc: 'Perfect round (10/10)', icon: '💯' },
+  { id: 'survivor', name: 'Survivor', desc: 'Endless: 20 in a row', icon: '🛡️' }
+];
+
+// ============================================================================
+// PERSISTENCE
+// ============================================================================
+function loadSave() {
+  try {
+    const v = localStorage.getItem('cardio_quest_save');
+    if (v) {
+      const data = JSON.parse(v);
+      Object.assign(STATE, data);
+      // re-merge system mastery in case new systems added
+      SYSTEMS.forEach(s => { if (!STATE.systemMastery[s]) STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
+      toast('SAVE LOADED', 'xp');
+    }
+  } catch (e) {
+    // no save yet, fine
+  }
+}
+function save() {
+  try {
+    const data = {
+      hp: STATE.hp, maxHp: STATE.maxHp, xp: STATE.xp, level: STATE.level,
+      bestStreak: STATE.bestStreak, systemMastery: STATE.systemMastery,
+      achievements: STATE.achievements, totalAnswered: STATE.totalAnswered,
+      totalCorrect: STATE.totalCorrect
+    };
+    localStorage.setItem('cardio_quest_save', JSON.stringify(data));
+  } catch (e) { console.error('save fail', e); }
+}
+
+// ============================================================================
+// UTILITIES
+// ============================================================================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function pickRandom(arr, n) { return shuffle(arr).slice(0, n); }
+function toast(msg, cls='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + cls;
+  setTimeout(() => t.className = 'toast ' + cls, 1800);
+}
+function unlock(id) {
+  if (STATE.achievements[id]) return;
+  const ach = ACHIEVEMENTS.find(a => a.id === id);
+  if (!ach) return;
+  STATE.achievements[id] = true;
+  toast(`🏆 ${ach.name} unlocked!`, 'xp');
+  save();
+}
+function checkAchievements() {
+  if (STATE.totalAnswered >= 1) unlock('first_blood');
+  if (STATE.streak >= 5) unlock('streak_5');
+  if (STATE.streak >= 10) unlock('streak_10');
+  if (STATE.level >= 5) unlock('level_5');
+  if (STATE.level >= 10) unlock('level_10');
+  ['Valves','Pharm/HF','Arrhythmia'].forEach((sys, i) => {
+    const m = STATE.systemMastery[sys];
+    if (m.seen >= 5 && (m.correct/m.seen) >= 0.9) {
+      unlock(['master_valves','master_pharm','master_ecg'][i]);
+    }
+  });
+}
+
+// ============================================================================
+// HUD
+// ============================================================================
+function renderHUD() {
+  let hearts = '';
+  for (let i = 0; i < STATE.maxHp; i++) {
+    hearts += `<span class="heart ${i < STATE.hp ? '' : 'lost'}">♥</span>`;
+  }
+  document.getElementById('hearts').innerHTML = hearts;
+  document.getElementById('xp-display').textContent = STATE.xp;
+  document.getElementById('lvl-display').textContent = STATE.level;
+  document.getElementById('streak-display').textContent = STATE.streak + '🔥';
+}
+function gainXP(amt) {
+  STATE.xp += amt;
+  const needed = STATE.level * 50;
+  if (STATE.xp >= needed) {
+    STATE.xp -= needed;
+    STATE.level++;
+    STATE.maxHp = Math.min(5, 3 + Math.floor(STATE.level / 5));
+    STATE.hp = STATE.maxHp;
+    toast(`LEVEL UP! Lvl ${STATE.level}`, 'xp');
+  }
+  renderHUD();
+}
+
+// ============================================================================
+// SCREENS
+// ============================================================================
+const panel = document.getElementById('panel');
+
+function renderMenu() {
+  STATE.mode = 'menu';
+  renderHUD();
+  panel.innerHTML = `
+    <h2 style="font-family:'Press Start 2P',monospace; font-size:18px; color:var(--neon-cyan); margin-bottom:20px; text-align:center;">★ SELECT MODE ★</h2>
+    <div class="menu-grid">
+      <div class="menu-card" onclick="startMode('daily')">
+        <span class="menu-icon">🏥</span>
+        <div class="menu-title">DAILY ROUNDS</div>
+        <div class="menu-desc">10 mixed cases. Quick warm-up.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('endless')">
+        <span class="menu-icon">⚔️</span>
+        <div class="menu-title">BOSS RUSH</div>
+        <div class="menu-desc">Endless gauntlet. Survive.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('valves')">
+        <span class="menu-icon">🎵</span>
+        <div class="menu-title">MURMUR MANOR</div>
+        <div class="menu-desc">Valve & murmur ID drills.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('ecg')">
+        <span class="menu-icon">📈</span>
+        <div class="menu-title">ECG TOWER</div>
+        <div class="menu-desc">Arrhythmias, MI, ECG.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('pharm')">
+        <span class="menu-icon">💊</span>
+        <div class="menu-title">PHARM LAB</div>
+        <div class="menu-desc">Drugs, MOA, side effects.</div>
+      </div>
+      <div class="menu-card" onclick="startMode('congenital')">
+        <span class="menu-icon">👶</span>
+        <div class="menu-title">CONGENITAL CAVE</div>
+        <div class="menu-desc">ASD, VSD, PDA, ToF.</div>
+      </div>
+    </div>
+    <div class="system-progress">
+      <h3 style="font-family:'Press Start 2P',monospace; font-size:13px; color:var(--neon-pink); margin:24px 0 12px;">⊟ SYSTEM MASTERY ⊟</h3>
+      ${SYSTEMS.map(sys => {
+        const m = STATE.systemMastery[sys];
+        const pct = m.seen ? Math.round(m.correct / m.seen * 100) : 0;
+        return `
+          <div class="system-bar">
+            <div class="system-name">${sys}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+            <div class="system-pct">${pct}% (${m.correct}/${m.seen})</div>
+          </div>`;
+      }).join('')}
+    </div>
+    <div class="controls">
+      <button class="btn btn-secondary" onclick="showAchievements()">🏆 ACHIEVEMENTS</button>
+      <button class="btn btn-secondary" onclick="showStats()">📊 STATS</button>
+      <button class="btn btn-secondary" onclick="showSyncModal()">🔄 SYNC</button>
+      <button class="btn btn-danger" onclick="resetSave()">⟲ RESET</button>
+    </div>
+  `;
+}
+
+function startMode(mode) {
+  STATE.mode = mode;
+  STATE.modeStats = { correct: 0, total: 0 };
+  STATE.modeIdx = 0;
+  STATE.hp = STATE.maxHp;
+
+  let pool = QBANK;
+  let limit = 10;
+  if (mode === 'valves') pool = QBANK.filter(q => q.topic === 'Valves');
+  else if (mode === 'ecg') pool = QBANK.filter(q => q.topic === 'Arrhythmia' || q.topic === 'MI');
+  else if (mode === 'pharm') pool = QBANK.filter(q => q.topic === 'Pharm/HF');
+  else if (mode === 'congenital') pool = QBANK.filter(q => q.topic === 'Congenital');
+  else if (mode === 'endless') { pool = QBANK; limit = 999; }
+
+  STATE.modeQs = mode === 'endless' ? shuffle(pool) : pickRandom(pool, Math.min(limit, pool.length));
+  STATE.modeStats.total = STATE.modeQs.length;
+  renderHUD();
+  nextQuestion();
+}
+
+function nextQuestion() {
+  if (STATE.hp <= 0) return endRound('LIFE LOST');
+  if (STATE.modeIdx >= STATE.modeQs.length) {
+    if (STATE.mode === 'endless') {
+      STATE.modeQs = shuffle(QBANK); STATE.modeIdx = 0;
+    } else {
+      return endRound('COMPLETE');
+    }
+  }
+  STATE.currentQ = STATE.modeQs[STATE.modeIdx];
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = STATE.currentQ;
+  const progressTxt = STATE.mode === 'endless'
+    ? `Q${STATE.modeStats.correct + 1} • ENDLESS`
+    : `Q${STATE.modeIdx + 1} / ${STATE.modeQs.length}`;
+
+  panel.innerHTML = `
+    <div class="question-area">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span class="q-tag">${q.tag} • ${q.topic}</span>
+        <span style="font-family:'JetBrains Mono',monospace; color:var(--text-dim); font-size:14px;">${progressTxt}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="choices" id="choices">
+        ${q.c.map((c, i) => `
+          <button class="choice" data-idx="${i}" onclick="answer(${i})">
+            <span class="key">${String.fromCharCode(65 + i)}</span>
+            <span>${c}</span>
+          </button>`).join('')}
+      </div>
+      <div id="feedback"></div>
+    </div>
+  `;
+}
+
+function answer(idx) {
+  const q = STATE.currentQ;
+  const isCorrect = idx === q.a;
+  document.querySelectorAll('.choice').forEach((el, i) => {
+    el.classList.add('disabled');
+    el.onclick = null;
+    if (i === q.a) el.classList.add('correct');
+    else if (i === idx) el.classList.add('wrong');
+  });
+
+  STATE.totalAnswered++;
+  STATE.systemMastery[q.topic].seen++;
+  if (isCorrect) {
+    STATE.totalCorrect++;
+    STATE.systemMastery[q.topic].correct++;
+    STATE.modeStats.correct++;
+    STATE.streak++;
+    if (STATE.streak > STATE.bestStreak) STATE.bestStreak = STATE.streak;
+    const xpGain = 10 + Math.min(STATE.streak * 2, 20);
+    gainXP(xpGain);
+    toast(`+${xpGain} XP`, 'xp');
+    if (STATE.mode === 'endless' && STATE.streak >= 20) unlock('survivor');
+  } else {
+    STATE.streak = 0;
+    STATE.hp--;
+    toast('-1 HP', 'error');
+  }
+  renderHUD();
+  checkAchievements();
+  save();
+
+  // show pearl
+  document.getElementById('feedback').innerHTML = `
+    <div class="pearl-box">
+      <div class="pearl-label">💎 MEHLMAN PEARL</div>
+      <div class="pearl-text">${q.p}</div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-secondary" onclick="renderMenu()">◄ MENU</button>
+      <button class="btn" onclick="advance()">${STATE.modeIdx + 1 >= STATE.modeQs.length && STATE.mode !== 'endless' ? 'FINISH ►' : 'NEXT ►'}</button>
+    </div>
+  `;
+}
+
+function advance() {
+  STATE.modeIdx++;
+  nextQuestion();
+}
+
+function endRound(reason) {
+  const pct = Math.round(STATE.modeStats.correct / Math.max(1, STATE.totalAnswered === 0 ? 1 : STATE.modeStats.total) * 100);
+  const correct = STATE.modeStats.correct;
+  const total = STATE.modeStats.total;
+  const livePct = total > 0 ? Math.round(correct/total*100) : 0;
+
+  let rank, rankColor;
+  if (livePct === 100 && total >= 10) { rank = 'S'; rankColor = 'var(--neon-yellow)'; unlock('perfect_round'); }
+  else if (livePct >= 90) { rank = 'A'; rankColor = 'var(--neon-green)'; }
+  else if (livePct >= 75) { rank = 'B'; rankColor = 'var(--neon-cyan)'; }
+  else if (livePct >= 60) { rank = 'C'; rankColor = 'var(--neon-pink)'; }
+  else { rank = 'D'; rankColor = 'var(--neon-red)'; }
+
+  const reasonMsg = reason === 'LIFE LOST' ? 'OUT OF HP' : 'ROUND COMPLETE';
+
+  panel.innerHTML = `
+    <div class="results-screen">
+      <div class="results-title">${reasonMsg}</div>
+      <div class="rank-badge" style="color:${rankColor}; border-color:${rankColor}; box-shadow: 0 0 30px ${rankColor};">RANK ${rank}</div>
+      <div class="results-stats">
+        <div class="stat-block">
+          <span class="stat-num">${correct}</span>
+          <span class="stat-label">CORRECT</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-num">${livePct}%</span>
+          <span class="stat-label">ACCURACY</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-num">${STATE.bestStreak}</span>
+          <span class="stat-label">BEST STREAK</span>
+        </div>
+      </div>
+      <div class="controls" style="justify-content:center;">
+        <button class="btn btn-secondary" onclick="renderMenu()">◄ MENU</button>
+        <button class="btn" onclick="startMode('${STATE.mode}')">↻ RETRY</button>
+      </div>
+    </div>
+  `;
+  STATE.streak = 0;
+  renderHUD();
+  save();
+}
+
+
+// ============================================================================
+// SYNC — Export / Import save codes across devices
+// ============================================================================
+function showSyncModal() {
+  const data = {
+    hp: STATE.hp, maxHp: STATE.maxHp, xp: STATE.xp, level: STATE.level,
+    bestStreak: STATE.bestStreak, systemMastery: STATE.systemMastery,
+    achievements: STATE.achievements, totalAnswered: STATE.totalAnswered,
+    totalCorrect: STATE.totalCorrect
+  };
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <h2>🔄 SYNC SAVE</h2>
+        <p style="font-size:14px; opacity:0.75; margin-bottom:18px;">Transfer your progress between devices. Copy code from one, paste on the other.</p>
+
+        <div style="margin-bottom:20px; padding:14px; background:rgba(0,0,0,0.25); border-radius:4px; border:1px solid rgba(128,128,128,0.25);">
+          <h3 style="font-size:15px; margin-bottom:8px; opacity:0.9;">📤 EXPORT &mdash; from this device</h3>
+          <p style="font-size:13px; opacity:0.65; margin-bottom:8px;">Copy this code, then paste it on your other device:</p>
+          <textarea id="sync-export-code" readonly style="width:100%; height:90px; font-family:monospace; font-size:11px; padding:8px; background:rgba(0,0,0,0.45); color:inherit; border:1px solid rgba(128,128,128,0.4); border-radius:3px; resize:none; word-break:break-all;">${code}</textarea>
+          <button class="btn btn-secondary" style="margin-top:10px; width:100%;" onclick="copyExportCode()">📋 Copy to Clipboard</button>
+        </div>
+
+        <div style="margin-bottom:20px; padding:14px; background:rgba(0,0,0,0.25); border-radius:4px; border:1px solid rgba(128,128,128,0.25);">
+          <h3 style="font-size:15px; margin-bottom:8px; opacity:0.9;">📥 IMPORT &mdash; from another device</h3>
+          <p style="font-size:13px; opacity:0.65; margin-bottom:8px;">Paste a save code from your other device:</p>
+          <textarea id="sync-import-code" placeholder="Paste save code here..." style="width:100%; height:90px; font-family:monospace; font-size:11px; padding:8px; background:rgba(0,0,0,0.45); color:inherit; border:1px solid rgba(128,128,128,0.4); border-radius:3px; resize:none;"></textarea>
+          <button class="btn" style="margin-top:10px; width:100%;" onclick="applyImport()">✓ Apply Import</button>
+        </div>
+
+        <div style="text-align:center;">
+          <button class="btn btn-secondary" onclick="closeModal()">CLOSE</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function copyExportCode() {
+  const ta = document.getElementById('sync-export-code');
+  if (!ta) return;
+  ta.select();
+  ta.setSelectionRange(0, 99999);
+  let ok = false;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(ta.value).then(
+      () => toast('COPIED!', 'xp'),
+      () => {
+        try { ok = document.execCommand('copy'); } catch (e) {}
+        if (ok) toast('COPIED!', 'xp');
+        else toast('Select & copy manually', 'error');
+      }
+    );
+  } else {
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    if (ok) toast('COPIED!', 'xp');
+    else toast('Select & copy manually', 'error');
+  }
+}
+
+function applyImport() {
+  const ta = document.getElementById('sync-import-code');
+  if (!ta) return;
+  const code = ta.value.trim();
+  if (!code) { toast('Paste a code first', 'error'); return; }
+  try {
+    let json;
+    try { json = decodeURIComponent(escape(atob(code))); }
+    catch (e) { json = atob(code); }
+    const data = JSON.parse(json);
+    if (typeof data.xp !== 'number' || !data.systemMastery) {
+      throw new Error('Invalid save format');
+    }
+    if (!confirm('This will REPLACE your current progress on this device. Continue?')) return;
+    Object.assign(STATE, data);
+    SYSTEMS.forEach(s => { if (!STATE.systemMastery[s]) STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
+    if (!STATE.achievements) STATE.achievements = {};
+    save();
+    closeModal();
+    toast('SAVE IMPORTED!', 'xp');
+    renderMenu();
+  } catch (e) {
+    toast('Invalid code — try again', 'error');
+  }
+}
+
+function showAchievements() {
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <h2>🏆 ACHIEVEMENTS</h2>
+        <div class="achievement-list">
+          ${ACHIEVEMENTS.map(a => `
+            <div class="achievement ${STATE.achievements[a.id] ? 'unlocked' : 'locked'}">
+              <span class="ach-icon">${STATE.achievements[a.id] ? a.icon : '🔒'}</span>
+              <div>
+                <strong>${a.name}</strong><br>
+                <span style="font-size:13px; color:var(--text-dim);">${a.desc}</span>
+              </div>
+            </div>`).join('')}
+        </div>
+        <button class="btn" onclick="closeModal()">CLOSE</button>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function showStats() {
+  const totalPct = STATE.totalAnswered ? Math.round(STATE.totalCorrect/STATE.totalAnswered*100) : 0;
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <h2>📊 OVERALL STATS</h2>
+        <p><strong style="color:var(--neon-cyan)">Total Answered:</strong> ${STATE.totalAnswered}</p>
+        <p><strong style="color:var(--neon-green)">Total Correct:</strong> ${STATE.totalCorrect}</p>
+        <p><strong style="color:var(--neon-yellow)">Lifetime Accuracy:</strong> ${totalPct}%</p>
+        <p><strong style="color:var(--neon-pink)">Best Streak:</strong> ${STATE.bestStreak}🔥</p>
+        <p><strong style="color:var(--neon-purple)">Current Level:</strong> ${STATE.level}</p>
+        <p><strong>Achievements:</strong> ${Object.keys(STATE.achievements).length} / ${ACHIEVEMENTS.length}</p>
+        <button class="btn" onclick="closeModal()">CLOSE</button>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeModal() {
+  document.querySelector('.modal-overlay')?.remove();
+}
+
+function resetSave() {
+  if (!confirm('Reset ALL progress? Cannot undo.')) return;
+  try { localStorage.removeItem('cardio_quest_save'); } catch (e) {}
+  STATE.hp = 3; STATE.maxHp = 3; STATE.xp = 0; STATE.level = 1;
+  STATE.streak = 0; STATE.bestStreak = 0; STATE.totalAnswered = 0; STATE.totalCorrect = 0;
+  STATE.achievements = {};
+  SYSTEMS.forEach(s => { STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
+  toast('SAVE RESET');
+  renderMenu();
+}
+
+// keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (STATE.mode === 'menu' || !STATE.currentQ) return;
+  const choices = document.querySelectorAll('.choice:not(.disabled)');
+  if (choices.length === 0) {
+    // result screen — Enter advances
+    if (e.key === 'Enter') {
+      const nextBtn = document.querySelector('.controls .btn:not(.btn-secondary):not(.btn-danger)');
+      nextBtn?.click();
+    }
+    return;
+  }
+  const keyIdx = ['a','b','c','d','1','2','3','4'].indexOf(e.key.toLowerCase());
+  if (keyIdx >= 0) {
+    const idx = keyIdx >= 4 ? keyIdx - 4 : keyIdx;
+    if (choices[idx]) answer(idx);
+  }
+});
+
+// ============================================================================
+// BOOT
+// ============================================================================
+loadSave();
+renderMenu();
+</script>
+
+</body>
+</html>

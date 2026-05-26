@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Step 1 Game Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-deep: #06080d;
+  --bg-mid: #0e131c;
+  --bg-card: #161d2a;
+  --text: #f0e8d5;
+  --text-dim: #7a8090;
+  --gold: #d4b056;
+  --grid: rgba(212, 176, 86, 0.04);
+
+  /* Game theme colors */
+  --cardio: #ff5cc4;
+  --cardio-2: #6bffa0;
+  --hormone: #ff79c6;
+  --hormone-2: #ffd93d;
+  --pharm: #c6ff00;
+  --pharm-2: #bd93f9;
+  --micro: #ffe600;
+  --micro-2: #7fff00;
+  --dojo: #c8324a;
+  --dojo-2: #c9a961;
+  --atlas: #c9a961;
+  --atlas-2: #c8324a;
+  --suffix: #f4a82c;
+  --suffix-2: #4dbb70;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 16px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body {
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(212, 176, 86, 0.08), transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(199, 125, 255, 0.06), transparent 50%),
+    linear-gradient(180deg, #06080d 0%, #0e131c 100%);
+  padding: 24px 16px 48px;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 0;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* HEADER */
+header {
+  text-align: center;
+  padding: 24px 0 36px;
+  border-bottom: 2px solid var(--gold);
+  margin-bottom: 36px;
+  position: relative;
+}
+header::before, header::after {
+  content: '◆';
+  color: var(--gold);
+  font-size: 14px;
+  position: absolute;
+  bottom: -8px;
+  background: var(--bg-deep);
+  padding: 0 8px;
+}
+header::before { left: 32%; }
+header::after { right: 32%; }
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 56px;
+  letter-spacing: 10px;
+  color: var(--gold);
+  margin-bottom: 6px;
+  text-shadow: 0 0 24px rgba(212, 176, 86, 0.4);
+}
+.subtitle {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  color: var(--text-dim);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+.tagline {
+  color: var(--text-dim);
+  font-style: italic;
+  margin-top: 12px;
+  font-size: 15px;
+}
+
+/* GAME GRID */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+  margin-bottom: 36px;
+}
+
+.game-card {
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-mid));
+  border: 1px solid var(--card-color, var(--gold));
+  border-radius: 6px;
+  padding: 22px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--card-color), var(--card-color-2));
+}
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px var(--card-shadow, rgba(212, 176, 86, 0.25));
+  border-color: var(--card-color-2);
+}
+.game-card .game-icon {
+  font-size: 38px;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 8px var(--card-color));
+}
+.game-card .game-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 3px;
+  color: var(--card-color);
+  margin-bottom: 4px;
+}
+.game-card .game-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.game-card .game-desc {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.5;
+  flex: 1;
+  margin-bottom: 14px;
+}
+.game-card .game-stats {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(128, 128, 128, 0.15);
+}
+.game-card .game-stats strong {
+  color: var(--card-color-2);
+  font-weight: 600;
+}
+
+/* CARD COLOR THEMES */
+.theme-cardio { --card-color: var(--cardio); --card-color-2: var(--cardio-2); --card-shadow: rgba(255, 92, 196, 0.3); }
+.theme-hormone { --card-color: var(--hormone); --card-color-2: var(--hormone-2); --card-shadow: rgba(255, 121, 198, 0.3); }
+.theme-pharm { --card-color: var(--pharm); --card-color-2: var(--pharm-2); --card-shadow: rgba(198, 255, 0, 0.25); }
+.theme-micro { --card-color: var(--micro); --card-color-2: var(--micro-2); --card-shadow: rgba(255, 230, 0, 0.25); }
+.theme-dojo { --card-color: var(--dojo); --card-color-2: var(--dojo-2); --card-shadow: rgba(200, 50, 74, 0.3); }
+.theme-atlas { --card-color: var(--atlas); --card-color-2: var(--atlas-2); --card-shadow: rgba(201, 169, 97, 0.3); }
+.theme-suffix { --card-color: var(--suffix); --card-color-2: var(--suffix-2); --card-shadow: rgba(244, 168, 44, 0.3); }
+
+/* INFO PANEL */
+.info-panel {
+  background: linear-gradient(180deg, var(--bg-card), var(--bg-mid));
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  padding: 22px;
+  margin-bottom: 24px;
+}
+.info-panel h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: var(--gold);
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+}
+.info-panel p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.info-panel ul {
+  margin-left: 18px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+}
+.info-panel ul li { margin-bottom: 4px; }
+.info-panel code {
+  background: rgba(212, 176, 86, 0.12);
+  color: var(--gold);
+  padding: 1px 6px;
+  border-radius: 2px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+}
+.info-panel strong { color: var(--gold); }
+
+footer {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 12px;
+  letter-spacing: 2px;
+  margin-top: 24px;
+  font-style: italic;
+}
+
+@media (max-width: 700px) {
+  h1 { font-size: 36px; letter-spacing: 5px; }
+  .games-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>STEP 1 LIBRARY</h1>
+    <div class="subtitle">Active Recall Game Series</div>
+    <div class="tagline">— 7 games. ~325 questions. Built for daily reps. —</div>
+  </header>
+
+  <div class="games-grid">
+
+    <a href="cardio_quest.html" class="game-card theme-cardio">
+      <div class="game-icon">❤</div>
+      <div class="game-title">CARDIO QUEST</div>
+      <div class="game-sub">Cardiovascular Pathology</div>
+      <div class="game-desc">Murmurs, MI patterns, ECGs, congenital defects, cardio pharm. Synthwave aesthetic for the original game in the series.</div>
+      <div class="game-stats"><strong>40+</strong> questions • <strong>6</strong> modes</div>
+    </a>
+
+    <a href="hormone_hunter.html" class="game-card theme-hormone">
+      <div class="game-icon">🌸</div>
+      <div class="game-title">HORMONE HUNTER</div>
+      <div class="game-sub">Reproductive + Endocrine</div>
+      <div class="game-desc">PCOS, sex chromosome disorders, thyroid, adrenal, MEN syndromes, pregnancy. The "blind vagina" decision tree.</div>
+      <div class="game-stats"><strong>45+</strong> questions • <strong>6</strong> modes</div>
+    </a>
+
+    <a href="pharm_arsenal.html" class="game-card theme-pharm">
+      <div class="game-icon">⚗</div>
+      <div class="game-title">PHARM ARSENAL</div>
+      <div class="game-sub">Pharmacology Vignettes</div>
+      <div class="game-desc">Drug mechanism, side effects, antidotes, drug-of-choice. Every major class drilled in vignette format.</div>
+      <div class="game-stats"><strong>65+</strong> questions • <strong>9</strong> modes</div>
+    </a>
+
+    <a href="microbe_mayhem.html" class="game-card theme-micro">
+      <div class="game-icon">🦠</div>
+      <div class="game-title">MICROBE MAYHEM</div>
+      <div class="game-sub">Microbiology Buzzwords</div>
+      <div class="game-desc">Gram stain patterns, animal associations, HepB serology, opportunistic infections. Pattern recognition central.</div>
+      <div class="game-stats"><strong>45+</strong> questions • <strong>7</strong> modes</div>
+    </a>
+
+    <a href="dissection_dojo.html" class="game-card theme-dojo">
+      <div class="game-icon">⚕</div>
+      <div class="game-title">DISSECTION DOJO</div>
+      <div class="game-sub">Anatomy — Text Format</div>
+      <div class="game-desc">Hernias (priority), brachial plexus, lower limb, spinal cord syndromes, abdominal vessels. Hernia Hall is your weak spot.</div>
+      <div class="game-stats"><strong>40+</strong> questions • <strong>9</strong> modes</div>
+    </a>
+
+    <a href="anatomy_atlas.html" class="game-card theme-atlas">
+      <div class="game-icon">📜</div>
+      <div class="game-title">ANATOMY ATLAS</div>
+      <div class="game-sub">Anatomy — Visual Plates</div>
+      <div class="game-desc">Custom SVG diagrams for every question. Hesselbach's triangle, NAVeL, plexus map, dermatomes, cord tracts.</div>
+      <div class="game-stats"><strong>18</strong> illustrated questions • <strong>7</strong> modes</div>
+    </a>
+
+    <a href="suffix_showdown.html" class="game-card theme-suffix">
+      <div class="game-icon">℞</div>
+      <div class="game-title">SUFFIX SHOWDOWN</div>
+      <div class="game-sub">Drug Naming Conventions</div>
+      <div class="game-desc">-olol, -pril, -sartan, -dipine. WHO stem system for rapid drug-class recognition. Snappy fast-rep format.</div>
+      <div class="game-stats"><strong>72</strong> questions • <strong>9</strong> modes</div>
+    </a>
+
+  </div>
+
+  <div class="info-panel">
+    <h2>HOW THIS WORKS</h2>
+    <p>Each game saves progress to <code>localStorage</code> in the browser you're using. That means:</p>
+    <ul>
+      <li><strong>Saves are per-device, per-browser.</strong> Your phone and laptop track progress separately.</li>
+      <li><strong>Use the 🔄 SYNC button</strong> in any game's menu to copy a save code between devices.</li>
+      <li><strong>Don't use Incognito/Private mode</strong> — saves get wiped when the tab closes.</li>
+      <li><strong>Bookmark this library page</strong> instead of individual games. One bookmark, seven games.</li>
+    </ul>
+  </div>
+
+  <div class="info-panel">
+    <h2>SUGGESTED DAILY ROUTINE</h2>
+    <p>~3 minutes per game = 21 minutes total. Realistic for daily use.</p>
+    <ul>
+      <li><strong>Hernia Hall</strong> in Dissection Dojo + <strong>Hernia Plates</strong> in Anatomy Atlas (your weak spot)</li>
+      <li><strong>Karyotype Lab</strong> in Hormone Hunter (sex chromosomes)</li>
+      <li><strong>Daily Petri</strong> in Microbe Mayhem (mixed bugs)</li>
+      <li><strong>Daily Lab</strong> in Pharm Arsenal + <strong>Daily Dose</strong> in Suffix Showdown</li>
+      <li><strong>Daily Rounds</strong> in Cardio Quest (rotation)</li>
+    </ul>
+  </div>
+
+  <footer>
+    Built for Step 1 prep. localStorage saves. Click 🔄 SYNC in any game to transfer between devices.
+  </footer>
+
+</div>
+
+</body>
+</html>

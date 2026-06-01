@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CELLULAR CHAOS — General Pathology</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Mulish:wght@400;500;600;700&family=Azeret+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0810;
+  --bg2:#150b16;
+  --panel:#1d1124;
+  --panel-hi:#281832;
+  --cyan:#fb6f92;
+  --cyan-dim:#be185d;
+  --amber:#8b5cf6;
+  --amber-hi:#c4b5fd;
+  --red:#64748b;
+  --green:#34d399;
+  --text:#fbe9f0;
+  --dim:#a08597;
+  --line:rgba(251,111,146,.15);
+  --glow:rgba(251,111,146,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Mulish',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 17% 0%,rgba(251,111,146,.11),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(139,92,246,.08),transparent 55%),
+    linear-gradient(180deg,#0d0810,#150b16);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--line) 1.5px,transparent 1.5px);
+  background-size:24px 24px;
+  mask-image:radial-gradient(ellipse at center,#000 32%,transparent 88%);
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(150deg,var(--cyan),var(--cyan-dim));color:#1d1124;
+  font-family:'Sora';font-weight:800;font-size:23px;margin-bottom:8px;box-shadow:0 0 24px var(--glow)}
+h1{font-family:'Sora';font-weight:800;font-size:30px;letter-spacing:.5px;color:var(--cyan)}
+.sub{font-family:'Azeret Mono';font-size:11px;color:var(--dim);letter-spacing:2px;margin-top:6px;text-transform:uppercase}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.6}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Sora';font-weight:700;font-size:15px;margin:9px 0 6px;letter-spacing:.3px;line-height:1.4}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'Azeret Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'Azeret Mono';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'Azeret Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'Azeret Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'Azeret Mono';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(52,211,153,.13)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(100,116,139,.16)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'Azeret Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(139,92,246,.10);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Sora';font-weight:700;font-size:12.5px;letter-spacing:.3px}
+
+.btn{font-family:'Sora';font-weight:700;letter-spacing:.5px;border:none;border-radius:10px;padding:14px 22px;cursor:pointer;font-size:14px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#1d1124;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Sora';font-weight:800;font-size:58px;color:var(--cyan);line-height:1.1}
+.rank{font-family:'Azeret Mono';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:12px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'Azeret Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:24px;color:var(--text);font-family:'Sora';font-weight:800}
+
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Sora';font-weight:700;color:var(--amber-hi);font-size:15px;margin-bottom:9px;letter-spacing:.3px;line-height:1.4}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'Azeret Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'Azeret Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'Azeret Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== CELL INJURY & DEATH ===== */
+{m:"inj",q:"Ischemic infarction of the heart or kidney produces which type of necrosis, in which the tissue architecture is preserved as 'ghost cells'?",c:["Coagulative necrosis","Liquefactive necrosis","Caseous necrosis","Fat necrosis"],a:0,why:"Coagulative necrosis (most ischemic infarcts) = protein denaturation locks in the cell outlines, so 'ghost' architecture persists for days.",p:"<b>Coagulative</b> = ischemia in most organs (heart, kidney). Architecture preserved ('ghost cells')."},
+{m:"inj",q:"Ischemic injury to the BRAIN, and bacterial abscesses, produce which type of necrosis (enzymatic digestion into a soft, fluid mass)?",c:["Liquefactive necrosis","Coagulative necrosis","Caseous necrosis","Fibrinoid necrosis"],a:0,why:"Liquefactive necrosis = neutrophil and lysosomal enzymes digest tissue into liquid; classic in CNS infarcts and abscesses.",p:"<b>Liquefactive</b> = brain infarcts + abscesses (enzymes turn it to goo)."},
+{m:"inj",q:"Tuberculosis and certain fungal infections cause which 'cheese-like' necrosis, surrounded by granulomas?",c:["Caseous necrosis","Coagulative necrosis","Fat necrosis","Liquefactive necrosis"],a:0,why:"Caseous necrosis = soft, friable, 'cheesy' debris within granulomas; classic for TB and systemic fungi.",p:"<b>Caseous</b> = TB + fungi, cheese-like, inside granulomas."},
+{m:"inj",q:"Acute pancreatitis produces which type of necrosis, characterized by chalky calcium 'soap' deposits (saponification)?",c:["Fat necrosis","Coagulative necrosis","Caseous necrosis","Fibrinoid necrosis"],a:0,why:"Fat necrosis = released lipases digest fat, freeing fatty acids that bind calcium (saponification); seen in pancreatitis and breast trauma.",p:"<b>Fat necrosis</b> = pancreatitis (enzymatic) or breast trauma. Saponification, then high amylase/lipase."},
+{m:"inj",q:"Pink, amorphous deposition of immune complexes within blood vessel walls, as in vasculitis and malignant hypertension, is which type of necrosis?",c:["Fibrinoid necrosis","Coagulative necrosis","Caseous necrosis","Liquefactive necrosis"],a:0,why:"Fibrinoid necrosis = immune complexes plus plasma proteins in vessel walls, appearing bright pink and amorphous; vasculitis, malignant HTN, preeclampsia.",p:"<b>Fibrinoid</b> = vessel walls (vasculitis, malignant HTN, preeclampsia). Pink + amorphous."},
+{m:"inj",q:"Programmed cell death that is ATP-dependent, affects single cells, and does NOT trigger an inflammatory response is called what?",c:["Apoptosis","Necrosis","Autophagy","Pyroptosis"],a:0,why:"Apoptosis = energy-requiring, regulated death (intrinsic/mitochondrial or extrinsic/Fas) via caspases; the cell shrinks and the membrane stays intact, so no inflammation.",p:"<b>Apoptosis</b> = programmed, ATP-needed, NO inflammation, shrinkage. Necrosis = passive + inflammation."},
+{m:"inj",q:"The EARLIEST and a reversible manifestation of cell injury, caused by failure of the Na+/K+ ATPase pump, is what?",c:["Cellular (hydropic) swelling","Plasma membrane rupture","Nuclear fragmentation","Mitochondrial vacuolization"],a:0,why:"Cellular swelling (and ribosome detachment) is reversible. Membrane damage, marked mitochondrial change, and nuclear breakdown signal IRreversible injury.",p:"Reversible = <b>cellular swelling</b> + ribosome loss. Irreversible = membrane damage, high Ca, nuclear breakdown."},
+{m:"inj",q:"Reperfusion of ischemic tissue paradoxically worsens injury, largely through the generation of what?",c:["Free radicals (reactive oxygen species)","Lactic acid only","Excess ATP","Antibodies"],a:0,why:"Reperfusion floods damaged tissue with oxygen, generating reactive oxygen species that cause lipid peroxidation and further injury; defended by SOD, catalase, glutathione.",p:"Reperfusion injury = <b>free radicals (ROS)</b>. Neutralized by SOD, catalase, glutathione, vitamins A/C/E."},
+
+/* ===== INFLAMMATION ===== */
+{m:"inflam",q:"The predominant cell of ACUTE inflammation, the first responder arriving within hours, is which leukocyte?",c:["Neutrophil","Lymphocyte","Plasma cell","Eosinophil"],a:0,why:"Neutrophils dominate acute inflammation (first ~24 h), then macrophages take over. Lymphocytes and plasma cells dominate chronic inflammation.",p:"Acute = <b>neutrophils</b> first (then macrophages). Chronic = macrophages + lymphocytes + plasma cells."},
+{m:"inflam",q:"The predominant cells of CHRONIC inflammation are macrophages and which other cells?",c:["Lymphocytes (and plasma cells)","Neutrophils","Mast cells","Platelets"],a:0,why:"Chronic inflammation = macrophages, lymphocytes, and plasma cells (mononuclear cells), accompanied by tissue destruction and repair (fibrosis).",p:"Chronic inflammation = <b>macrophages + lymphocytes + plasma cells</b>, then fibrosis."},
+{m:"inflam",q:"Which mediator, released by mast cells, is primarily responsible for the IMMEDIATE vasodilation and increased vascular permeability of acute inflammation?",c:["Histamine","Collagen","Albumin","Interferon-gamma"],a:0,why:"Histamine (from mast cells, basophils, platelets) causes immediate vasodilation and increased venular permeability, producing the early redness, heat, and swelling.",p:"Immediate vascular response = <b>histamine</b> (mast cells). Drives rubor, calor, tumor."},
+{m:"inflam",q:"A granuloma is composed of activated macrophages that have transformed into which cell type, often fusing into multinucleated giant cells?",c:["Epithelioid cells","Neutrophils","Plasma cells","Fibroblasts"],a:0,why:"Granulomas = epithelioid macrophages (epithelioid histiocytes) with giant cells, driven by Th1 cells via IFN-gamma and TNF.",p:"Granuloma = <b>epithelioid macrophages</b> + giant cells. Th1 (IFN-gamma) + TNF maintain it."},
+{m:"inflam",q:"Which POSITIVE acute-phase reactant rises in inflammation, serves as a clinical marker, and also acts as an opsonin?",c:["C-reactive protein","Albumin","Transferrin","Prealbumin"],a:0,why:"CRP (driven by IL-6) rises in inflammation and opsonizes. Albumin and transferrin are NEGATIVE acute-phase reactants that fall.",p:"Positive (up): <b>CRP, ferritin, fibrinogen, hepcidin, serum amyloid A</b>. Negative (down): albumin, transferrin."},
+{m:"inflam",q:"Early wound healing forms granulation tissue rich in type III collagen, which is later replaced during remodeling by which collagen?",c:["Type I collagen","Type II collagen","Type IV collagen","Type VII collagen"],a:0,why:"Granulation tissue lays down weaker type III collagen; remodeling (matrix metalloproteinases) replaces it with stronger type I collagen.",p:"Wound: <b>type III then type I</b> collagen (weak scar to strong). Vitamin C needed to cross-link."},
+{m:"inflam",q:"An inflammatory effusion with HIGH protein content and high specific gravity is classified as what?",c:["An exudate","A transudate","Lymph","Serous fluid"],a:0,why:"Exudate = protein-rich fluid from increased vascular permeability (inflammation, infection, malignancy). Transudate = protein-poor (high hydrostatic or low oncotic pressure).",p:"<b>Exudate</b> = high protein (inflammation/infection/cancer). Transudate = low protein (CHF, cirrhosis)."},
+{m:"inflam",q:"Neurons, cardiac muscle, and skeletal muscle CANNOT regenerate and heal only by scarring. They belong to which category of tissue?",c:["Permanent","Labile","Stable","Quiescent"],a:0,why:"Permanent tissues (neurons, cardiac and skeletal muscle) cannot divide, so they scar only. Labile tissues (gut, skin, marrow) constantly divide; stable tissues (liver, kidney) divide when stimulated.",p:"<b>Permanent</b> = neurons, cardiac + skeletal muscle (scar only). Labile = skin/gut/marrow. Stable = liver/kidney."},
+
+/* ===== NEOPLASIA BASICS ===== */
+{m:"neo",q:"Reversible replacement of one differentiated adult cell type with another (e.g., squamous to columnar in Barrett esophagus) is called what?",c:["Metaplasia","Dysplasia","Anaplasia","Hyperplasia"],a:0,why:"Metaplasia = a reversible, adaptive change of one mature cell type to another (often a stress response); it can progress to dysplasia.",p:"<b>Metaplasia</b> = reversible cell-type swap (Barrett, squamous metaplasia of bronchi in smokers)."},
+{m:"neo",q:"Disordered, atypical cellular growth that is PRE-malignant but still reversible is called what?",c:["Dysplasia","Metaplasia","Anaplasia","Hypertrophy"],a:0,why:"Dysplasia = disordered growth with cytologic atypia, confined above the basement membrane; pre-malignant but potentially reversible.",p:"<b>Dysplasia</b> = pre-malignant, still reversible. Crossing the basement membrane makes it invasive carcinoma."},
+{m:"neo",q:"COMPLETE lack of differentiation with marked cellular and nuclear pleomorphism, a hallmark of aggressive malignancy, is called what?",c:["Anaplasia","Dysplasia","Metaplasia","Hyperplasia"],a:0,why:"Anaplasia = total loss of differentiation with pleomorphism, giant nuclei, and abnormal mitoses, characteristic of high-grade malignancy.",p:"<b>Anaplasia</b> = undifferentiated, pleomorphic, malignant. The opposite of well-differentiated."},
+{m:"neo",q:"A malignant tumor arising from EPITHELIAL tissue is called what?",c:["Carcinoma","Sarcoma","Lymphoma","Adenoma"],a:0,why:"Carcinoma = malignant epithelial tumor (e.g., adenocarcinoma, squamous cell carcinoma). Sarcoma = malignant mesenchymal (connective tissue) tumor.",p:"<b>Carcinoma = epithelial</b> (malignant). <b>Sarcoma = mesenchymal</b>. The suffix -oma alone usually means benign."},
+{m:"neo",q:"Which feature DEFINITIVELY distinguishes a malignant tumor from a benign one?",c:["Ability to invade and metastasize","Presence of a capsule","Slow growth","Being well differentiated"],a:0,why:"Invasion through the basement membrane and the ability to metastasize define malignancy. Benign tumors are encapsulated, localized, and do not metastasize.",p:"Malignant = <b>invasion + metastasis</b>. Benign = encapsulated, localized, no metastasis."},
+{m:"neo",q:"Tumor STAGE, the single most important prognostic factor, describes what?",c:["The extent of spread (size, nodes, metastasis)","The degree of differentiation","The mitotic rate only","The cell of origin"],a:0,why:"Stage = anatomic extent of spread (TNM: tumor size, lymph nodes, metastasis) and is more prognostic than grade. Grade = degree of differentiation.",p:"<b>STAGE = spread (TNM), matters MORE.</b> Grade = differentiation. Stage beats grade for prognosis."},
+{m:"neo",q:"Carcinomas typically spread FIRST by which route?",c:["Lymphatic (to regional lymph nodes)","Hematogenous (through the blood)","Transcoelomic (across body cavities)","Perineural"],a:0,why:"Carcinomas usually metastasize first via lymphatics to regional nodes; sarcomas characteristically spread hematogenously.",p:"<b>Carcinomas spread to lymphatics first.</b> Sarcomas spread hematogenously (blood)."},
+{m:"neo",q:"The MOST COMMON malignant tumor found in the liver, brain, and bone is which type?",c:["A metastasis (secondary tumor)","A primary tumor of that organ","A benign tumor","A lymphoma"],a:0,why:"Metastases vastly outnumber primary tumors at these sites; the most common liver, brain, or bone malignancy is metastatic disease.",p:"Liver/brain/bone: <b>metastasis is far more common than a primary tumor</b>."},
+
+/* ===== ONCOGENES & TUMOR SUPPRESSORS ===== */
+{m:"onco",q:"Loss of which tumor suppressor, the 'guardian of the genome,' is the most common genetic change in human cancers (and underlies Li-Fraumeni syndrome)?",c:["p53 (TP53)","RB","APC","BRCA1"],a:0,why:"p53 (TP53) arrests the cell cycle for repair or triggers apoptosis; it is the most frequently mutated gene in cancer. Germline loss causes Li-Fraumeni.",p:"<b>p53</b> = guardian of the genome, most common mutation in cancer. Li-Fraumeni = germline p53 loss."},
+{m:"onco",q:"Mutation of which tumor suppressor underlies Knudson's two-hit hypothesis and predisposes to both a childhood eye tumor and osteosarcoma?",c:["RB","p53","RAS","HER2"],a:0,why:"RB (the retinoblastoma gene) controls the G1-to-S checkpoint; loss of both alleles (two hits) causes retinoblastoma and osteosarcoma.",p:"<b>RB</b> = retinoblastoma + osteosarcoma, G1/S checkpoint, the original two-hit gene."},
+{m:"onco",q:"Tumor suppressor genes typically require how many 'hits' (mutated alleles) to lose function and promote cancer?",c:["Two (both alleles)","One","Three","None"],a:0,why:"Knudson two-hit: tumor suppressors are recessive at the cell level, so BOTH alleles must be inactivated. Oncogenes need only one activating hit (dominant).",p:"Tumor suppressors = <b>two hits</b> (both alleles, recessive). Oncogenes = one hit (dominant)."},
+{m:"onco",q:"A constitutively activated GTPase that drives growth-factor signaling in many carcinomas (colon, pancreas, lung) is the product of which oncogene?",c:["RAS","p53","RB","APC"],a:0,why:"RAS is a proto-oncogene GTPase; activating mutations leave it permanently 'on,' driving proliferation. It is found in many carcinomas.",p:"<b>RAS</b> = GTPase stuck 'on,' driving growth signaling. Common in colon/pancreatic/lung cancer."},
+{m:"onco",q:"Overexpression of which oncogene, via the t(8;14) translocation, drives Burkitt lymphoma?",c:["c-MYC","BCR-ABL","HER2","BCL-2"],a:0,why:"c-MYC (a transcription factor) is placed under the immunoglobulin heavy-chain promoter by t(8;14), causing constitutive overexpression and Burkitt lymphoma.",p:"<b>c-MYC</b> = t(8;14) = Burkitt lymphoma (a transcription factor)."},
+{m:"onco",q:"Amplification of which oncogene in breast cancer predicts response to trastuzumab (Herceptin)?",c:["HER2 (ERBB2)","RAS","RB","p53"],a:0,why:"HER2/neu (ERBB2) is a growth-factor receptor; amplification produces aggressive breast cancer that responds to anti-HER2 therapy (trastuzumab).",p:"<b>HER2</b> = breast (and gastric) cancer, treated with trastuzumab. A receptor tyrosine kinase."},
+{m:"onco",q:"Inherited mutations in which tumor suppressor genes greatly raise the risk of breast and ovarian cancer (they normally repair double-strand DNA breaks)?",c:["BRCA1 / BRCA2","RAS / MYC","RB / p53","HER2 / RET"],a:0,why:"BRCA1 and BRCA2 are DNA-repair tumor suppressors; germline mutations sharply increase breast and ovarian (and other) cancer risk.",p:"<b>BRCA1/2</b> = DNA repair, breast + ovarian cancer. Tumor suppressors (two-hit)."},
+{m:"onco",q:"Which tumor suppressor, mutated in familial adenomatous polyposis, is the earliest 'gatekeeper' step in most colorectal cancers?",c:["APC","p53","HER2","RAS"],a:0,why:"APC loss is the initiating event in the adenoma-carcinoma sequence (chromosome 5q); germline loss causes familial adenomatous polyposis.",p:"<b>APC</b> = FAP and the first step in sporadic colon cancer (adenoma-carcinoma sequence). Chromosome 5q."},
+
+/* ===== TUMOR MARKERS & ASSOCIATIONS ===== */
+{m:"mark",q:"An elevated alpha-fetoprotein points to hepatocellular carcinoma or which other category of tumor?",c:["Germ cell (yolk sac / nonseminomatous) tumors","Colorectal cancer","Breast cancer","Prostate cancer"],a:0,why:"AFP is elevated in HCC and in nonseminomatous germ cell tumors (yolk sac); it is also raised in maternal serum with neural tube defects.",p:"AFP = <b>HCC + germ cell (yolk sac)</b> tumors. Also up in neural tube defects."},
+{m:"mark",q:"Which tumor marker is used to monitor for recurrence of COLORECTAL cancer?",c:["CEA (carcinoembryonic antigen)","PSA","CA-125","Calcitonin"],a:0,why:"CEA is used to monitor colorectal cancer (and is raised in pancreatic and gastric cancers); it is not specific enough for screening.",p:"<b>CEA</b> = colorectal cancer monitoring. Nonspecific, so not for screening."},
+{m:"mark",q:"Which tumor marker is associated with OVARIAN cancer and used to monitor it?",c:["CA-125","PSA","AFP","CEA"],a:0,why:"CA-125 is the marker for epithelial ovarian cancer, used to monitor response and recurrence.",p:"<b>CA-125</b> = ovarian cancer."},
+{m:"mark",q:"Which marker is used to screen for and monitor PROSTATE cancer?",c:["PSA (prostate-specific antigen)","CA 19-9","CA-125","AFP"],a:0,why:"PSA is the prostate marker; it is also raised in BPH and prostatitis, so it is not perfectly specific.",p:"<b>PSA</b> = prostate cancer (also up in BPH/prostatitis)."},
+{m:"mark",q:"Which tumor marker is most associated with PANCREATIC adenocarcinoma?",c:["CA 19-9","PSA","CA-125","AFP"],a:0,why:"CA 19-9 is the classic marker for pancreatic adenocarcinoma.",p:"<b>CA 19-9</b> = pancreatic cancer."},
+{m:"mark",q:"Exposure to aflatoxin (produced by Aspergillus on stored grains and nuts) increases the risk of which cancer?",c:["Hepatocellular carcinoma","Bladder cancer","Mesothelioma","Leukemia"],a:0,why:"Aflatoxin (from Aspergillus) causes a specific p53 mutation leading to hepatocellular carcinoma, especially with coexisting HBV/HCV.",p:"Aflatoxin (Aspergillus) causes <b>hepatocellular carcinoma</b> (p53 mutation)."},
+{m:"mark",q:"Hypercalcemia caused by PTH-related peptide (PTHrP) is a paraneoplastic syndrome most associated with which lung cancer?",c:["Squamous cell carcinoma of the lung","Small cell carcinoma","Adenocarcinoma","Carcinoid tumor"],a:0,why:"Squamous cell lung carcinoma secretes PTHrP, causing hypercalcemia; it is centrally located, smoking-related, and shows keratin pearls.",p:"PTHrP causing hypercalcemia = <b>squamous cell</b> lung cancer (central, keratin pearls, smoking)."},
+{m:"mark",q:"SIADH, ectopic ACTH (Cushing syndrome), and Lambert-Eaton myasthenic syndrome are paraneoplastic syndromes of which lung cancer?",c:["Small cell carcinoma","Squamous cell carcinoma","Adenocarcinoma","Large cell carcinoma"],a:0,why:"Small cell lung carcinoma (neuroendocrine origin) causes SIADH, ectopic ACTH, and Lambert-Eaton; it is central, strongly smoking-related, and often metastatic at diagnosis.",p:"Small cell lung cancer = <b>SIADH + ACTH (Cushing) + Lambert-Eaton</b>. Neuroendocrine, central."}
+];
+
+const VAULT=[
+{t:"Necrosis by Organ",b:"<b>Coagulative</b> = ischemia, most organs (heart/kidney), preserved architecture. <b>Liquefactive</b> = brain + abscess. <b>Caseous</b> = TB/fungi (cheese + granuloma). <b>Fat</b> = pancreas/breast (saponification). <b>Fibrinoid</b> = vessels (vasculitis, malignant HTN).",g:"Cell death"},
+{t:"Apoptosis vs Necrosis",b:"<b>Apoptosis</b> = programmed, ATP-needed, single cells, NO inflammation, shrinkage. Intrinsic (mitochondria, cytochrome c, Bcl-2) or extrinsic (Fas/FasL), both via caspases. <b>Necrosis</b> = passive, swelling, INFLAMMATION.",g:"Cell death"},
+{t:"Reversible vs Irreversible Injury",b:"<b>Reversible</b> = cellular swelling, ribosome detachment, fatty change. <b>Irreversible</b> = plasma membrane damage, high cytosolic Ca, mitochondrial vacuolization, nuclear breakdown (pyknosis to karyorrhexis to karyolysis).",g:"Injury"},
+{t:"Inflammation Cells",b:"<b>Acute</b> = neutrophils first (then macrophages). <b>Chronic</b> = macrophages + lymphocytes + plasma cells, then fibrosis. <b>Granuloma</b> = epithelioid macrophages + giant cells, driven by Th1 (IFN-gamma) + TNF.",g:"Inflammation"},
+{t:"Acute-Phase Reactants (IL-6 driven)",b:"<b>Up (positive):</b> CRP, ferritin, fibrinogen, hepcidin, serum amyloid A. <b>Down (negative):</b> albumin, transferrin, prealbumin.",g:"Inflammation"},
+{t:"Wound Healing",b:"Granulation tissue (fibroblasts + new vessels) = <b>type III collagen, remodeled to type I</b> (stronger). Vitamin C cross-links collagen. Permanent tissues scar only.",g:"Repair"},
+{t:"Metaplasia to Cancer",b:"<b>Metaplasia</b> (reversible cell swap) to <b>dysplasia</b> (pre-malignant, reversible) to <b>carcinoma in situ</b> to <b>invasive carcinoma</b> (through basement membrane). Anaplasia = undifferentiated = malignant.",g:"Neoplasia"},
+{t:"Carcinoma vs Sarcoma",b:"<b>Carcinoma</b> = malignant EPITHELIAL tumor, spreads to lymphatics first (e.g., adeno-, squamous cell). <b>Sarcoma</b> = malignant MESENCHYMAL tumor, spreads hematogenously. Malignant = invasion + metastasis.",g:"Neoplasia"},
+{t:"Grade vs Stage",b:"<b>Grade</b> = degree of differentiation (how ugly the cells look). <b>Stage</b> = extent of spread (TNM: Tumor size, Nodes, Metastasis). <b>Stage matters MORE</b> for prognosis.",g:"Neoplasia"},
+{t:"Oncogenes vs Tumor Suppressors",b:"<b>Oncogenes</b> (gain of function, ONE hit): RAS, c-MYC (Burkitt t8;14), HER2 (breast, trastuzumab), BCR-ABL (CML), RET (MEN2). <b>Tumor suppressors</b> (loss of function, TWO hits): p53 (most common, Li-Fraumeni), RB (retinoblastoma/osteosarcoma), APC (FAP), BRCA1/2, VHL, NF1.",g:"Genes"},
+{t:"Tumor Markers",b:"<b>AFP</b> = HCC + germ cell. <b>CEA</b> = colorectal. <b>CA-125</b> = ovarian. <b>PSA</b> = prostate. <b>CA 19-9</b> = pancreatic. <b>beta-hCG</b> = testicular/choriocarcinoma/mole. <b>Calcitonin</b> = medullary thyroid. <b>Chromogranin</b> = neuroendocrine.",g:"Markers"},
+{t:"Carcinogens",b:"<b>Aflatoxin</b> to HCC. <b>Vinyl chloride</b> to hepatic angiosarcoma. <b>Aniline dyes</b> to bladder. <b>Asbestos</b> to mesothelioma/bronchogenic. <b>Benzene</b> to leukemia. <b>Nitrosamines</b> to gastric. <b>Arsenic</b> to skin/angiosarcoma. <b>Radon</b> to lung.",g:"Carcinogens"},
+{t:"Paraneoplastic Syndromes",b:"<b>Small cell lung</b> = SIADH + ACTH (Cushing) + Lambert-Eaton. <b>Squamous cell lung</b> = PTHrP (hypercalcemia). <b>Renal cell</b> = EPO (polycythemia). <b>Thymoma</b> = myasthenia gravis.",g:"Associations"}
+];
+
+const MODES={
+  daily:{name:"Daily Biopsy",ic:"🔬",desc:"15 random questions across all general-pathology topics. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Slide",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  inj:{name:"Cell Injury & Death",ic:"🦴",desc:"The structural foundation: the five necrosis types by organ, apoptosis vs necrosis, reversible vs irreversible injury.",pick:()=>shuffle(QBANK.filter(q=>q.m==="inj"))},
+  inflam:{name:"Inflammation",ic:"🔥",desc:"Acute vs chronic cells, mediators, granulomas, acute-phase reactants, wound healing, exudate vs transudate.",pick:()=>shuffle(QBANK.filter(q=>q.m==="inflam"))},
+  neo:{name:"Neoplasia Basics",ic:"🧫",desc:"Metaplasia/dysplasia/anaplasia, benign vs malignant, grade vs stage, routes of spread.",pick:()=>shuffle(QBANK.filter(q=>q.m==="neo"))},
+  onco:{name:"Oncogenes & Suppressors",ic:"🧬",desc:"RAS, MYC, HER2, the two-hit hypothesis, p53, RB, APC, BRCA.",pick:()=>shuffle(QBANK.filter(q=>q.m==="onco"))},
+  mark:{name:"Markers & Carcinogens",ic:"🏷️",desc:"AFP/CEA/CA-125/PSA/CA 19-9, the key carcinogens, and paraneoplastic syndromes.",pick:()=>shuffle(QBANK.filter(q=>q.m==="mark"))}
+};
+const MODE_TAGS={inj:"Cell Injury / Death",inflam:"Inflammation",neo:"Neoplasia",onco:"Oncogenes / Suppressors",mark:"Markers / Carcinogens"};
+
+const SAVE_KEY="cellular_chaos_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">Px</div>
+    <h1>CELLULAR CHAOS</h1>
+    <div class="sub">General Pathology · Inflammation · Neoplasia — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("inj",m.inj,"special")}${tile("inflam",m.inflam,"")}${tile("neo",m.neo,"")}${tile("onco",m.onco,"")}${tile("mark",m.mark,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy pathology tools — necrosis by organ, oncogenes vs suppressors, tumor markers, carcinogens, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
+}
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:22px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">Pathology memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
+});
+menu();
+</script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PSYCH WARD — Psychiatry / Behavioral</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Public+Sans:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4efe6;
+  --bg2:#e9e2d4;
+  --panel:#fffefb;
+  --panel-hi:#f3eee2;
+  --cyan:#0f766e;        /* deep teal primary (clinical) */
+  --cyan-dim:#134e4a;
+  --amber:#b45309;       /* clay accent */
+  --amber-hi:#92400e;
+  --red:#dc2626;
+  --green:#15803d;
+  --text:#2b2535;
+  --dim:#6f6880;
+  --line:rgba(15,118,110,.16);
+  --glow:rgba(15,118,110,.25);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Public Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 18% 0%,rgba(15,118,110,.07),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(180,83,9,.05),transparent 55%),
+    linear-gradient(180deg,#f4efe6,#e9e2d4);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--line) 1px,transparent 1px);
+  background-size:28px 28px;
+  mask-image:radial-gradient(ellipse at center,#000 33%,transparent 88%);opacity:.7;
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;
+  background:linear-gradient(150deg,var(--cyan),var(--cyan-dim));color:#fffefb;
+  font-family:'Instrument Serif';font-size:36px;margin-bottom:8px;box-shadow:0 4px 18px var(--glow)}
+h1{font-family:'Instrument Serif';font-weight:400;font-size:46px;letter-spacing:.5px;color:var(--cyan)}
+.sub{font-family:'Geist Mono';font-size:11px;color:var(--dim);letter-spacing:2px;margin-top:2px;text-transform:uppercase}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(43,37,53,.05)}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.7}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 22px rgba(43,37,53,.12)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Instrument Serif';font-weight:400;font-size:23px;margin:5px 0 5px;letter-spacing:.2px}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'Geist Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'Geist Mono';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'Geist Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:#e3dccd;border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'Geist Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 1px 2px rgba(43,37,53,.04)}
+.choice .k{font-family:'Geist Mono';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(21,128,61,.10)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(220,38,38,.08)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.9}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease;box-shadow:0 1px 3px rgba(43,37,53,.06)}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'Geist Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(180,83,9,.08);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Instrument Serif';font-weight:400;font-size:16px}
+
+.btn{font-family:'Instrument Serif';font-weight:400;letter-spacing:.5px;border:none;border-radius:10px;padding:12px 22px;cursor:pointer;font-size:20px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#fffefb;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 4px 16px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Instrument Serif';font-weight:400;font-size:84px;color:var(--cyan);line-height:1}
+.rank{font-family:'Geist Mono';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:8px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'Geist Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:30px;color:var(--text);font-family:'Instrument Serif';font-weight:400}
+
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber);box-shadow:0 1px 3px rgba(43,37,53,.05)}
+.vault-card h4{font-family:'Instrument Serif';font-weight:400;color:var(--amber-hi);font-size:22px;margin-bottom:6px;letter-spacing:.2px}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'Geist Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'Geist Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'Geist Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== NEUROTRANSMITTERS (biological substrate) ===== */
+{m:"nt",q:"Major depressive disorder is associated with DECREASED levels of which neurotransmitters?",c:["Serotonin, norepinephrine, and dopamine","Dopamine and glutamate (both increased)","GABA (increased)","Acetylcholine (increased)"],a:0,why:"The monoamine hypothesis: depression involves low serotonin, norepinephrine, and dopamine — the rationale for SSRIs/SNRIs.",p:"Depression = <b>↓serotonin, ↓NE, ↓dopamine</b> (monoamine hypothesis)."},
+{m:"nt",q:"The positive symptoms of schizophrenia are linked to EXCESS activity of which neurotransmitter in the mesolimbic pathway?",c:["Dopamine","Serotonin","GABA","Acetylcholine"],a:0,why:"Hyperactive mesolimbic dopamine → positive symptoms (hallucinations, delusions); antipsychotics block D2 receptors.",p:"Psychosis = <b>↑dopamine</b> (mesolimbic). Antipsychotics = D2 blockers."},
+{m:"nt",q:"Alzheimer disease is characterized by a deficiency of which neurotransmitter, produced by the nucleus basalis of Meynert?",c:["Acetylcholine","Dopamine","Serotonin","Glutamate"],a:0,why:"Alzheimer's = loss of cholinergic neurons (nucleus basalis of Meynert) → ↓ACh; cholinesterase inhibitors are used.",p:"Alzheimer = <b>↓ACh</b> (nucleus basalis of Meynert). Tx: donepezil, rivastigmine."},
+{m:"nt",q:"Generalized anxiety is associated with decreased activity of which inhibitory neurotransmitter, the target of benzodiazepines?",c:["GABA","Dopamine","Norepinephrine","Histamine"],a:0,why:"Anxiety = ↓GABA (and ↑NE, ↓serotonin); benzodiazepines enhance GABA-A signaling.",p:"Anxiety = <b>↓GABA</b> (also ↑NE). Benzos boost GABA."},
+{m:"nt",q:"The locus coeruleus is the principal brainstem source of which neurotransmitter?",c:["Norepinephrine","Serotonin","Dopamine","Acetylcholine"],a:0,why:"Locus coeruleus (pons) = norepinephrine; raphe nuclei = serotonin; substantia nigra/VTA = dopamine.",p:"<b>Locus coeruleus = norepinephrine.</b> (Raphe = serotonin.)"},
+{m:"nt",q:"The raphe nuclei are the main source of which neurotransmitter?",c:["Serotonin","Norepinephrine","Dopamine","GABA"],a:0,why:"The raphe nuclei (brainstem midline) are the principal source of serotonin (5-HT) projections.",p:"<b>Raphe = serotonin.</b> Locus coeruleus = NE; SN/VTA = dopamine; basal nucleus = ACh."},
+{m:"nt",q:"Drugs of abuse ultimately converge on which dopaminergic reward pathway?",c:["Mesolimbic (VTA to nucleus accumbens)","Nigrostriatal","Tuberoinfundibular","Spinothalamic"],a:0,why:"The mesolimbic pathway (VTA → nucleus accumbens) is the final common reward circuit hijacked by addictive drugs.",p:"Reward/addiction = <b>mesolimbic</b> (VTA → nucleus accumbens). Dopamine surge."},
+{m:"nt",q:"Antipsychotic blockade of dopamine in the tuberoinfundibular pathway causes elevation of which hormone, producing galactorrhea?",c:["Prolactin","Cortisol","Thyroxine","Growth hormone"],a:0,why:"Dopamine normally inhibits prolactin; D2 blockade in the tuberoinfundibular pathway disinhibits it → hyperprolactinemia, galactorrhea, gynecomastia.",p:"D2 blockade (tuberoinfundibular) → <b>↑prolactin</b> → galactorrhea/gynecomastia/amenorrhea."},
+
+/* ===== MOOD & PSYCHOTIC ===== */
+{m:"mood",q:"Major depressive disorder requires depressed mood or anhedonia plus associated symptoms for a minimum duration of what?",c:["2 weeks","2 days","6 months","1 year"],a:0,why:"MDD = ≥5 of 9 SIG-E-CAPS symptoms (including mood/anhedonia) for at least 2 weeks.",p:"MDD = <b>≥2 weeks</b>, ≥5 symptoms (SIG E CAPS)."},
+{m:"mood",q:"A manic episode lasting at least 1 week (or any duration requiring hospitalization) defines which disorder?",c:["Bipolar I disorder","Bipolar II disorder","Cyclothymia","Major depressive disorder"],a:0,why:"Bipolar I requires at least one full manic episode (≥1 week or hospitalization); depression isn't even required for diagnosis.",p:"Bipolar I = <b>full mania ≥1 week</b> (or hospitalized). Depression optional."},
+{m:"mood",q:"Recurrent major depressive episodes plus at least one HYPOmanic episode (but never a full manic episode) define which disorder?",c:["Bipolar II disorder","Bipolar I disorder","Persistent depressive disorder","Schizoaffective disorder"],a:0,why:"Bipolar II = major depression + hypomania (≥4 days), never full mania.",p:"Bipolar II = <b>hypomania (≥4 days) + major depression</b>. No full mania."},
+{m:"mood",q:"Chronic depressed mood lasting at least 2 years, not severe enough to meet criteria for major depression, is called what?",c:["Persistent depressive disorder (dysthymia)","Cyclothymia","Bipolar II disorder","Adjustment disorder"],a:0,why:"Persistent depressive disorder (dysthymia) = depressed mood most days for ≥2 years (≥1 year in children).",p:"Dysthymia / persistent depressive disorder = <b>≥2 years</b> of milder depression."},
+{m:"mood",q:"Schizophrenia requires continuous signs of disturbance for a minimum total duration of what?",c:["6 months","1 month","2 weeks","2 years"],a:0,why:"Schizophrenia = ≥2 of 5 core symptoms with ≥1 month of active symptoms and total disturbance ≥6 months.",p:"Schizophrenia = <b>≥6 months</b> total (≥1 month active symptoms)."},
+{m:"mood",q:"Schizophrenia-like symptoms lasting between 1 and 6 months are classified as what?",c:["Schizophreniform disorder","Brief psychotic disorder","Schizophrenia","Delusional disorder"],a:0,why:"Schizophreniform = the schizophrenia symptom picture but lasting 1–6 months total.",p:"Schizophreniform = <b>1–6 months</b>. (The 'middle' of the timing ladder.)"},
+{m:"mood",q:"Psychotic symptoms lasting LESS than 1 month, often following a stressor, with full return to baseline, are called what?",c:["Brief psychotic disorder","Schizophreniform disorder","Schizophrenia","Schizoid personality disorder"],a:0,why:"Brief psychotic disorder = psychosis <1 month, frequently post-stressor, with return to prior functioning.",p:"Brief psychotic disorder = <b><1 month</b>, often post-stressor, returns to baseline."},
+{m:"mood",q:"A patient has both mood episodes AND psychosis, but also experiences delusions or hallucinations for at least 2 weeks in the ABSENCE of any mood symptoms. What is the diagnosis?",c:["Schizoaffective disorder","Bipolar I with psychotic features","Major depression with psychosis","Schizophrenia"],a:0,why:"Schizoaffective = criteria for a mood episode PLUS ≥2 weeks of psychosis without mood symptoms (distinguishes it from mood disorder with psychotic features).",p:"Schizoaffective = mood episodes + <b>≥2 weeks of psychosis WITHOUT mood symptoms</b>."},
+
+/* ===== ANXIETY / TRAUMA / SOMATIC ===== */
+{m:"anx",q:"Excessive, hard-to-control worry about multiple things, present more days than not for at least 6 months, defines what?",c:["Generalized anxiety disorder","Panic disorder","Adjustment disorder","Obsessive-compulsive disorder"],a:0,why:"GAD = chronic excessive worry ≥6 months with somatic symptoms (restlessness, fatigue, tension). First-line: SSRI/SNRI + CBT.",p:"GAD = <b>excessive worry ≥6 months</b>. SSRIs/SNRIs first-line."},
+{m:"anx",q:"Recurrent UNEXPECTED panic attacks with persistent worry about future attacks (or behavior change to avoid them) define what?",c:["Panic disorder","Specific phobia","Generalized anxiety disorder","PTSD"],a:0,why:"Panic disorder = recurrent unexpected panic attacks + ≥1 month of anticipatory worry/avoidance. SSRIs (long-term); benzos (acute).",p:"Panic disorder = <b>unexpected attacks + anticipatory worry</b>. SSRIs long-term."},
+{m:"anx",q:"Intrusive, unwanted thoughts (obsessions) relieved by repetitive behaviors (compulsions), which the patient recognizes as excessive and distressing, define what?",c:["Obsessive-compulsive disorder","Obsessive-compulsive personality disorder","Generalized anxiety disorder","Body dysmorphic disorder"],a:0,why:"OCD = ego-dystonic obsessions + compulsions; first-line is SSRIs (high dose) and CBT/exposure-response prevention. (OCPD = ego-syntonic, no true obsessions/compulsions.)",p:"OCD = obsessions + compulsions, <b>ego-dystonic</b>. SSRIs + ERP. (OCPD = ego-syntonic.)"},
+{m:"anx",q:"Re-experiencing, avoidance, negative mood, and hyperarousal after a trauma, lasting MORE than 1 month, is which disorder?",c:["Post-traumatic stress disorder","Acute stress disorder","Adjustment disorder","Panic disorder"],a:0,why:"PTSD = symptoms >1 month after trauma. Acute stress disorder = the same picture lasting 3 days to 1 month.",p:"PTSD = <b>>1 month</b>. Acute stress disorder = 3 days–1 month. SSRIs/SNRIs + trauma-focused CBT."},
+{m:"anx",q:"Marked, persistent fear of a specific object or situation, with immediate anxiety on exposure and active avoidance, is called what?",c:["Specific phobia","Agoraphobia","Social anxiety disorder","Panic disorder"],a:0,why:"Specific phobia = excessive fear of a particular trigger (heights, animals, blood); treated with exposure therapy.",p:"Specific phobia = fear of one <b>specific</b> trigger. Tx: exposure therapy."},
+{m:"anx",q:"Sudden neurologic symptoms (e.g., paralysis, blindness, nonepileptic seizures) inconsistent with any disease, often after acute stress and sometimes with surprising lack of concern, is what?",c:["Conversion (functional neurological) disorder","Somatic symptom disorder","Factitious disorder","Malingering"],a:0,why:"Conversion disorder = neurologic symptoms incompatible with known disease, often stress-triggered, sometimes with 'la belle indifférence.' Not intentionally produced.",p:"Conversion = neuro symptoms not explained by disease, post-stress, 'la belle indifférence.' Not faked."},
+{m:"anx",q:"Intentionally feigning or producing illness to assume the SICK ROLE, with NO external reward, is which condition?",c:["Factitious disorder","Malingering","Somatic symptom disorder","Conversion disorder"],a:0,why:"Factitious disorder (Munchausen) = consciously faked symptoms for the internal/psychological gain of being a patient. Malingering = faking for external gain (money, drugs, avoiding work).",p:"Factitious = sick role (<b>internal</b> motive). Malingering = <b>external</b> gain. Somatic = genuinely believes."},
+{m:"anx",q:"Excessive anxiety and disproportionate thoughts about one or more physical symptoms (which may be genuine), causing impairment for more than 6 months, is what?",c:["Somatic symptom disorder","Illness anxiety disorder","Conversion disorder","Factitious disorder"],a:0,why:"Somatic symptom disorder = real or perceived physical symptoms + excessive thoughts/anxiety/behaviors about them for >6 months. (Illness anxiety = preoccupation with HAVING an illness, minimal symptoms.)",p:"Somatic symptom disorder = excessive worry about <b>actual symptoms</b>. Illness anxiety = fear of disease with few symptoms."},
+
+/* ===== SUBSTANCE USE ===== */
+{m:"subst",q:"Tremor and anxiety progressing to autonomic instability, confusion, and hallucinations 48–96 hours after the last drink describe what?",c:["Delirium tremens (alcohol withdrawal)","Opioid withdrawal","Wernicke encephalopathy","Cocaine intoxication"],a:0,why:"Delirium tremens = severe alcohol withdrawal (48–96 h) with autonomic hyperactivity, confusion, hallucinations; potentially fatal. Treat with benzodiazepines.",p:"DTs = <b>48–96 h</b> after last drink, autonomic + confusion. Benzodiazepines. (Withdrawal seizures earlier, ~12–48 h.)"},
+{m:"subst",q:"Pinpoint pupils, respiratory depression, and decreased consciousness, rapidly reversed by naloxone, indicate intoxication with which class?",c:["Opioids","Stimulants","Benzodiazepines","Hallucinogens"],a:0,why:"Opioid intoxication = CNS/respiratory depression + miosis (pinpoint pupils); reversed by naloxone.",p:"Opioid intoxication = <b>pinpoint pupils + respiratory depression</b> → naloxone."},
+{m:"subst",q:"Dilated pupils, lacrimation, rhinorrhea, diarrhea, piloerection, and yawning — uncomfortable but not life-threatening — describe withdrawal from what?",c:["Opioids","Alcohol","Benzodiazepines","Barbiturates"],a:0,why:"Opioid withdrawal = flu-like (mydriasis, rhinorrhea, GI symptoms, piloerection/'cold turkey'); miserable but not dangerous (unlike alcohol/benzo withdrawal).",p:"Opioid withdrawal = <b>flu-like + dilated pupils</b>, NOT life-threatening. Tx: methadone/buprenorphine, clonidine."},
+{m:"subst",q:"Dilated pupils, hypertension, tachycardia, euphoria, agitation, and a risk of myocardial infarction or stroke describe intoxication with which class?",c:["Stimulants (cocaine/amphetamine)","Opioids","Benzodiazepines","Alcohol"],a:0,why:"Stimulant intoxication = sympathetic overdrive (mydriasis, HTN, tachycardia, hyperthermia); cocaine → vasospasm/MI/stroke. Avoid beta-blockers alone in cocaine (unopposed alpha).",p:"Stimulants = <b>dilated pupils + sympathetic surge</b> + MI/stroke risk (cocaine). Use benzos for agitation."},
+{m:"subst",q:"Which agent reverses benzodiazepine overdose, though it is used cautiously because it can precipitate seizures?",c:["Flumazenil","Naloxone","Naltrexone","Physostigmine"],a:0,why:"Flumazenil is the benzodiazepine antagonist; risky in chronic users (withdrawal seizures). Naloxone reverses opioids.",p:"Benzo reversal = <b>flumazenil</b> (seizure risk). Opioid reversal = naloxone."},
+{m:"subst",q:"The triad of confusion, ataxia, and ophthalmoplegia in an alcoholic, reversible with thiamine, is called what?",c:["Wernicke encephalopathy","Korsakoff syndrome","Delirium tremens","Hepatic encephalopathy"],a:0,why:"Wernicke = acute, reversible thiamine (B1) deficiency triad; give thiamine BEFORE glucose. If untreated → Korsakoff (irreversible amnesia + confabulation).",p:"Wernicke = <b>confusion + ataxia + ophthalmoplegia</b>. Thiamine BEFORE glucose. Korsakoff = permanent memory loss."},
+{m:"subst",q:"Violent or agitated behavior, BOTH vertical and horizontal nystagmus, and analgesia describe intoxication with which drug?",c:["Phencyclidine (PCP)","LSD","Cannabis","Heroin"],a:0,why:"PCP intoxication = violence, dissociation, analgesia, and the classic vertical + horizontal/rotatory nystagmus.",p:"PCP = <b>violence + vertical/horizontal nystagmus + analgesia</b>."},
+{m:"subst",q:"Withdrawal from which class — like alcohol withdrawal — can cause life-threatening seizures and is managed with a slow taper?",c:["Benzodiazepines","Opioids","Stimulants","Cannabis"],a:0,why:"Benzodiazepine (and barbiturate) withdrawal mirrors alcohol: tremor, autonomic instability, and dangerous seizures → taper slowly.",p:"Benzo/barbiturate withdrawal = <b>seizures, life-threatening</b> (like alcohol). Taper. Opioid withdrawal is NOT lethal."},
+
+/* ===== PERSONALITY / DEVELOPMENT / DEFENSES ===== */
+{m:"pers",q:"Paranoid, schizoid, and schizotypal personality disorders, described as 'odd or eccentric,' belong to which cluster?",c:["Cluster A","Cluster B","Cluster C","Cluster D"],a:0,why:"Cluster A = 'weird' (paranoid, schizoid, schizotypal); genetic association with schizophrenia.",p:"Cluster A = <b>'Weird'</b> (Accusatory/paranoid, Aloof/schizoid, Awkward/schizotypal)."},
+{m:"pers",q:"Borderline and antisocial personality disorders, described as 'dramatic and erratic,' belong to which cluster?",c:["Cluster B","Cluster A","Cluster C","Cluster D"],a:0,why:"Cluster B = 'wild' (antisocial, borderline, histrionic, narcissistic); associated with mood disorders and substance use.",p:"Cluster B = <b>'Wild'</b> (Bad/antisocial, Borderline, Histrionic, Narcissistic)."},
+{m:"pers",q:"Avoidant, dependent, and obsessive-compulsive personality disorders, described as 'anxious and fearful,' belong to which cluster?",c:["Cluster C","Cluster A","Cluster B","Cluster D"],a:0,why:"Cluster C = 'worried' (avoidant, dependent, obsessive-compulsive); associated with anxiety disorders.",p:"Cluster C = <b>'Worried'</b> (Cowardly/avoidant, Clingy/dependent, Compulsive/OCPD)."},
+{m:"pers",q:"Unstable relationships, fear of abandonment, impulsivity, recurrent self-harm, and the defense of 'splitting' characterize which personality disorder?",c:["Borderline personality disorder","Histrionic personality disorder","Narcissistic personality disorder","Dependent personality disorder"],a:0,why:"Borderline PD = affective instability, abandonment fears, impulsivity, self-harm, splitting (all-good/all-bad). First-line treatment is dialectical behavior therapy.",p:"Borderline = <b>splitting</b>, unstable relationships, self-harm. Tx: DBT."},
+{m:"pers",q:"Persistent deficits in social communication PLUS restricted, repetitive behaviors and interests, beginning in early childhood, define what?",c:["Autism spectrum disorder","ADHD","Rett syndrome","Social anxiety disorder"],a:0,why:"Autism spectrum disorder = social-communication deficits + restricted/repetitive behaviors, onset in early development.",p:"Autism = <b>social-communication deficits + restricted/repetitive behaviors</b>, early onset."},
+{m:"pers",q:"Inattention and/or hyperactivity-impulsivity present in two or more settings, with onset before age 12, defines what?",c:["Attention-deficit/hyperactivity disorder","Autism spectrum disorder","Oppositional defiant disorder","Conduct disorder"],a:0,why:"ADHD = inattentive and/or hyperactive-impulsive symptoms in ≥2 settings, onset <12. First-line: stimulants (methylphenidate, amphetamines).",p:"ADHD = inattention/hyperactivity, <b>onset <12</b>, ≥2 settings. Stimulants first-line."},
+{m:"pers",q:"Multiple motor tics and at least one vocal tic, present for more than 1 year with onset before age 18, define what?",c:["Tourette disorder","Conduct disorder","Obsessive-compulsive disorder","Autism spectrum disorder"],a:0,why:"Tourette = motor + vocal tics for >1 year, onset <18; strongly associated with OCD and ADHD. Tx: behavioral therapy, then antipsychotics/alpha-2 agonists.",p:"Tourette = <b>motor + vocal tics >1 year</b>, onset <18. Comorbid OCD/ADHD."},
+{m:"pers",q:"Channeling unacceptable impulses into a socially acceptable activity (e.g., aggression redirected into competitive sports) is which MATURE defense mechanism?",c:["Sublimation","Reaction formation","Projection","Displacement"],a:0,why:"Sublimation = mature defense; the impulse is redirected into something constructive. (Displacement shifts the feeling onto a safer target; reaction formation does the opposite of the impulse.)",p:"Sublimation = <b>mature</b> (impulse → constructive outlet). Mature 4: sublimation, altruism, humor, suppression."}
+];
+
+const VAULT=[
+{t:"Neurotransmitter Changes",b:"<b>Depression</b> ↓serotonin/NE/dopamine · <b>Psychosis</b> ↑dopamine (mesolimbic) · <b>Alzheimer</b> ↓ACh · <b>Anxiety</b> ↓GABA · <b>Parkinson/Huntington</b> ↓dopamine / ↓GABA+ACh.",g:"Substrate"},
+{t:"The Four Dopamine Pathways",b:"<b>Mesolimbic</b> = positive psychotic symptoms (target). <b>Mesocortical</b> = negative symptoms. <b>Nigrostriatal</b> = EPS/movement. <b>Tuberoinfundibular</b> = prolactin (blockade → galactorrhea).",g:"Substrate"},
+{t:"Psychotic Timing Ladder",b:"<b>Brief psychotic</b> <1 month · <b>Schizophreniform</b> 1–6 months · <b>Schizophrenia</b> ≥6 months · <b>Schizoaffective</b> = mood + ≥2 wk psychosis WITHOUT mood symptoms.",g:"Psychosis"},
+{t:"Mood Durations",b:"<b>MDD</b> ≥2 weeks · <b>Mania (Bipolar I)</b> ≥1 week · <b>Hypomania (Bipolar II)</b> ≥4 days · <b>Dysthymia & cyclothymia</b> ≥2 years.",g:"Mood"},
+{t:"SIG E CAPS (MDD)",b:"<b>S</b>leep, <b>I</b>nterest, <b>G</b>uilt, <b>E</b>nergy, <b>C</b>oncentration, <b>A</b>ppetite, <b>P</b>sychomotor, <b>S</b>uicidality. Need ≥5 (incl. mood or anhedonia) × 2 weeks.",g:"Mood"},
+{t:"Anxiety/Trauma Durations",b:"<b>GAD</b> ≥6 months · <b>PTSD</b> >1 month · <b>Acute stress disorder</b> 3 days–1 month · <b>Adjustment disorder</b> within 3 months of a stressor.",g:"Anxiety"},
+{t:"Faked vs Real",b:"<b>Factitious</b> = consciously faked for the SICK ROLE (internal). <b>Malingering</b> = faked for external gain (money/drugs/duty). <b>Somatic symptom</b> = genuinely distressed by real symptoms. <b>Conversion</b> = unconscious neuro symptoms.",g:"Somatic"},
+{t:"Personality Clusters",b:"<b>A = Weird</b> (paranoid, schizoid, schizotypal). <b>B = Wild</b> (antisocial, borderline, histrionic, narcissistic). <b>C = Worried</b> (avoidant, dependent, OCPD). 'Mad, Bad, Sad.'",g:"Personality"},
+{t:"Alcohol Withdrawal Timeline",b:"<b>6–24 h</b> tremor/anxiety · <b>12–48 h</b> withdrawal seizures · <b>48–96 h</b> delirium tremens (autonomic + confusion, can be fatal). Tx: benzodiazepines.",g:"Substance"},
+{t:"Pupil Cheat Sheet",b:"<b>Pinpoint pupils</b> = opioid intoxication (+ respiratory depression). <b>Dilated pupils</b> = stimulant/cocaine/PCP intoxication AND opioid withdrawal.",g:"Substance"},
+{t:"Wernicke vs Korsakoff",b:"<b>Wernicke</b> = acute, reversible: Confusion + Ataxia + Ophthalmoplegia (thiamine BEFORE glucose). <b>Korsakoff</b> = chronic, irreversible: amnesia + confabulation.",g:"Substance"},
+{t:"Reversal Agents",b:"<b>Opioids</b> → naloxone. <b>Benzodiazepines</b> → flumazenil (seizure risk). <b>Acetaminophen</b> → N-acetylcysteine. <b>Anticholinergics</b> → physostigmine.",g:"Substance"},
+{t:"Defense Mechanisms",b:"<b>Mature</b> (best): Sublimation, Altruism, Humor, Suppression. <b>Immature</b>: projection, denial, displacement, reaction formation, splitting (borderline), regression (kids).",g:"Behavioral"},
+{t:"First-Line Meds",b:"<b>SSRIs</b> = depression, GAD, panic, OCD, PTSD, social anxiety. <b>Lithium / valproate</b> = bipolar. <b>Stimulants</b> = ADHD. <b>Antipsychotics</b> = psychosis. <b>Benzos</b> = acute only (taper).",g:"Treatment"}
+];
+
+const MODES={
+  daily:{name:"Daily Intake",ic:"📋",desc:"15 random questions across all psych topics. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Rounds",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  nt:{name:"Neurotransmitters",ic:"🦴",desc:"The biological substrate — NT changes in disease + their brain sources & pathways.",pick:()=>shuffle(QBANK.filter(q=>q.m==="nt"))},
+  mood:{name:"Mood & Psychotic",ic:"🎭",desc:"MDD, bipolar I/II, the schizophrenia timing ladder, schizoaffective.",pick:()=>shuffle(QBANK.filter(q=>q.m==="mood"))},
+  anx:{name:"Anxiety, Trauma & Somatic",ic:"🌀",desc:"GAD, panic, OCD, PTSD timing, conversion, factitious vs malingering.",pick:()=>shuffle(QBANK.filter(q=>q.m==="anx"))},
+  subst:{name:"Substance Use",ic:"🍷",desc:"Intoxication vs withdrawal, reversal agents, Wernicke, the pupil cheat.",pick:()=>shuffle(QBANK.filter(q=>q.m==="subst"))},
+  pers:{name:"Personality & Development",ic:"🧩",desc:"Clusters A/B/C, autism/ADHD/Tourette, defense mechanisms.",pick:()=>shuffle(QBANK.filter(q=>q.m==="pers"))}
+};
+const MODE_TAGS={nt:"Neurotransmitters",mood:"Mood / Psychotic",anx:"Anxiety / Trauma / Somatic",subst:"Substance Use",pers:"Personality / Development"};
+
+const SAVE_KEY="psych_ward_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">P</div>
+    <h1>Psych Ward</h1>
+    <div class="sub">Psychiatry · Behavioral Science — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("nt",m.nt,"special")}${tile("mood",m.mood,"")}${tile("anx",m.anx,"")}${tile("subst",m.subst,"")}${tile("pers",m.pers,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy psych tools — timing ladders, SIG E CAPS, the pupil cheat, personality clusters, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
+}
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:38px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">Psych memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
+});
+menu();
+</script>
+</body>
+</html>

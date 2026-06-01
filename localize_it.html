@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LOCALIZE IT — Neuro / Neuroanatomy</title>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08060f;
+  --bg2:#0e0a1a;
+  --panel:#15102a;
+  --panel-hi:#1e1742;
+  --cyan:#a78bfa;        /* violet primary */
+  --cyan-dim:#6d28d9;
+  --amber:#bef264;       /* lime accent */
+  --amber-hi:#d9f99d;
+  --red:#fb7185;
+  --green:#4ade80;
+  --text:#ece9fb;
+  --dim:#8b82b5;
+  --line:rgba(167,139,250,.15);
+  --glow:rgba(167,139,250,.55);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 15% 0%,rgba(167,139,250,.12),transparent 55%),
+    radial-gradient(ellipse at 90% 100%,rgba(190,242,100,.07),transparent 55%),
+    linear-gradient(180deg,#08060f,#0e0a1a);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--line) 1px,transparent 1px);
+  background-size:28px 28px;
+  mask-image:radial-gradient(ellipse at center,#000 35%,transparent 88%);
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px;position:relative}
+.badge{display:inline-block;width:54px;height:54px;line-height:54px;border-radius:50%;
+  background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#15102a;
+  font-family:'Big Shoulders Display';font-weight:800;font-size:34px;margin-bottom:8px;
+  box-shadow:0 0 24px var(--glow)}
+h1{font-family:'Big Shoulders Display';font-weight:800;font-size:38px;letter-spacing:1px;color:var(--cyan)}
+.sub{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:3px;margin-top:2px;text-transform:uppercase}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;
+  transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.6}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Big Shoulders Display';font-weight:700;font-size:20px;margin:6px 0 5px;letter-spacing:.5px}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'JetBrains Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'JetBrains Mono';font-size:10px;letter-spacing:3px;color:var(--dim);
+  text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;
+  font-family:'JetBrains Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'JetBrains Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);
+  border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;
+  cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'JetBrains Mono';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(74,222,128,.13)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(251,113,133,.13)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);
+  border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'JetBrains Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(190,242,100,.10);border:1px dashed var(--amber);border-radius:10px;
+  padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Big Shoulders Display';font-size:16px;letter-spacing:.5px}
+
+.btn{font-family:'Big Shoulders Display';font-weight:700;letter-spacing:1px;border:none;border-radius:10px;
+  padding:13px 22px;cursor:pointer;font-size:17px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#15102a;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Big Shoulders Display';font-size:72px;font-weight:800;color:var(--cyan);line-height:1}
+.rank{font-family:'JetBrains Mono';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:8px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'JetBrains Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:26px;color:var(--text);font-family:'Big Shoulders Display'}
+
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Big Shoulders Display';color:var(--amber-hi);font-size:19px;margin-bottom:7px;letter-spacing:.5px}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'JetBrains Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;
+  display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'JetBrains Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* correct = index into c[]; choices shuffle at render so position is never a tell.
+   Stems never contain the answer. */
+const QBANK=[
+/* ===== NEUROANATOMY ===== */
+{m:"anat",q:"A tract carries fine touch, vibration, and proprioception, ascends on the SAME side of the spinal cord, and crosses only in the lower medulla. Which tract is it?",c:["Dorsal column–medial lemniscus","Spinothalamic tract","Lateral corticospinal tract","Spinocerebellar tract"],a:0,why:"DCML = fine touch/vibration/proprioception; ascends ipsilateral, decussates in the caudal medulla.",p:"<b>Dorsal = the Dignified senses.</b> Crosses HIGH (medulla)."},
+{m:"anat",q:"A tract carries pain and temperature and crosses to the opposite side within one or two segments of entering the cord. Which tract is it?",c:["Spinothalamic tract","Dorsal column–medial lemniscus","Lateral corticospinal tract","Cuneatus"],a:0,why:"Spinothalamic crosses almost immediately (anterior white commissure) — why central cord lesions hit it first.",p:"<b>Pain crosses fast.</b> Spinothalamic decussates at the level it enters."},
+{m:"anat",q:"The main voluntary motor pathway decussates at the pyramids of the medulla. Which tract is this?",c:["Lateral corticospinal tract","Spinothalamic tract","Dorsal columns","Rubrospinal tract"],a:0,why:"Corticospinal fibers cross at the medullary pyramids — a lesion above causes contralateral weakness, below causes ipsilateral.",p:"<b>Motor crosses at the pyramids.</b>"},
+{m:"anat",q:"Which two cranial nerves emerge from the midbrain?",c:["CN III and IV","CN V and VI","CN IX and X","CN XI and XII"],a:0,why:"Midbrain = CN III & IV; pons = V–VIII; medulla = IX–XII.",p:"<b>Rule of 4:</b> 4 nerves in the midbrain/above (III,IV), 4 in pons (V–VIII), 4 in medulla (IX–XII)."},
+{m:"anat",q:"Which cranial nerve exits the medulla and controls movement of the tongue?",c:["CN XII (hypoglossal)","CN VII (facial)","CN V (trigeminal)","CN III (oculomotor)"],a:0,why:"The hypoglossal nerve (XII) is a pure motor nerve to the tongue, exiting the medulla.",p:"XII = tongue. Lesion → tongue deviates TOWARD the bad side."},
+{m:"anat",q:"A lacunar (small-vessel) infarct of the posterior limb of the internal capsule classically produces what?",c:["Pure motor hemiparesis","Pure sensory loss only","Isolated homonymous hemianopia","Fluent aphasia"],a:0,why:"Corticospinal fibers funnel through the posterior limb → pure motor stroke from a tiny lacune.",p:"Internal capsule lacune = <b>pure motor</b>, face + arm + leg, no cortical signs."},
+{m:"anat",q:"Occlusion of the anterior cerebral artery causes contralateral weakness affecting predominantly which body region?",c:["The leg","The face and arm","The trunk only","The whole body equally"],a:0,why:"ACA supplies the medial cortex = the leg portion of the homunculus.",p:"<b>ACA = leg, MCA = face/arm.</b> Homunculus geography."},
+{m:"anat",q:"Middle cerebral artery occlusion in the DOMINANT hemisphere causes contralateral face/arm weakness plus what additional deficit?",c:["Aphasia","Isolated leg weakness","Resting tremor","Cerebellar ataxia"],a:0,why:"Dominant MCA territory includes Broca and Wernicke areas → aphasia accompanies the motor deficit.",p:"Dominant MCA = <b>face/arm weakness + aphasia.</b>"},
+{m:"anat",q:"Posterior cerebral artery occlusion classically produces which visual deficit?",c:["Contralateral homonymous hemianopia with macular sparing","Bitemporal hemianopia","Monocular blindness","Tunnel vision"],a:0,why:"PCA supplies the occipital cortex; macula is spared by collateral MCA supply.",p:"PCA = <b>occipital</b> = homonymous hemianopia, macula spared."},
+{m:"anat",q:"Dopamine acting via D1 receptors stimulates the direct basal ganglia pathway. What is the net effect on movement?",c:["Facilitates (increases) movement","Inhibits movement","No effect on movement","Affects only sensation"],a:0,why:"Direct pathway (D1) facilitates movement; indirect pathway (D2) inhibits it. Parkinson's loses dopamine → less facilitation.",p:"<b>D1 = Direct = Do the movement.</b> D2 = inDirect = Don't."},
+{m:"anat",q:"A ruptured berry (saccular) aneurysm causing subarachnoid hemorrhage most commonly arises at which site?",c:["Anterior communicating artery","Basilar tip","Internal carotid origin","Vertebral artery"],a:0,why:"The anterior communicating artery is the single most common berry aneurysm site.",p:"Most common berry aneurysm = <b>ACom</b>. Assoc: ADPKD, Ehlers-Danlos."},
+{m:"anat",q:"Nonfluent, effortful, telegraphic speech with INTACT comprehension localizes damage to which region?",c:["Broca area (inferior frontal gyrus)","Wernicke area (superior temporal gyrus)","Arcuate fasciculus","Occipital cortex"],a:0,why:"Broca = expressive aphasia: nonfluent output, comprehension preserved, patient frustrated.",p:"<b>Broca = Broken speech</b> (nonfluent). Frontal."},
+{m:"anat",q:"Fluent but nonsensical speech with IMPAIRED comprehension localizes damage to which region?",c:["Wernicke area (superior temporal gyrus)","Broca area (inferior frontal gyrus)","Cerebellum","Basal ganglia"],a:0,why:"Wernicke = receptive aphasia: fluent 'word salad,' comprehension lost, patient unaware.",p:"<b>Wernicke = Wordy</b> nonsense. Temporal. 'What are you saying?'"},
+
+/* ===== VASCULAR / STROKE ===== */
+{m:"stroke",q:"Sudden vertigo, ipsilateral facial pain loss, contralateral body pain loss, dysphagia, hoarseness, and Horner syndrome localize to occlusion of which artery?",c:["Posterior inferior cerebellar artery (PICA)","Anterior inferior cerebellar artery (AICA)","Anterior spinal artery","Posterior cerebral artery"],a:0,why:"Lateral medullary (Wallenberg) syndrome = PICA. Nucleus ambiguus → dysphagia/hoarseness.",p:"Wallenberg = <b>PICA</b>. \"Don't PICA horse that can't eat\" (hoarse + dysphagia)."},
+{m:"stroke",q:"A lateral pontine syndrome featuring ipsilateral FACIAL paralysis and deafness results from occlusion of which artery?",c:["Anterior inferior cerebellar artery (AICA)","Posterior inferior cerebellar artery (PICA)","Middle cerebral artery","Basilar artery"],a:0,why:"AICA supplies the lateral pons including CN VII/VIII → facial paralysis + deafness.",p:"<b>AICA = Facial droop.</b> (PICA = can't eat; AICA = facial/auditory.)"},
+{m:"stroke",q:"A lens-shaped (biconvex) hemorrhage that does NOT cross suture lines, often after a temporal skull fracture with a lucid interval, comes from which vessel?",c:["Middle meningeal artery","Bridging veins","Anterior cerebral artery","Cavernous sinus"],a:0,why:"Epidural hematoma = middle meningeal artery (off maxillary a.); arterial → rapid, biconvex, lucid interval.",p:"Epidural = <b>Middle Meningeal Artery</b> = lens shape, lucid interval, talk-and-die."},
+{m:"stroke",q:"A crescent-shaped hemorrhage that DOES cross suture lines, common in elderly or alcoholic patients after minor trauma, results from tearing of what?",c:["Bridging veins","Middle meningeal artery","Circle of Willis","Lenticulostriate arteries"],a:0,why:"Subdural hematoma = torn bridging veins; venous → slow, crescent, crosses sutures.",p:"Subdural = <b>bridging veins</b>, crescent, crosses sutures, elderly/etoh (brain atrophy stretches veins)."},
+{m:"stroke",q:"Hypertensive intraparenchymal hemorrhage most often occurs in the basal ganglia due to rupture of which vessels?",c:["Lenticulostriate arteries","Middle meningeal artery","Bridging veins","Posterior communicating artery"],a:0,why:"Chronic HTN → Charcot-Bouchard microaneurysms of lenticulostriate vessels → basal ganglia bleed.",p:"HTN bleed = <b>lenticulostriate</b> → basal ganglia (esp. putamen)."},
+{m:"stroke",q:"A patient has the 'worst headache of life' with neck stiffness; initial CT is read as normal, and LP later shows xanthochromia. What is the diagnosis?",c:["Subarachnoid hemorrhage","Migraine","Bacterial meningitis","Epidural hematoma"],a:0,why:"SAH classic: thunderclap headache; if CT misses it, xanthochromia (RBC breakdown) on LP confirms.",p:"\"Worst headache of life\" + <b>xanthochromia</b> = SAH until proven otherwise."},
+
+/* ===== SPINAL CORD ===== */
+{m:"cord",q:"A cord hemisection causes ipsilateral loss of motor and vibration/proprioception with contralateral loss of pain and temperature below the lesion. Name the syndrome.",c:["Brown-Séquard syndrome","Anterior cord syndrome","Syringomyelia","Tabes dorsalis"],a:0,why:"Hemisection: ipsilateral DCML + corticospinal (uncrossed at that level), contralateral spinothalamic (already crossed).",p:"Brown-Séquard = <b>hemisection</b>. Pain/temp loss is on the OTHER side."},
+{m:"cord",q:"Vitamin B12 deficiency degenerates the dorsal columns and lateral corticospinal tracts together. What is this disorder called?",c:["Subacute combined degeneration","Tabes dorsalis","Syringomyelia","Poliomyelitis"],a:0,why:"B12 loss → demyelination of dorsal columns (sensory ataxia) + corticospinal (spasticity) + spinocerebellar.",p:"B12 = <b>subacute combined degeneration</b>. 'Combined' = dorsal columns + corticospinal."},
+{m:"cord",q:"Tertiary syphilis degenerates the dorsal columns and dorsal roots, causing sensory ataxia and Argyll Robertson pupils. Name the condition.",c:["Tabes dorsalis","Subacute combined degeneration","ALS","Syringomyelia"],a:0,why:"Tabes dorsalis = dorsal column/root degeneration → ataxia, lancinating pains, Argyll Robertson ('prostitute') pupils.",p:"Tabes = <b>tertiary syphilis</b>, dorsal columns. Argyll Robertson pupil: accommodates but doesn't react."},
+{m:"cord",q:"A central cord cavity damages the crossing fibers, producing bilateral 'cape-like' loss of pain and temperature with preserved touch. What is this?",c:["Syringomyelia","Brown-Séquard syndrome","Tabes dorsalis","Anterior cord syndrome"],a:0,why:"Syrinx expands centrally → hits decussating spinothalamic fibers first → cape distribution; assoc. with Chiari I.",p:"Syringomyelia = <b>cape-like</b> pain/temp loss. Hits crossing spinothalamic fibers."},
+{m:"cord",q:"A disease shows COMBINED upper and lower motor neuron signs with absolutely NO sensory deficit. Which is it?",c:["Amyotrophic lateral sclerosis","Guillain-Barré syndrome","Multiple sclerosis","Poliomyelitis"],a:0,why:"ALS = both UMN (spasticity, hyperreflexia) and LMN (atrophy, fasciculations), sensory spared.",p:"ALS = <b>UMN + LMN, no sensory.</b> Lou Gehrig. SOD1 mutation."},
+{m:"cord",q:"Destruction of the anterior horn cells produces pure lower motor neuron signs — flaccid paralysis and fasciculations. Which structure is lost?",c:["Anterior horn (lower motor neurons)","Dorsal columns","Lateral corticospinal tract","Dorsal root ganglion"],a:0,why:"Anterior horn = LMN cell bodies; loss (polio, SMA) → flaccid paralysis, fasciculations, areflexia.",p:"Anterior horn = <b>LMN</b> = flaccid + fasciculations. (Polio, Werdnig-Hoffmann)."},
+{m:"cord",q:"An anterior spinal artery infarct spares which sensory modality?",c:["Vibration and proprioception","Pain","Temperature","Crude touch"],a:0,why:"ASA supplies the anterior 2/3 (corticospinal + spinothalamic); dorsal columns (posterior) are spared.",p:"ASA infarct = motor + pain/temp lost, <b>dorsal columns spared</b> (separate blood supply)."},
+
+/* ===== CRANIAL NERVE / PERIPHERAL ===== */
+{m:"cn",q:"In a peripheral facial nerve (Bell) palsy, how is the forehead affected compared with a central (UMN) facial lesion?",c:["The forehead IS paralyzed (cannot wrinkle)","The forehead is spared","Only the eye is affected","No facial weakness occurs"],a:0,why:"LMN/peripheral CN VII lesion paralyzes the whole half-face including forehead; UMN lesions spare the forehead (bilateral cortical input).",p:"<b>Bell palsy = forehead OUT.</b> Stroke = forehead spared."},
+{m:"cn",q:"A compressive third nerve palsy from a posterior communicating artery aneurysm presents with the eye in which position and what pupil?",c:["'Down and out' with a dilated pupil","Up and in with a constricted pupil","Midline with a normal pupil","Down and out with a pinpoint pupil"],a:0,why:"CN III compression hits superficial parasympathetic fibers first → blown pupil; unopposed LR/SO → down-and-out.",p:"CN III compressed = <b>down & out + blown pupil</b>. (Diabetic ischemic III spares the pupil.)"},
+{m:"cn",q:"Brief, electric, lancinating unilateral facial pain triggered by light touch or chewing is mediated by which nerve?",c:["Trigeminal nerve (CN V)","Facial nerve (CN VII)","Glossopharyngeal nerve (CN IX)","Vagus nerve (CN X)"],a:0,why:"Trigeminal neuralgia (tic douloureux) = CN V; first-line treatment is carbamazepine.",p:"Trigeminal neuralgia = <b>CN V</b>, tx <b>carbamazepine</b>."},
+{m:"cn",q:"With a lower motor neuron hypoglossal lesion, the protruded tongue deviates in which direction?",c:["Toward the side of the lesion","Away from the lesion","Straight, no deviation","Upward"],a:0,why:"Weak genioglossus on the lesioned side; the intact side pushes the tongue toward the weak side.",p:"Tongue \"<b>licks its wounds</b>\" — deviates TOWARD the lesion (LMN)."},
+{m:"cn",q:"Ptosis, miosis, and anhidrosis on one side of the face indicate interruption of which pathway?",c:["Sympathetic pathway","Parasympathetic pathway","Facial nerve","Trigeminal sensory"],a:0,why:"Horner syndrome = lost sympathetics → ptosis (Müller's), miosis (unopposed constriction), anhidrosis.",p:"Horner = <b>sympathetic</b> loss = PMA: Ptosis, Miosis, Anhidrosis."},
+{m:"cn",q:"Uncal (transtentorial) herniation first compresses which cranial nerve, producing an early blown pupil?",c:["CN III (oculomotor)","CN VI (abducens)","CN VII (facial)","CN IV (trochlear)"],a:0,why:"The medial temporal uncus pushes against CN III → ipsilateral fixed/dilated pupil, a herniation warning sign.",p:"Uncal herniation = <b>CN III</b> first = blown pupil + down-and-out."},
+
+/* ===== DEMYELINATING / MOVEMENT / MISC ===== */
+{m:"dz",q:"A young woman has optic neuritis, internuclear ophthalmoplegia, and white-matter lesions separated in time and space. What is the diagnosis?",c:["Multiple sclerosis","Guillain-Barré syndrome","Myasthenia gravis","Stroke"],a:0,why:"MS = CNS demyelination disseminated in time and space; INO (MLF lesion) and optic neuritis are classic.",p:"MS = young <b>woman</b>, INO, optic neuritis, oligoclonal bands. \"Disseminated in time + space.\""},
+{m:"dz",q:"Ascending symmetric weakness with areflexia developing days after a GI infection, with high CSF protein but normal cell count, indicates what?",c:["Guillain-Barré syndrome","Multiple sclerosis","ALS","Myasthenia gravis"],a:0,why:"GBS = post-infectious (often Campylobacter) autoimmune demyelination of peripheral nerves; albuminocytologic dissociation.",p:"GBS = <b>ascending</b> paralysis, <b>albuminocytologic dissociation</b> (high protein, normal cells). Watch the diaphragm."},
+{m:"dz",q:"Resting tremor, rigidity, bradykinesia, and postural instability result from degeneration of which structure?",c:["Substantia nigra pars compacta","Caudate nucleus","Subthalamic nucleus","Cerebellar vermis"],a:0,why:"Parkinson = loss of dopaminergic neurons in the SN pars compacta; Lewy bodies (α-synuclein).",p:"Parkinson = <b>substantia nigra</b> dopamine loss. TRAP: Tremor, Rigidity, Akinesia, Postural instability."},
+{m:"dz",q:"Chorea, behavioral change, and dementia with caudate atrophy and a CAG trinucleotide repeat define which disease?",c:["Huntington disease","Parkinson disease","Wilson disease","ALS"],a:0,why:"Huntington = autosomal dominant CAG expansion (chromosome 4) → caudate atrophy, ↓GABA and ACh.",p:"Huntington = <b>CAG</b>, caudate atrophy, anticipation. \"Caudate loses ACh and GABA.\""},
+{m:"dz",q:"Fatigable weakness and ptosis that WORSEN through the day and improve with rest, caused by antibodies to the ACh receptor, describe which disease?",c:["Myasthenia gravis","Lambert-Eaton syndrome","Multiple sclerosis","Botulism"],a:0,why:"MG = anti-AChR antibodies; postsynaptic; worse with use; associated with thymoma; improves with edrophonium.",p:"MG = <b>worse with use</b>, anti-AChR, thymoma. (Ocular symptoms first.)"},
+{m:"dz",q:"Proximal weakness that IMPROVES with repeated use, linked to small cell lung cancer and antibodies to voltage-gated calcium channels, describes which disease?",c:["Lambert-Eaton myasthenic syndrome","Myasthenia gravis","Guillain-Barré syndrome","Polymyositis"],a:0,why:"LEMS = presynaptic anti-Ca-channel antibodies → less ACh release; repeated use builds up Ca → improves; paraneoplastic (SCLC).",p:"LEMS = <b>better with use</b>, anti-Ca-channel, small cell lung cancer."},
+{m:"dz",q:"Gait apraxia ('magnetic' gait), urinary incontinence, and dementia — 'wet, wacky, and wobbly' — describe which condition?",c:["Normal pressure hydrocephalus","Alzheimer disease","Parkinson disease","Huntington disease"],a:0,why:"NPH = ventricular enlargement with normal opening pressure; LP/shunt can reverse it. The triad is the buzz.",p:"NPH = <b>Wet, Wacky, Wobbly</b>. Reversible — tap the CSF."}
+];
+
+const VAULT=[
+{t:"Tract Crossing Rule",b:"<b>Dorsal columns</b> (touch/vibration/proprioception): ascend ipsilateral, cross HIGH in the medulla. <b>Spinothalamic</b> (pain/temp): cross at the level, almost immediately.",g:"Spinal tracts"},
+{t:"Brainstem Rule of 4",b:"4 cranial nerves above pons (III, IV), 4 in the pons (V–VIII), 4 in the medulla (IX–XII). Midline structures start with M, lateral with S.",g:"Neuroanatomy"},
+{t:"Homunculus: ACA vs MCA",b:"<b>ACA = leg</b> (medial cortex). <b>MCA = face + arm</b> (lateral). Dominant MCA also = aphasia.",g:"Stroke localization"},
+{t:"CN III — Down & Out, Blown",b:"Compressive III (PCom aneurysm, uncal herniation) = <b>down-and-out eye + dilated pupil</b>. Diabetic ischemic III = pupil SPARED.",g:"Cranial nerves"},
+{t:"Tongue Licks Its Wounds",b:"LMN hypoglossal (XII) lesion → protruded tongue deviates <b>TOWARD</b> the lesion.",g:"Cranial nerves"},
+{t:"Epidural vs Subdural",b:"<b>Epidural</b> = Middle Meningeal Artery, lens shape, lucid interval, doesn't cross sutures. <b>Subdural</b> = bridging veins, crescent, crosses sutures, elderly/etoh.",g:"Hemorrhage"},
+{t:"PICA vs AICA",b:"<b>PICA</b> (Wallenberg) = \"can't eat\" — dysphagia, hoarseness, Horner. <b>AICA</b> = \"Facial droop\" — facial paralysis + deafness.",g:"Stroke"},
+{t:"ALS = UMN + LMN, no sensory",b:"Both upper (spasticity, hyperreflexia) and lower (atrophy, fasciculations) signs, sensation intact. SOD1.",g:"Spinal cord"},
+{t:"MS = Young woman, INO, optic neuritis",b:"CNS demyelination disseminated in <b>time + space</b>; oligoclonal bands in CSF; MLF lesion = internuclear ophthalmoplegia.",g:"Demyelinating"},
+{t:"MG vs LEMS",b:"<b>MG</b> = worse with use, anti-AChR, thymoma. <b>LEMS</b> = better with use, anti-Ca-channel, small cell lung cancer.",g:"NMJ disease"},
+{t:"NPH = Wet, Wacky, Wobbly",b:"Urinary incontinence, dementia, magnetic gait. Normal opening pressure. Reversible with shunt.",g:"Movement/dementia"},
+{t:"Broca vs Wernicke",b:"<b>Broca = Broken</b> speech (nonfluent, comprehension intact, frontal). <b>Wernicke = Wordy</b> nonsense (fluent, no comprehension, temporal).",g:"Aphasia"}
+];
+
+const MODES={
+  daily:{name:"Daily Circuit",ic:"🧠",desc:"15 random questions across all neuro topics. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Synapse",ic:"♾️",desc:"Survival mode — answer until you miss. Chase the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  anat:{name:"Neuroanatomy",ic:"🦴",desc:"Tracts, brainstem, blood supply, homunculus, basal ganglia, aphasia.",pick:()=>shuffle(QBANK.filter(q=>q.m==="anat"))},
+  stroke:{name:"Stroke Ward",ic:"🩸",desc:"Vascular territories, Wallenberg/AICA, epidural vs subdural, SAH.",pick:()=>shuffle(QBANK.filter(q=>q.m==="stroke"))},
+  cord:{name:"Spinal Cord Lab",ic:"🪜",desc:"Brown-Séquard, B12, syringomyelia, ALS, anterior horn, ASA.",pick:()=>shuffle(QBANK.filter(q=>q.m==="cord"))},
+  cn:{name:"Cranial Nerve Clinic",ic:"👁️",desc:"Bell palsy, CN III, trigeminal neuralgia, Horner, herniation.",pick:()=>shuffle(QBANK.filter(q=>q.m==="cn"))},
+  dz:{name:"Demyelinating & Movement",ic:"⚡",desc:"MS, GBS, Parkinson, Huntington, MG vs LEMS, NPH.",pick:()=>shuffle(QBANK.filter(q=>q.m==="dz"))}
+};
+const MODE_TAGS={anat:"Neuroanatomy",stroke:"Vascular / Stroke",cord:"Spinal Cord",cn:"Cranial Nerve",dz:"Demyelinating / Movement"};
+
+const SAVE_KEY="localize_it_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">Ψ</div>
+    <h1>LOCALIZE IT</h1>
+    <div class="sub">Neuro · Neuroanatomy · Localization — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">
+    ${tile("daily",m.daily,"")}
+    ${tile("endless",m.endless,"amber")}
+  </div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("anat",m.anat,"special")}
+    ${tile("stroke",m.stroke,"")}
+    ${tile("cord",m.cord,"")}
+    ${tile("cn",m.cn,"")}
+    ${tile("dz",m.dz,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy localization tools — Rule of 4, tongue licks its wounds, epidural vs subdural, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')">
+    <div class="ic">${mode.ic}</div><h3>${mode.name}</h3>
+    <p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
+}
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">
+      ${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})">
+        <span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}
+    </div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{
+    n.classList.add("disabled");
+    if(i===s.correctPos)n.classList.add("correct");
+    if(i===pos&&!correct)n.classList.add("wrong");
+  });
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}">
+    <div class="lab">${correct?"✔ Correct":"✕ Review"}</div>
+    <div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){
+    if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}
+    post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;
+  }
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:30px">💎 DIRTY MEDICINE VAULT</h1>
+      <div class="sub">Neuro memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
+});
+menu();
+</script>
+</body>
+</html>

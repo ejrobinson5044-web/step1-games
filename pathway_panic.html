@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PATHWAY PANIC — Biochemistry / Metabolism</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Albert+Sans:wght@400;500;600;700&family=Overpass+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070a14;
+  --bg2:#0c1322;
+  --panel:#111a2e;
+  --panel-hi:#18253f;
+  --cyan:#3b82f6;        /* electric blue primary (molecular) */
+  --cyan-dim:#1d4ed8;
+  --amber:#facc15;       /* lime-gold accent (ATP/energy) */
+  --amber-hi:#fde047;
+  --red:#f87171;
+  --green:#34d399;
+  --text:#e6edfa;
+  --dim:#7d8aa8;
+  --line:rgba(59,130,246,.15);
+  --glow:rgba(59,130,246,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Albert Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 16% 0%,rgba(59,130,246,.12),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(250,204,21,.06),transparent 55%),
+    linear-gradient(180deg,#070a14,#0c1322);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--line) 1px,transparent 1px);
+  background-size:26px 26px;
+  mask-image:radial-gradient(ellipse at center,#000 33%,transparent 88%);
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:16px;
+  background:linear-gradient(150deg,var(--cyan),var(--cyan-dim));color:#fff;
+  font-family:'Unbounded';font-weight:700;font-size:28px;margin-bottom:8px;box-shadow:0 0 24px var(--glow)}
+h1{font-family:'Unbounded';font-weight:800;font-size:34px;letter-spacing:.5px;color:var(--cyan)}
+.sub{font-family:'Overpass Mono';font-size:11px;color:var(--dim);letter-spacing:2px;margin-top:4px;text-transform:uppercase}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.6}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Unbounded';font-weight:600;font-size:16px;margin:8px 0 5px;letter-spacing:.2px}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'Overpass Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'Overpass Mono';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'Overpass Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'Overpass Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'Overpass Mono';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(52,211,153,.13)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(248,113,113,.13)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'Overpass Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(250,204,21,.10);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Unbounded';font-weight:600;font-size:13.5px}
+
+.btn{font-family:'Unbounded';font-weight:600;letter-spacing:.5px;border:none;border-radius:10px;padding:13px 22px;cursor:pointer;font-size:15px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#fff;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Unbounded';font-weight:800;font-size:70px;color:var(--cyan);line-height:1}
+.rank{font-family:'Overpass Mono';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:8px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'Overpass Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:25px;color:var(--text);font-family:'Unbounded';font-weight:800}
+
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Unbounded';font-weight:600;color:var(--amber-hi);font-size:15.5px;margin-bottom:7px;letter-spacing:.2px}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'Overpass Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'Overpass Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'Overpass Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== CELLULAR LOCATION ===== */
+{m:"loc",q:"Glycolysis takes place in which cellular compartment?",c:["Cytoplasm","Mitochondrial matrix","Inner mitochondrial membrane","Nucleus"],a:0,why:"Glycolysis is entirely cytoplasmic — no oxygen or mitochondria required.",p:"<b>Cytoplasm:</b> glycolysis, HMP shunt, fatty acid synthesis, cholesterol synthesis, glycogen metabolism."},
+{m:"loc",q:"The citric acid (Krebs) cycle occurs in which location?",c:["Mitochondrial matrix","Cytoplasm","Smooth ER","Peroxisome"],a:0,why:"The TCA cycle runs in the mitochondrial matrix, feeding NADH/FADH2 to the electron transport chain.",p:"<b>Mitochondria:</b> TCA cycle, fatty acid β-oxidation, pyruvate dehydrogenase, ketogenesis, ETC."},
+{m:"loc",q:"Fatty acid β-oxidation occurs in which compartment?",c:["Mitochondria","Cytoplasm","Golgi apparatus","Nucleus"],a:0,why:"β-oxidation is mitochondrial; long-chain fatty acids need the carnitine shuttle (CPT-1) to get in.",p:"FA <b>oxidation = mitochondria</b>. FA synthesis = cytoplasm. (Opposite compartments.)"},
+{m:"loc",q:"Fatty acid synthesis, which uses cytosolic acetyl-CoA and NADPH, occurs in which compartment?",c:["Cytoplasm","Mitochondrial matrix","Lysosome","Rough ER"],a:0,why:"FA synthesis is cytoplasmic; NADPH comes from the HMP shunt (also cytoplasmic).",p:"FA <b>synthesis = cytoplasm</b> (needs NADPH from HMP shunt)."},
+{m:"loc",q:"The urea cycle is unusual because it spans which location(s)?",c:["Both mitochondria and cytoplasm","Only mitochondria","Only cytoplasm","Only the lysosome"],a:0,why:"Urea cycle starts in the mitochondria (CPS-I) and finishes in the cytoplasm. Gluconeogenesis is the other 'both' pathway.",p:"<b>Both compartments:</b> urea cycle + gluconeogenesis."},
+{m:"loc",q:"Which organelle contains acid hydrolases and is defective in diseases such as Tay-Sachs and Gaucher?",c:["Lysosome","Mitochondrion","Peroxisome","Smooth ER"],a:0,why:"Lysosomes degrade macromolecules with acid hydrolases; enzyme defects → lysosomal storage diseases.",p:"<b>Lysosome = acid hydrolases.</b> Defects → lysosomal storage diseases (sphingolipidoses, MPS)."},
+{m:"loc",q:"Very-long-chain fatty acid β-oxidation occurs in which organelle, which is defective in Zellweger syndrome?",c:["Peroxisome","Lysosome","Mitochondrion","Golgi"],a:0,why:"Peroxisomes handle VLCFA β-oxidation and branched-chain (phytanic acid) oxidation; defects → Zellweger, adrenoleukodystrophy, Refsum.",p:"<b>Peroxisome = VLCFA + phytanic acid.</b> Zellweger, adrenoleukodystrophy, Refsum."},
+{m:"loc",q:"Which liver zone is most sensitive to ischemia and is affected first in centrilobular (pericentral) necrosis?",c:["Zone III (centrilobular)","Zone I (periportal)","Zone II (midzonal)","The portal triad"],a:0,why:"Zone III is farthest from the blood supply → first to die in ischemia; it's rich in cytochrome P450 (alcohol/drug metabolism).",p:"<b>Zone III</b> = centrilobular = ischemia-sensitive + P450-rich (alcohol, acetaminophen). Zone I sees toxins/viral first."},
+
+/* ===== RATE-LIMITING ENZYMES ===== */
+{m:"rle",q:"The rate-limiting enzyme of glycolysis is what?",c:["Phosphofructokinase-1 (PFK-1)","Hexokinase","Pyruvate kinase","Pyruvate dehydrogenase"],a:0,why:"PFK-1 is the committed, rate-limiting step of glycolysis (activated by AMP/F2,6BP; inhibited by ATP/citrate).",p:"Glycolysis RLE = <b>PFK-1</b>. (F2,6BP activates it; citrate/ATP inhibit it.)"},
+{m:"rle",q:"The rate-limiting enzyme of gluconeogenesis is what?",c:["Fructose-1,6-bisphosphatase","Glucose-6-phosphatase","Pyruvate carboxylase","PEP carboxykinase"],a:0,why:"Fructose-1,6-bisphosphatase is the rate-limiting step; the four key gluconeogenic enzymes bypass the irreversible glycolytic steps.",p:"Gluconeogenesis RLE = <b>fructose-1,6-bisphosphatase</b>."},
+{m:"rle",q:"The rate-limiting enzyme of cholesterol synthesis, the target of statin drugs, is what?",c:["HMG-CoA reductase","HMG-CoA synthase","Squalene synthase","Acetyl-CoA carboxylase"],a:0,why:"HMG-CoA reductase converts HMG-CoA to mevalonate — the committed, statin-inhibited step of cholesterol synthesis.",p:"Cholesterol RLE = <b>HMG-CoA reductase</b> (statin target). Note: HMG-CoA SYNTHASE = ketogenesis."},
+{m:"rle",q:"The rate-limiting enzyme that breaks down glycogen is what?",c:["Glycogen phosphorylase","Glycogen synthase","Branching enzyme","Debranching enzyme"],a:0,why:"Glycogen phosphorylase releases glucose-1-phosphate; it's the rate-limiting step of glycogenolysis (deficient in McArdle).",p:"Glycogenolysis RLE = <b>glycogen phosphorylase</b>. (Glycogen SYNTHASE builds it.)"},
+{m:"rle",q:"The rate-limiting enzyme of fatty acid synthesis, which makes malonyl-CoA, is what?",c:["Acetyl-CoA carboxylase","Fatty acid synthase","Citrate lyase","Carnitine palmitoyltransferase I"],a:0,why:"Acetyl-CoA carboxylase (ACC) converts acetyl-CoA → malonyl-CoA — the committed step of FA synthesis (needs biotin).",p:"FA synthesis RLE = <b>acetyl-CoA carboxylase</b> (makes malonyl-CoA; needs biotin)."},
+{m:"rle",q:"Long-chain fatty acids enter the mitochondria for oxidation via which transport enzyme, which is inhibited by malonyl-CoA?",c:["Carnitine palmitoyltransferase I (CPT-1)","Acetyl-CoA carboxylase","Citrate synthase","Pyruvate carboxylase"],a:0,why:"CPT-1 is the rate-limiting transporter of long-chain FAs into mitochondria; malonyl-CoA (the synthesis signal) blocks it so you don't burn and build at once.",p:"FA oxidation gate = <b>CPT-1</b>; malonyl-CoA inhibits it (can't oxidize and synthesize simultaneously)."},
+{m:"rle",q:"The first and rate-limiting enzyme of the urea cycle, activated by N-acetylglutamate, is what?",c:["Carbamoyl phosphate synthetase I","Ornithine transcarbamylase","Arginase","Carbamoyl phosphate synthetase II"],a:0,why:"CPS-I (mitochondrial) commits ammonia to the urea cycle; it requires N-acetylglutamate as an activator. CPS-II is for pyrimidines (cytoplasm).",p:"Urea cycle RLE = <b>CPS-I</b> (needs N-acetylglutamate). CPS-<b>II</b> = pyrimidine synthesis."},
+{m:"rle",q:"The rate-limiting enzyme of the HMP (pentose phosphate) shunt, which generates NADPH, is what?",c:["Glucose-6-phosphate dehydrogenase","Transketolase","Transaldolase","6-phosphogluconate dehydrogenase"],a:0,why:"G6PD is the rate-limiting enzyme of the HMP shunt; its deficiency → no NADPH → oxidative hemolysis.",p:"HMP shunt RLE = <b>G6PD</b> (makes NADPH for glutathione + biosynthesis)."},
+
+/* ===== INBORN ERRORS ===== */
+{m:"inborn",q:"An infant with a musty body odor, fair skin, and intellectual disability who is not on the proper restricted diet has a deficiency of which enzyme?",c:["Phenylalanine hydroxylase","Homogentisate oxidase","Tyrosinase","Branched-chain ketoacid dehydrogenase"],a:0,why:"Phenylketonuria = phenylalanine hydroxylase deficiency (or BH4 cofactor) → buildup of phenylalanine/phenylketones; treat by restricting phenylalanine (and avoiding aspartame).",p:"PKU = <b>phenylalanine hydroxylase</b> (or BH4). Musty odor, avoid aspartame, ↑Phe → fair skin (↓melanin)."},
+{m:"inborn",q:"Urine that turns BLACK on standing, with darkened connective tissue and arthralgias, results from a deficiency of homogentisate oxidase. This benign condition is called what?",c:["Alkaptonuria","Phenylketonuria","Homocystinuria","Cystinuria"],a:0,why:"Alkaptonuria = homogentisate oxidase deficiency → homogentisic acid accumulates → black urine, ochronosis (blue-black connective tissue).",p:"Alkaptonuria = <b>black urine + ochronosis</b> (homogentisate oxidase). Largely benign."},
+{m:"inborn",q:"Marfanoid habitus with DOWNWARD/inward lens dislocation, thrombosis, and intellectual disability, often from cystathionine synthase deficiency, indicates what?",c:["Homocystinuria","Marfan syndrome","Ehlers-Danlos syndrome","Alkaptonuria"],a:0,why:"Homocystinuria → elevated homocysteine → thrombosis, marfanoid body, lens dislocates DOWN (Marfan = fibrillin, lens UP).",p:"Homocystinuria = <b>lens DOWN</b> + thrombosis. Marfan = lens UP (fibrillin). Direction is the trap."},
+{m:"inborn",q:"An infant with urine smelling of maple syrup and an inability to degrade leucine, isoleucine, and valine has a deficiency of which enzyme?",c:["Branched-chain alpha-ketoacid dehydrogenase","Phenylalanine hydroxylase","Galactokinase","Aldolase B"],a:0,why:"Maple syrup urine disease = branched-chain α-ketoacid dehydrogenase deficiency → buildup of branched-chain amino acids/ketoacids; B1-dependent.",p:"MSUD = <b>branched-chain α-ketoacid dehydrogenase</b>. Maple-syrup urine, neurotoxic. (B1 cofactor.)"},
+{m:"inborn",q:"A neonate develops cataracts, jaundice, hepatomegaly, and E. coli sepsis after starting milk feeds. This is a deficiency of which enzyme?",c:["Galactose-1-phosphate uridyltransferase (GALT)","Galactokinase","Aldolase B","Fructokinase"],a:0,why:"Classic galactosemia = GALT deficiency → toxic galactose-1-phosphate accumulation → cataracts, liver damage, E. coli sepsis, failure to thrive.",p:"Classic galactosemia = <b>GALT</b>. Sick neonate + cataracts + E. coli sepsis. (Galactokinase = cataracts only.)"},
+{m:"inborn",q:"Hypoglycemia, jaundice, and vomiting after ingesting fruit or sucrose, due to deficiency of aldolase B, is which disorder?",c:["Hereditary fructose intolerance","Essential fructosuria","Galactosemia","Von Gierke disease"],a:0,why:"HFI = aldolase B deficiency → fructose-1-phosphate accumulates, traps phosphate → hypoglycemia and liver damage. Treat by avoiding fructose/sucrose.",p:"HFI = <b>aldolase B</b>, symptomatic (hypoglycemia, liver). Essential fructosuria (fructokinase) = benign."},
+{m:"inborn",q:"A child with isolated infantile cataracts and reducing substances in the urine, but NO liver damage or sepsis, has a deficiency of which enzyme?",c:["Galactokinase","Galactose-1-phosphate uridyltransferase","Aldolase B","Glucose-6-phosphatase"],a:0,why:"Galactokinase deficiency = mild — galactitol accumulates in the lens → infantile cataracts, but no hepatic/systemic toxicity.",p:"Galactokinase deficiency = <b>cataracts only</b> (galactitol). Much milder than classic galactosemia."},
+{m:"inborn",q:"An X-linked urea cycle defect causing hyperammonemia and elevated orotic acid (but with NO megaloblastic anemia) is a deficiency of which enzyme?",c:["Ornithine transcarbamylase","Carbamoyl phosphate synthetase I","Arginase","UMP synthase"],a:0,why:"OTC deficiency (X-linked) → carbamoyl phosphate spills into pyrimidine synthesis → orotic aciduria + hyperammonemia, WITHOUT megaloblastic anemia (vs orotic aciduria from UMP synthase defect).",p:"OTC deficiency = <b>orotic acid ↑ + hyperammonemia, NO megaloblastic anemia</b>. (Orotic aciduria = UMP synthase, WITH anemia.)"},
+
+/* ===== STORAGE DISEASES ===== */
+{m:"storage",q:"Severe fasting hypoglycemia with hepatomegaly, lactic acidosis, and hyperuricemia in an infant, from deficiency of glucose-6-phosphatase, is which glycogen storage disease?",c:["Von Gierke disease (type I)","Pompe disease (type II)","Cori disease (type III)","McArdle disease (type V)"],a:0,why:"Von Gierke = G6Pase deficiency → can't release free glucose → severe fasting hypoglycemia, hepatomegaly, lactic acidosis, hyperuricemia/lipidemia.",p:"Von Gierke = <b>G6Pase</b>, severe fasting hypoglycemia, big liver. 'Gierke = Glucose can't get out.'"},
+{m:"storage",q:"An infant with cardiomegaly, hypotonia, and early death from deficiency of lysosomal acid α-glucosidase (acid maltase) has which disease?",c:["Pompe disease (type II)","Von Gierke disease (type I)","McArdle disease (type V)","Tay-Sachs disease"],a:0,why:"Pompe = lysosomal acid α-glucosidase deficiency → glycogen accumulates in lysosomes → cardiomyopathy, hypotonia, early death.",p:"<b>Pompe trashes the Pump</b> (heart). Acid maltase, cardiomegaly, hypotonia."},
+{m:"storage",q:"Exercise-induced muscle cramps and myoglobinuria with a 'second wind' phenomenon, from deficiency of skeletal-muscle glycogen phosphorylase, is which disease?",c:["McArdle disease (type V)","Von Gierke disease (type I)","Pompe disease (type II)","Gaucher disease"],a:0,why:"McArdle = myophosphorylase deficiency → muscle can't break down glycogen → exercise intolerance, cramps, myoglobinuria; no rise in blood lactate with exercise.",p:"<b>McArdle = Muscle.</b> Exercise cramps, myoglobinuria, 'second wind.' Flat lactate curve."},
+{m:"storage",q:"A neurodegenerative lysosomal disease with a cherry-red macula and NO hepatosplenomegaly, from hexosaminidase A deficiency, is what?",c:["Tay-Sachs disease","Niemann-Pick disease","Gaucher disease","Krabbe disease"],a:0,why:"Tay-Sachs = hexosaminidase A deficiency → GM2 ganglioside accumulation → cherry-red macula, progressive neurodegeneration, NO hepatosplenomegaly.",p:"Tay-Sachs = <b>cherry-red macula, NO HSM</b>, hexosaminidase A. ('Tay-SaX = no organomegaly.')"},
+{m:"storage",q:"The MOST COMMON lysosomal storage disease — hepatosplenomegaly, bone crises, and 'crumpled tissue paper' macrophages — is due to deficiency of which enzyme?",c:["Glucocerebrosidase","Sphingomyelinase","Hexosaminidase A","Alpha-galactosidase A"],a:0,why:"Gaucher disease = β-glucocerebrosidase deficiency → glucocerebroside-laden macrophages ('crumpled tissue paper'); HSM, bone pain, pancytopenia.",p:"Gaucher = most common, <b>glucocerebrosidase</b>, 'crumpled tissue paper' macrophages, bone crises."},
+{m:"storage",q:"A lysosomal disease with a cherry-red macula AND hepatosplenomegaly, plus foam cells, from sphingomyelinase deficiency, is what?",c:["Niemann-Pick disease","Tay-Sachs disease","Fabry disease","Hurler syndrome"],a:0,why:"Niemann-Pick = sphingomyelinase deficiency → sphingomyelin accumulation → cherry-red macula PLUS hepatosplenomegaly and foam cells (vs Tay-Sachs, no HSM).",p:"Niemann-Pick = cherry-red macula <b>+ HSM</b>, foam cells, sphingomyelinase. 'No Man Picks his nose with HSM.'"},
+{m:"storage",q:"An X-linked lysosomal disease with angiokeratomas, peripheral neuropathy, and renal failure, from α-galactosidase A deficiency, is what?",c:["Fabry disease","Gaucher disease","Tay-Sachs disease","Krabbe disease"],a:0,why:"Fabry = α-galactosidase A deficiency (X-linked) → ceramide trihexoside accumulation → angiokeratomas, neuropathic pain, renal and cardiac disease.",p:"Fabry = X-linked, <b>α-galactosidase A</b>, angiokeratomas + neuropathic pain + renal failure."},
+{m:"storage",q:"A mucopolysaccharidosis with corneal clouding, coarse facies, and developmental delay, from α-L-iduronidase deficiency, is which syndrome?",c:["Hurler syndrome","Hunter syndrome","Fabry disease","Pompe disease"],a:0,why:"Hurler = α-L-iduronidase deficiency (autosomal recessive) → corneal clouding, coarse facies, developmental delay. Hunter (X-linked) has NO corneal clouding + aggressive behavior.",p:"Hurler = <b>α-L-iduronidase, corneal clouding</b>. Hunter = X-linked, NO clouding, aggressive ('Hunters aim, so they SEE clearly')."},
+{m:"storage",q:"A lysosomal disease with globoid cells, peripheral neuropathy, and optic atrophy, from galactocerebrosidase deficiency, is what?",c:["Krabbe disease","Gaucher disease","Fabry disease","Metachromatic leukodystrophy"],a:0,why:"Krabbe = galactocerebrosidase (galactosylceramidase) deficiency → galactocerebroside accumulation → globoid cells, peripheral neuropathy, optic atrophy, developmental regression.",p:"Krabbe = <b>galactocerebrosidase, globoid cells</b>, peripheral neuropathy + optic atrophy."},
+
+/* ===== VITAMINS ===== */
+{m:"vit",q:"Deficiency of which vitamin causes Wernicke-Korsakoff syndrome and beriberi, and impairs pyruvate dehydrogenase?",c:["Thiamine (B1)","Niacin (B3)","Pyridoxine (B6)","Cobalamin (B12)"],a:0,why:"Thiamine (B1) is a cofactor for PDH, α-ketoglutarate dehydrogenase, and transketolase; deficiency → Wernicke-Korsakoff, wet/dry beriberi.",p:"B1 = <b>Wernicke-Korsakoff + beriberi</b>. Cofactor for PDH, α-KGDH, transketolase. Give before glucose in alcoholics."},
+{m:"vit",q:"The 'three D's' — dermatitis, diarrhea, and dementia (pellagra) — result from deficiency of which vitamin?",c:["Niacin (B3)","Thiamine (B1)","Riboflavin (B2)","Folate (B9)"],a:0,why:"Niacin (B3) deficiency = pellagra (3 D's, +death); causes include Hartnup disease, carcinoid syndrome, and isoniazid (B6 needed to make niacin).",p:"B3/niacin = <b>pellagra: dermatitis, diarrhea, dementia</b>. Hartnup, carcinoid, INH."},
+{m:"vit",q:"Isoniazid therapy can deplete which vitamin, causing peripheral neuropathy and sideroblastic anemia?",c:["Pyridoxine (B6)","Thiamine (B1)","Niacin (B3)","Vitamin C"],a:0,why:"B6 (pyridoxine) deficiency (classically from isoniazid) → peripheral neuropathy, sideroblastic anemia, convulsions; B6 is needed for heme synthesis (ALA) and neurotransmitters.",p:"B6 = <b>INH depletes it</b> → neuropathy + sideroblastic anemia + seizures. (Give B6 with INH.)"},
+{m:"vit",q:"Bleeding gums, poor wound healing, and 'corkscrew' hairs from impaired collagen hydroxylation indicate deficiency of which vitamin?",c:["Vitamin C","Vitamin A","Vitamin K","Niacin (B3)"],a:0,why:"Vitamin C is a cofactor for prolyl/lysyl hydroxylase in collagen synthesis; deficiency = scurvy (bleeding gums, poor healing, corkscrew hairs, perifollicular hemorrhage).",p:"Vitamin C = <b>scurvy</b>, collagen hydroxylation, corkscrew hairs, bleeding gums. Also aids iron absorption."},
+{m:"vit",q:"Night blindness and dry eyes (xerophthalmia) result from deficiency of which fat-soluble vitamin?",c:["Vitamin A","Vitamin D","Vitamin E","Vitamin K"],a:0,why:"Vitamin A (retinol) is needed for rhodopsin and epithelial differentiation; deficiency → night blindness, xerophthalmia. Excess → pseudotumor cerebri and teratogenicity.",p:"Vitamin A = <b>night blindness</b>, epithelial differentiation. Toxicity = teratogen + pseudotumor cerebri. (Isotretinoin is a retinoid.)"},
+{m:"vit",q:"Deficiency of which vitamin causes rickets in children and osteomalacia in adults?",c:["Vitamin D","Vitamin A","Vitamin C","Vitamin K"],a:0,why:"Vitamin D (calcitriol) raises serum calcium and phosphate; deficiency → defective bone mineralization (rickets/osteomalacia), hypocalcemia.",p:"Vitamin D = <b>rickets (kids) / osteomalacia (adults)</b>. Raises Ca and phosphate. Activated in the kidney (1α-hydroxylase)."},
+{m:"vit",q:"Deficiency of which fat-soluble antioxidant vitamin causes hemolytic anemia and a neuropathy resembling Friedreich ataxia?",c:["Vitamin E","Vitamin K","Vitamin A","Vitamin D"],a:0,why:"Vitamin E (tocopherol) protects membranes from oxidation; deficiency → hemolytic anemia, peripheral neuropathy, and spinocerebellar signs (ataxia mimicking Friedreich).",p:"Vitamin E = <b>antioxidant</b>; deficiency → hemolysis + neuro/ataxia. (High dose can worsen vitamin K / bleeding.)"}
+];
+
+const VAULT=[
+{t:"Pathway Locations",b:"<b>Cytoplasm:</b> glycolysis, HMP shunt, FA synthesis, cholesterol synthesis, glycogen. <b>Mitochondria:</b> TCA, FA β-oxidation, PDH, ketogenesis, ETC. <b>Both:</b> urea cycle + gluconeogenesis.",g:"Location"},
+{t:"Rate-Limiting Enzymes",b:"Glycolysis = <b>PFK-1</b>; gluconeogenesis = <b>F-1,6-BPase</b>; TCA = citrate synthase; glycogenolysis = <b>glycogen phosphorylase</b>; FA synth = <b>ACC</b>; FA ox gate = <b>CPT-1</b>; HMP = <b>G6PD</b>; cholesterol = <b>HMG-CoA reductase</b>; urea = <b>CPS-I</b>; ketogenesis = HMG-CoA synthase.",g:"Enzymes"},
+{t:"CPS-I vs CPS-II",b:"<b>CPS-I</b> = urea cycle (mitochondria, needs N-acetylglutamate). <b>CPS-II</b> = pyrimidine synthesis (cytoplasm). Same name, totally different jobs.",g:"Enzymes"},
+{t:"PKU",b:"<b>Phenylalanine hydroxylase</b> (or BH4) deficiency → ↑phenylalanine. Musty odor, fair skin, intellectual disability. Avoid phenylalanine + <b>aspartame</b>.",g:"Inborn error"},
+{t:"Galactose Disorders",b:"<b>GALT</b> deficiency = classic galactosemia: sick neonate, cataracts, E. coli sepsis, liver damage. <b>Galactokinase</b> deficiency = cataracts only (galactitol), benign.",g:"Inborn error"},
+{t:"Fructose Disorders",b:"<b>Aldolase B</b> = hereditary fructose intolerance (symptomatic: hypoglycemia, liver). <b>Fructokinase</b> = essential fructosuria (benign, asymptomatic).",g:"Inborn error"},
+{t:"Homocystinuria vs Marfan",b:"Both marfanoid. <b>Homocystinuria</b> = lens dislocates DOWN + thrombosis (cystathionine synthase). <b>Marfan</b> = lens UP (fibrillin-1). Direction of the lens is the trap.",g:"Inborn error"},
+{t:"Glycogen Storage (Very Poor Carb Metabolism)",b:"<b>V</b>on Gierke (G6Pase, liver/hypoglycemia) · <b>P</b>ompe (acid maltase, heart) · <b>C</b>ori (debrancher) · <b>M</b>cArdle (muscle phosphorylase).",g:"Storage"},
+{t:"Cherry-Red Macula: TS vs NP",b:"<b>Tay-Sachs</b> = hexosaminidase A, NO hepatosplenomegaly. <b>Niemann-Pick</b> = sphingomyelinase, cherry-red + HSM + foam cells.",g:"Storage"},
+{t:"Hurler vs Hunter",b:"<b>Hurler</b> = α-L-iduronidase, corneal clouding, AR. <b>Hunter</b> = iduronate sulfatase, X-linked, NO corneal clouding, aggressive ('Hunters aim → they SEE').",g:"Storage"},
+{t:"Other Sphingolipidoses",b:"<b>Gaucher</b> = glucocerebrosidase (most common, 'crumpled tissue paper'). <b>Fabry</b> = α-gal A, X-linked, angiokeratomas. <b>Krabbe</b> = galactocerebrosidase, globoid cells.",g:"Storage"},
+{t:"B-Vitamin Quick Hits",b:"<b>B1</b> Wernicke/beriberi · <b>B2</b> cheilosis/corneal vascularization · <b>B3</b> pellagra (3 D's) · <b>B6</b> INH neuropathy + sideroblastic · <b>B9/B12</b> megaloblastic (B12 + neuro).",g:"Vitamins"},
+{t:"Fat-Soluble ADEK + Toxicity",b:"<b>A</b> night blindness / toxicity = teratogen + pseudotumor. <b>D</b> rickets/osteomalacia. <b>E</b> antioxidant; deficiency = hemolysis/neuro. <b>K</b> clotting (II,VII,IX,X).",g:"Vitamins"}
+];
+
+const MODES={
+  daily:{name:"Daily Metabolite",ic:"⚗️",desc:"15 random questions across all biochem topics. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Cascade",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  loc:{name:"Cellular Location",ic:"🦴",desc:"Where each pathway runs + organelle pathology (lysosome, peroxisome, liver zones).",pick:()=>shuffle(QBANK.filter(q=>q.m==="loc"))},
+  rle:{name:"Rate-Limiting Enzymes",ic:"⚙️",desc:"The committed step of every major pathway — the highest-yield enzyme drill.",pick:()=>shuffle(QBANK.filter(q=>q.m==="rle"))},
+  inborn:{name:"Inborn Errors",ic:"🧬",desc:"PKU, galactose & fructose disorders, homocystinuria, MSUD, OTC.",pick:()=>shuffle(QBANK.filter(q=>q.m==="inborn"))},
+  storage:{name:"Storage Diseases",ic:"📦",desc:"Glycogen (von Gierke→McArdle) and lysosomal (Tay-Sachs, Gaucher, Fabry...).",pick:()=>shuffle(QBANK.filter(q=>q.m==="storage"))},
+  vit:{name:"Vitamins",ic:"🍊",desc:"B-vitamin deficiencies and the fat-soluble ADEK vitamins.",pick:()=>shuffle(QBANK.filter(q=>q.m==="vit"))}
+};
+const MODE_TAGS={loc:"Cellular Location",rle:"Rate-Limiting Enzymes",inborn:"Inborn Errors",storage:"Storage Diseases",vit:"Vitamins"};
+
+const SAVE_KEY="pathway_panic_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">⌬</div>
+    <h1>PATHWAY PANIC</h1>
+    <div class="sub">Biochemistry · Metabolism — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("loc",m.loc,"special")}${tile("rle",m.rle,"")}${tile("inborn",m.inborn,"")}${tile("storage",m.storage,"")}${tile("vit",m.vit,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy biochem tools — pathway locations, RLE table, storage-disease mnemonics, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
+}
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:30px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">Biochem memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
+});
+menu();
+</script>
+</body>
+</html>

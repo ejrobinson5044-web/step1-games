@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>P-VALUE PANIC — Biostatistics / Epidemiology</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0b16;
+  --bg2:#0f1124;
+  --panel:#161936;
+  --panel-hi:#1f2348;
+  --cyan:#818cf8;        /* indigo/periwinkle primary (data) */
+  --cyan-dim:#4338ca;
+  --amber:#fbbf24;       /* amber accent */
+  --amber-hi:#fde047;
+  --red:#f87171;
+  --green:#34d399;
+  --text:#e7e9fb;
+  --dim:#8088b0;
+  --line:rgba(129,140,248,.15);
+  --glow:rgba(129,140,248,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 17% 0%,rgba(129,140,248,.12),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(251,191,36,.06),transparent 55%),
+    linear-gradient(180deg,#0a0b16,#0f1124);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:30px 30px;
+  mask-image:radial-gradient(ellipse at center,#000 30%,transparent 88%);opacity:.5;
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;
+  background:linear-gradient(150deg,var(--cyan),var(--cyan-dim));color:#0f1124;
+  font-family:'Space Mono';font-weight:700;font-size:30px;margin-bottom:8px;box-shadow:0 0 24px var(--glow)}
+h1{font-family:'Space Mono';font-weight:700;font-size:32px;letter-spacing:0;color:var(--cyan)}
+.sub{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:2px;margin-top:4px;text-transform:uppercase}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.6}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Space Mono';font-weight:700;font-size:15px;margin:8px 0 5px;letter-spacing:0}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'JetBrains Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'JetBrains Mono';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'JetBrains Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'JetBrains Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'JetBrains Mono';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(52,211,153,.13)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(248,113,113,.13)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'JetBrains Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(251,191,36,.10);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Space Mono';font-weight:700;font-size:12.5px}
+
+.btn{font-family:'Space Mono';font-weight:700;letter-spacing:0;border:none;border-radius:10px;padding:13px 22px;cursor:pointer;font-size:15px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#0f1124;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Space Mono';font-weight:700;font-size:64px;color:var(--cyan);line-height:1}
+.rank{font-family:'JetBrains Mono';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:8px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'JetBrains Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:24px;color:var(--text);font-family:'Space Mono';font-weight:700}
+
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Space Mono';font-weight:700;color:var(--amber-hi);font-size:14.5px;margin-bottom:7px;letter-spacing:0}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'JetBrains Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'JetBrains Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== THE 2x2 TABLE ===== */
+{m:"two",q:"Sensitivity is the proportion of people WITH the disease who test positive. A highly sensitive test is best used to do what?",c:["Rule OUT disease (when negative)","Rule IN disease (when positive)","Confirm a diagnosis","Estimate prevalence"],a:0,why:"High sensitivity → few false negatives → a negative result reliably excludes disease. Sens = TP/(TP+FN).",p:"<b>SnNOUT:</b> a SeNsitive test, when Negative, rules OUT disease. Good for screening."},
+{m:"two",q:"A highly SPECIFIC test, when the result is positive, is best used to do what?",c:["Rule IN disease","Rule OUT disease","Screen the whole population","Replace incidence data"],a:0,why:"High specificity → few false positives → a positive result reliably confirms disease. Spec = TN/(TN+FP).",p:"<b>SpPIN:</b> a SPecific test, when Positive, rules IN disease. Good for confirmation."},
+{m:"two",q:"Do sensitivity and specificity change as the disease prevalence in the population changes?",c:["No — they are intrinsic to the test","Yes — both rise with prevalence","Yes — both fall with prevalence","Only specificity changes"],a:0,why:"Sensitivity and specificity are fixed properties of the test itself; they do NOT depend on prevalence. PPV/NPV do.",p:"Sens/Spec = <b>intrinsic</b> (prevalence-independent). PPV/NPV <b>do</b> change with prevalence."},
+{m:"two",q:"When a diagnostic test is applied in a population where the disease is much MORE COMMON, the positive predictive value (chance a positive test is a true positive) does what?",c:["Increases","Decreases","Stays the same","Falls to zero"],a:0,why:"Higher prevalence → a positive result is more likely truly positive → PPV rises. PPV = TP/(TP+FP).",p:"Prevalence ↑ → <b>PPV ↑, NPV ↓</b>. (More disease around → a positive means more.)"},
+{m:"two",q:"As disease prevalence INCREASES, the negative predictive value does what?",c:["Decreases","Increases","Stays the same","Becomes infinite"],a:0,why:"Higher prevalence → a negative result is less reassuring → NPV falls. NPV = TN/(TN+FN).",p:"Prevalence ↑ → <b>NPV ↓</b> (a negative test means less when disease is common)."},
+{m:"two",q:"The false-positive rate of a test equals which expression?",c:["1 − specificity","1 − sensitivity","1 − PPV","Prevalence × sensitivity"],a:0,why:"False-positive rate = FP/(FP+TN) = 1 − specificity. (False-negative rate = 1 − sensitivity.)",p:"<b>False-positive rate = 1 − specificity.</b> False-negative rate = 1 − sensitivity."},
+{m:"two",q:"A positive likelihood ratio (LR+) greater than 10 indicates the test result does what?",c:["Strongly rules IN disease","Strongly rules OUT disease","Has no diagnostic value","Only applies to screening"],a:0,why:"LR+ >10 produces a large increase in post-test probability (rules in); LR− <0.1 strongly rules out. LR+ = sensitivity/(1−specificity).",p:"<b>LR+ >10 = rules IN.</b> LR− <0.1 = rules OUT. LR ~1 = useless."},
+{m:"two",q:"If you LOWER the cutoff value of a diagnostic test to catch more cases, what happens to sensitivity and specificity?",c:["Sensitivity increases, specificity decreases","Both increase","Both decrease","Sensitivity decreases, specificity increases"],a:0,why:"Lowering the threshold catches more true (and false) positives → ↑sensitivity, ↓specificity. Raising it does the reverse.",p:"<b>Lower cutoff → ↑sensitivity, ↓specificity.</b> (Catch more, at the cost of more false positives.)"},
+
+/* ===== STUDY DESIGNS / MEASURES ===== */
+{m:"design",q:"A study that follows exposed and unexposed groups forward in time to compare disease incidence is which design?",c:["Cohort study","Case-control study","Cross-sectional study","Case series"],a:0,why:"Cohort = follow groups by exposure status forward → measures incidence and relative risk. Can be prospective or retrospective.",p:"Cohort = <b>forward, exposure → outcome</b>, gives incidence + relative risk."},
+{m:"design",q:"A study comparing people WITH a disease to people without it, looking BACKWARD for prior exposures, is which design (best for rare diseases)?",c:["Case-control study","Cohort study","Cross-sectional study","Randomized controlled trial"],a:0,why:"Case-control = start with outcome, look back at exposures → odds ratio; efficient for rare diseases.",p:"Case-control = <b>backward, outcome → exposure</b>, gives odds ratio, best for RARE diseases."},
+{m:"design",q:"A study measuring exposure and disease simultaneously at a single point in time, providing prevalence, is which design?",c:["Cross-sectional study","Cohort study","Case-control study","Crossover trial"],a:0,why:"Cross-sectional = a 'snapshot' → measures prevalence; can't establish temporality/causation.",p:"Cross-sectional = <b>snapshot, prevalence</b>, no causality (can't tell which came first)."},
+{m:"design",q:"Which study design, with random allocation to intervention versus control, provides the strongest evidence for causality?",c:["Randomized controlled trial","Cohort study","Case-control study","Ecological study"],a:0,why:"RCT randomization balances confounders → strongest single-study causal evidence (meta-analysis of RCTs is even higher).",p:"RCT = <b>gold standard</b> (randomization balances confounders). Meta-analysis of RCTs sits on top."},
+{m:"design",q:"Which measure of association is calculated from a COHORT study as the incidence in the exposed divided by the incidence in the unexposed?",c:["Relative risk","Odds ratio","Hazard rate alone","Prevalence ratio"],a:0,why:"Relative risk (RR) = incidence in exposed / incidence in unexposed — requires knowing incidence, so it comes from cohorts/RCTs.",p:"<b>Relative risk = cohort.</b> RR>1 harmful, <1 protective, =1 no effect."},
+{m:"design",q:"Which measure of association is the primary output of a CASE-CONTROL study?",c:["Odds ratio","Relative risk","Absolute risk reduction","Incidence rate"],a:0,why:"Case-control studies can't measure incidence, so they report the odds ratio (which approximates RR when the disease is rare).",p:"<b>Odds ratio = case-control.</b> OR ≈ RR when disease is rare."},
+{m:"design",q:"The number needed to treat (NNT) is calculated as the reciprocal of which quantity?",c:["Absolute risk reduction","Relative risk","Odds ratio","Relative risk reduction"],a:0,why:"NNT = 1 / absolute risk reduction. (NNH = 1 / absolute risk increase.) Lower NNT = more effective treatment.",p:"<b>NNT = 1 / ARR.</b> NNH = 1 / ARI. Smaller NNT = better drug."},
+{m:"design",q:"The absolute risk reduction (ARR) of a treatment is the difference between which two quantities?",c:["Event rate in controls minus event rate in the treated","Relative risk minus 1","Odds in cases minus odds in controls","Prevalence minus incidence"],a:0,why:"ARR = (event rate in control group) − (event rate in treatment group). RRR = ARR / control event rate.",p:"<b>ARR = control rate − treatment rate.</b> RRR = ARR / control rate."},
+
+/* ===== BIAS / VALIDITY ===== */
+{m:"bias",q:"In a case-control study, cases remembering prior exposures more thoroughly than controls introduces which type of bias?",c:["Recall bias","Selection bias","Lead-time bias","Confounding"],a:0,why:"Recall bias = differential accuracy of memory between groups; classic in retrospective case-control studies.",p:"Recall bias = <b>cases remember exposures better</b> (retrospective studies). Reduce with records/objective data."},
+{m:"bias",q:"Bias arising when the study sample is not representative of the target population (e.g., from nonrandom enrollment or loss to follow-up) is called what?",c:["Selection bias","Recall bias","Observer bias","Confounding"],a:0,why:"Selection bias = systematic difference between who is studied and the target population (Berkson bias, nonresponse, attrition).",p:"Selection bias = <b>nonrepresentative sample</b> (Berkson, loss to follow-up). Reduce with randomization."},
+{m:"bias",q:"Screening detects a disease earlier, making survival APPEAR longer even though the actual date of death is unchanged. Which bias is this?",c:["Lead-time bias","Length-time bias","Recall bias","Confounding"],a:0,why:"Lead-time bias = earlier diagnosis just starts the survival clock sooner, without changing the natural history.",p:"Lead-time bias = <b>earlier detection, same death date</b> → survival looks longer (it isn't)."},
+{m:"bias",q:"Screening preferentially detects slowly progressive, less aggressive disease, overstating its apparent benefit. Which bias is this?",c:["Length-time bias","Lead-time bias","Selection bias","Recall bias"],a:0,why:"Length-time bias = slow-growing (better-prognosis) disease spends more time detectable, so screening catches it disproportionately.",p:"Length-time bias = screening catches <b>slow, indolent</b> disease → overstates benefit."},
+{m:"bias",q:"A variable associated with BOTH the exposure and the outcome that distorts their apparent relationship is called what?",c:["A confounder","An effect modifier","A mediator","A collider"],a:0,why:"Confounding = a third variable linked to exposure and outcome; address by randomization, restriction, matching, or multivariate analysis.",p:"Confounder = related to <b>both exposure and outcome</b>. Fix with randomization/matching/multivariate adjustment."},
+{m:"bias",q:"Subjects changing their behavior simply because they know they are being observed is called what?",c:["The Hawthorne effect","The Pygmalion effect","Recall bias","The placebo effect"],a:0,why:"The Hawthorne effect = behavior changes due to awareness of observation (a form of measurement/observer effect).",p:"Hawthorne effect = <b>behaving differently because you're watched</b>."},
+{m:"bias",q:"Random error reduces which property of a measurement — its reproducibility?",c:["Precision (reliability)","Accuracy (validity)","Generalizability","Causality"],a:0,why:"Precision/reliability = reproducibility, degraded by RANDOM error. Accuracy/validity = closeness to truth, degraded by SYSTEMATIC error (bias).",p:"<b>Random error → ↓precision</b> (reliability). Systematic error (bias) → ↓accuracy (validity)."},
+{m:"bias",q:"The extent to which a study's results can be GENERALIZED to other populations or settings is called what?",c:["External validity (generalizability)","Internal validity","Precision","Statistical power"],a:0,why:"External validity = generalizability. Internal validity = whether the result is true within the study (free of bias/confounding).",p:"<b>External validity = generalizability.</b> Internal validity = true within the study."},
+
+/* ===== STATISTICAL TESTS / INFERENCE ===== */
+{m:"test",q:"Which statistical test compares the MEANS of two groups?",c:["t-test","ANOVA","Chi-square test","Pearson correlation"],a:0,why:"The t-test compares two means. ANOVA compares 3+ means; chi-square compares categorical proportions.",p:"<b>t-test = 2 means.</b> ANOVA = 3+ means. Chi-square = categorical."},
+{m:"test",q:"Which test compares the MEANS of three or more groups?",c:["ANOVA","t-test","Chi-square test","Correlation coefficient"],a:0,why:"ANOVA (analysis of variance) compares means across 3+ groups (a significant result then needs post-hoc testing).",p:"<b>ANOVA = 3+ means</b> ('ANalysis Of VAriance' = 3 or more)."},
+{m:"test",q:"Which test compares CATEGORICAL (proportional) data between two or more groups?",c:["Chi-square test","t-test","ANOVA","Linear regression"],a:0,why:"The chi-square test compares proportions/frequencies of categorical (non-numeric) outcomes.",p:"<b>Chi-square = categorical</b> data (proportions/percentages)."},
+{m:"test",q:"A p-value less than 0.05 conventionally means what?",c:["The result is statistically significant — reject the null hypothesis","The null hypothesis is proven true","The study has no bias","The effect is clinically important"],a:0,why:"p<0.05 = <5% chance the observed result (or more extreme) would occur if the null were true → reject the null. (Statistical ≠ clinical significance.)",p:"p<0.05 = <b>reject the null</b> (statistically significant). Significance ≠ clinical importance."},
+{m:"test",q:"A 95% confidence interval for a relative risk that INCLUDES 1.0 indicates the result is what?",c:["Not statistically significant","Statistically significant","Proof of harm","Proof of benefit"],a:0,why:"If the CI for an RR or OR crosses 1.0 (the null), the result is not statistically significant. (For a difference of means, the null is 0.)",p:"95% CI crossing <b>1.0 (RR/OR)</b> or <b>0 (mean difference)</b> = NOT significant."},
+{m:"test",q:"Concluding that there IS an effect when in reality there is none (a false positive) is which type of error?",c:["Type I error (alpha)","Type II error (beta)","Random error","Systematic error"],a:0,why:"Type I (α) error = rejecting a true null = false positive. Conventionally α is set at 0.05.",p:"<b>Type I (α) = false positive</b> ('you saw a difference that wasn't there')."},
+{m:"test",q:"Failing to detect an effect that actually exists (a false negative) is which type of error?",c:["Type II error (beta)","Type I error (alpha)","Confounding","Lead-time bias"],a:0,why:"Type II (β) error = failing to reject a false null = false negative; often due to an underpowered (too small) study.",p:"<b>Type II (β) = false negative</b> ('you missed a real difference'). Often = too small a sample."},
+{m:"test",q:"Statistical power (1 − β) — the probability of detecting a true effect — increases most directly by doing what?",c:["Increasing the sample size","Decreasing the sample size","Increasing beta","Decreasing the effect size"],a:0,why:"Power rises with larger sample size (also with a larger effect size, larger α, and less variability). Power = 1 − β.",p:"<b>Power = 1 − β</b>; biggest lever = <b>↑ sample size</b>. Want power ≥ 80%."},
+
+/* ===== EPIDEMIOLOGY / SCREENING / PREVENTION ===== */
+{m:"epi",q:"The number of NEW cases of a disease arising in a population over a period of time is called what?",c:["Incidence","Prevalence","Mortality rate","Attack rate ratio"],a:0,why:"Incidence = new cases per population at risk per time. Prevalence = all existing cases at a point.",p:"<b>Incidence = NEW cases.</b> Prevalence = all EXISTING cases. Prevalence ≈ incidence × duration."},
+{m:"epi",q:"The total number of EXISTING cases (new plus pre-existing) in a population at a given time is called what?",c:["Prevalence","Incidence","Cumulative risk","Case-fatality rate"],a:0,why:"Prevalence ≈ incidence × disease duration; it reflects the current burden, not the rate of new disease.",p:"<b>Prevalence = all existing cases</b> ≈ incidence × duration."},
+{m:"epi",q:"A new treatment that prolongs life without curing a chronic disease will have what effect on that disease's prevalence?",c:["Increases prevalence","Decreases prevalence","No effect on prevalence","Eliminates the disease"],a:0,why:"Longer survival = patients remain 'cases' longer → prevalence rises (incidence × longer duration), even though incidence is unchanged.",p:"Prolonging life (not curing) → <b>↑ prevalence</b> (longer duration). Incidence unchanged."},
+{m:"epi",q:"Vaccination and smoking-cessation counseling — preventing disease BEFORE it occurs — are examples of which level of prevention?",c:["Primary prevention","Secondary prevention","Tertiary prevention","Quaternary prevention"],a:0,why:"Primary prevention = stopping disease before onset (vaccines, seatbelts, behavior change, risk-factor reduction).",p:"<b>Primary = prevent onset</b> (vaccines, seatbelts). Before disease exists."},
+{m:"epi",q:"Screening tests such as mammography and Pap smears, aimed at early detection in asymptomatic people, represent which level of prevention?",c:["Secondary prevention","Primary prevention","Tertiary prevention","Quaternary prevention"],a:0,why:"Secondary prevention = early detection of subclinical/asymptomatic disease via screening to intervene sooner.",p:"<b>Secondary = screen / detect early</b> (Pap, mammo, BP checks). Disease present but asymptomatic."},
+{m:"epi",q:"Cardiac rehabilitation and diabetic foot care, which reduce complications of ESTABLISHED disease, represent which level of prevention?",c:["Tertiary prevention","Primary prevention","Secondary prevention","Quaternary prevention"],a:0,why:"Tertiary prevention = limiting disability/complications and rehabilitating in patients with known disease.",p:"<b>Tertiary = reduce complications</b> of existing disease (rehab, foot care, dialysis)."},
+{m:"epi",q:"A good SCREENING test, used in the general population to catch disease early, should prioritize a high value of what?",c:["Sensitivity","Specificity","Cost","Specificity and low sensitivity"],a:0,why:"Screening favors high sensitivity (don't miss cases); a positive screen is then confirmed by a highly specific test.",p:"<b>Screen with a sensitive test; confirm with a specific test.</b> (Don't miss → then don't over-call.)"},
+{m:"epi",q:"Among the Bradford Hill criteria for causation, which is the single ESSENTIAL requirement — that the cause must precede the effect?",c:["Temporality","Strength of association","Dose-response","Plausibility"],a:0,why:"Temporality (cause before effect) is the one criterion that MUST be satisfied; the others (strength, dose-response, consistency, etc.) strengthen the case.",p:"Bradford Hill: <b>temporality is essential</b> (cause must come first). The rest just strengthen the argument."}
+];
+
+const VAULT=[
+{t:"The 2×2 Table",b:"Columns = disease (+/−), rows = test (+/−). <b>Sens = TP/(TP+FN)</b> (down the disease+ column). <b>Spec = TN/(TN+FP)</b>. <b>PPV = TP/(TP+FP)</b> (across the test+ row). <b>NPV = TN/(TN+FN)</b>.",g:"2×2 table"},
+{t:"SnNOUT / SpPIN",b:"<b>SnNOUT:</b> a highly SeNsitive test, when Negative, rules OUT. <b>SpPIN:</b> a highly SPecific test, when Positive, rules IN.",g:"2×2 table"},
+{t:"Prevalence Effects",b:"Sensitivity & specificity are <b>intrinsic</b> (don't change with prevalence). As prevalence ↑: <b>PPV ↑, NPV ↓</b>. Lower test cutoff → ↑sensitivity, ↓specificity.",g:"2×2 table"},
+{t:"Likelihood Ratios",b:"<b>LR+ >10</b> = strongly rules IN. <b>LR− <0.1</b> = strongly rules OUT. LR ≈ 1 = useless. LR+ = sens/(1−spec); LR− = (1−sens)/spec.",g:"2×2 table"},
+{t:"Study Designs",b:"<b>Cohort</b> = forward, incidence, RR (rare exposures). <b>Case-control</b> = backward, OR (rare diseases). <b>Cross-sectional</b> = snapshot, prevalence. <b>RCT</b> = gold standard, causality.",g:"Designs"},
+{t:"RR vs OR",b:"<b>RR = cohort</b> (incidence exposed / unexposed). <b>OR = case-control</b> (OR ≈ RR when disease is rare). >1 harmful, <1 protective, =1 no effect.",g:"Measures"},
+{t:"Risk Math",b:"<b>ARR</b> = control rate − treatment rate. <b>RRR</b> = ARR / control rate. <b>NNT</b> = 1/ARR. <b>NNH</b> = 1/ARI. Smaller NNT = better.",g:"Measures"},
+{t:"Bias Types",b:"<b>Recall</b> (case-control memory) · <b>Selection</b> (nonrepresentative sample, Berkson) · <b>Lead-time</b> (detect earlier, same death) · <b>Length-time</b> (catch slow disease) · <b>Confounding</b> (third variable).",g:"Bias"},
+{t:"Precision vs Accuracy",b:"<b>Precision</b> (reliability/reproducibility) ← hurt by RANDOM error. <b>Accuracy</b> (validity/truth) ← hurt by SYSTEMATIC error (bias). Internal validity = true within study; external = generalizable.",g:"Validity"},
+{t:"Which Statistical Test?",b:"<b>t-test</b> = compare 2 means. <b>ANOVA</b> = 3+ means. <b>Chi-square</b> = categorical/proportions. (Correlation/regression = relationship between numeric variables.)",g:"Tests"},
+{t:"Errors & Power",b:"<b>Type I (α)</b> = false positive (saw an effect that wasn't there). <b>Type II (β)</b> = false negative (missed a real one). <b>Power = 1 − β</b>; ↑ with sample size. Want ≥ 80%.",g:"Inference"},
+{t:"p-value & CI",b:"<b>p<0.05</b> = reject null (statistically significant, ≠ clinically important). <b>95% CI</b> crossing 1.0 (RR/OR) or 0 (mean difference) = NOT significant.",g:"Inference"},
+{t:"Incidence vs Prevalence",b:"<b>Incidence</b> = new cases. <b>Prevalence</b> = all existing ≈ incidence × duration. Prolonging life (not curing) → ↑ prevalence.",g:"Epidemiology"},
+{t:"Prevention Levels",b:"<b>Primary</b> = prevent onset (vaccines, seatbelts). <b>Secondary</b> = screen/detect early (Pap, mammo). <b>Tertiary</b> = reduce complications of existing disease (rehab).",g:"Prevention"}
+];
+
+const MODES={
+  daily:{name:"Daily Dataset",ic:"📊",desc:"15 random questions across all biostats topics. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Sampling",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  two:{name:"The 2×2 Table",ic:"🎯",desc:"Biostats has no anatomy — THIS is the must-know core: sens/spec/PPV/NPV, prevalence, LRs.",pick:()=>shuffle(QBANK.filter(q=>q.m==="two"))},
+  design:{name:"Study Designs",ic:"🔬",desc:"Cohort, case-control, cross-sectional, RCT, and RR/OR/NNT/ARR.",pick:()=>shuffle(QBANK.filter(q=>q.m==="design"))},
+  bias:{name:"Bias & Validity",ic:"⚠️",desc:"Recall, selection, lead/length-time, confounding, precision vs accuracy.",pick:()=>shuffle(QBANK.filter(q=>q.m==="bias"))},
+  test:{name:"Tests & Inference",ic:"🧮",desc:"t-test/ANOVA/chi-square, p-values, CIs, type I/II error, power.",pick:()=>shuffle(QBANK.filter(q=>q.m==="test"))},
+  epi:{name:"Epi & Prevention",ic:"🌐",desc:"Incidence vs prevalence, screening, and the levels of prevention.",pick:()=>shuffle(QBANK.filter(q=>q.m==="epi"))}
+};
+const MODE_TAGS={two:"The 2×2 Table",design:"Study Designs",bias:"Bias / Validity",test:"Tests / Inference",epi:"Epidemiology / Prevention"};
+
+const SAVE_KEY="pvalue_panic_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">p</div>
+    <h1>P-VALUE PANIC</h1>
+    <div class="sub">Biostatistics · Epidemiology — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("two",m.two,"special")}${tile("design",m.design,"")}${tile("bias",m.bias,"")}${tile("test",m.test,"")}${tile("epi",m.epi,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy biostats tools — the 2×2 table, SnNOUT/SpPIN, RR vs OR, errors & power, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
+}
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:26px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">Biostats memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
+});
+menu();
+</script>
+</body>
+</html>

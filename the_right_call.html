@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>THE RIGHT CALL — Medical Ethics / Communication</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Libre+Franklin:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f0e7;
+  --bg2:#e8e3d5;
+  --panel:#fdfcf7;
+  --panel-hi:#f1ede1;
+  --cyan:#1e3a5f;        /* ink-navy primary (legal) */
+  --cyan-dim:#14273f;
+  --amber:#9a3324;       /* burgundy accent */
+  --amber-hi:#7c2818;
+  --red:#b91c1c;
+  --green:#166534;
+  --text:#23211c;
+  --dim:#6b6657;
+  --line:rgba(30,58,95,.16);
+  --glow:rgba(30,58,95,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Libre Franklin',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 18% 0%,rgba(30,58,95,.06),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(154,51,36,.05),transparent 55%),
+    linear-gradient(180deg,#f3f0e7,#e8e3d5);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px);
+  background-size:100% 30px;
+  mask-image:radial-gradient(ellipse at center,#000 33%,transparent 88%);opacity:.5;
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;
+  background:linear-gradient(150deg,var(--cyan),var(--cyan-dim));color:#fdfcf7;
+  font-family:'Playfair Display';font-weight:700;font-size:38px;margin-bottom:8px;box-shadow:0 4px 18px var(--glow)}
+h1{font-family:'Playfair Display';font-weight:800;font-size:40px;letter-spacing:.3px;color:var(--cyan)}
+.sub{font-family:'Courier Prime';font-size:11px;color:var(--dim);letter-spacing:2px;margin-top:3px;text-transform:uppercase}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(35,33,28,.05)}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.7}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 22px rgba(35,33,28,.12)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Playfair Display';font-weight:700;font-size:19px;margin:6px 0 5px;letter-spacing:.2px}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'Courier Prime';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'Courier Prime';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'Courier Prime';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:#ddd6c6;border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'Courier Prime';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 1px 2px rgba(35,33,28,.04)}
+.choice .k{font-family:'Courier Prime';font-size:13px;color:var(--cyan);font-weight:700;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(22,101,52,.10)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(185,28,28,.08)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.9}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease;box-shadow:0 1px 3px rgba(35,33,28,.06)}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'Courier Prime';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(154,51,36,.07);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Playfair Display';font-weight:700}
+
+.btn{font-family:'Playfair Display';font-weight:700;letter-spacing:.3px;border:none;border-radius:10px;padding:12px 22px;cursor:pointer;font-size:18px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#fdfcf7;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 4px 16px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Playfair Display';font-weight:800;font-size:80px;color:var(--cyan);line-height:1}
+.rank{font-family:'Courier Prime';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:8px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'Courier Prime';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:28px;color:var(--text);font-family:'Playfair Display';font-weight:800}
+
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber);box-shadow:0 1px 3px rgba(35,33,28,.05)}
+.vault-card h4{font-family:'Playfair Display';font-weight:700;color:var(--amber-hi);font-size:19px;margin-bottom:6px;letter-spacing:.2px}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'Courier Prime';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'Courier Prime';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'Courier Prime';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== PRINCIPLES & CAPACITY ===== */
+{m:"prin",q:"A competent adult refuses a life-saving blood transfusion for religious reasons. Respecting this refusal upholds which ethical principle?",c:["Autonomy","Beneficence","Justice","Nonmaleficence"],a:0,why:"Autonomy = a competent patient's right to self-determination. A capable, informed refusal must be honored even if it leads to harm or death.",p:"<b>Autonomy</b> usually wins: a capable adult can refuse ANY treatment, even life-saving care."},
+{m:"prin",q:"The ethical duty to act in the patient's best interest is which principle?",c:["Beneficence","Autonomy","Nonmaleficence","Justice"],a:0,why:"Beneficence = acting for the patient's benefit/well-being.",p:"<b>Beneficence</b> = do GOOD (act in the patient's best interest)."},
+{m:"prin",q:"The principle of 'first, do no harm' — avoiding interventions that cause net harm — is called what?",c:["Nonmaleficence","Beneficence","Justice","Autonomy"],a:0,why:"Nonmaleficence = the obligation to avoid causing harm; weighed against beneficence in risk/benefit decisions.",p:"<b>Nonmaleficence</b> = do NO harm. (Beneficence = do good — the two are weighed together.)"},
+{m:"prin",q:"Allocating scarce ICU beds fairly and without discrimination reflects which ethical principle?",c:["Justice","Autonomy","Beneficence","Fidelity"],a:0,why:"Justice = fair, equitable distribution of resources and treatment of similar cases alike.",p:"<b>Justice</b> = fairness in distributing benefits/burdens and treating like cases alike."},
+{m:"prin",q:"A physician assessing whether a patient can understand and reason through a SPECIFIC medical decision is evaluating which of the following — a clinical determination made at the bedside?",c:["Decision-making capacity","Competence","Beneficence","Fidelity"],a:0,why:"Capacity is a clinical, decision-specific judgment any physician can make. Competence is a global legal status decided by a court.",p:"<b>Capacity</b> = clinical, decision-specific (physician decides). <b>Competence</b> = legal, global (court decides)."},
+{m:"prin",q:"Decision-making capacity requires that a patient can communicate a choice, understand the information, and appreciate the consequences. What is the fourth required element?",c:["Reason about the options","Pass a cognitive screening test","Agree with the physician's recommendation","Be at least 18 years old"],a:0,why:"The four pillars of capacity: communicate a choice, understand, appreciate consequences, and reason/manipulate the information rationally. Agreeing with the doctor is NOT required.",p:"Capacity = <b>Communicate, Understand, Appreciate, Reason</b>. (Disagreeing with you ≠ lacking capacity.)"},
+{m:"prin",q:"Valid informed consent requires the patient to have capacity, receive adequate disclosure, and understand the information. The decision must also be made in what way?",c:["Voluntarily (free of coercion)","In writing only","With family approval","After a waiting period"],a:0,why:"Informed consent = capacity + disclosure + understanding + voluntariness (no coercion or undue influence).",p:"Informed consent = <b>capacity + disclosure + understanding + voluntariness</b>."},
+{m:"prin",q:"When an incapacitated patient has no advance directive and no designated proxy, who is generally the FIRST surrogate decision-maker?",c:["The spouse","The adult children","The parents","The attending physician"],a:0,why:"Typical surrogate hierarchy: spouse → adult children → parents → siblings → other relatives (exact order varies by state).",p:"Surrogate order: <b>spouse → adult children → parents → siblings</b>. (A named proxy beats all of them.)"},
+
+/* ===== CONSENT & CONFIDENTIALITY ===== */
+{m:"conf",q:"A 16-year-old asks to be tested and treated for a sexually transmitted infection without involving their parents. In most U.S. states, the physician should do what?",c:["Treat the minor and keep it confidential","Require parental consent first","Refuse until age 18","Notify the parents immediately"],a:0,why:"Minors can consent on their own for STI care (and usually contraception, pregnancy, and substance-use treatment) — confidentiality is maintained.",p:"Minors consent ALONE for: <b>STIs, contraception, pregnancy, substance abuse</b> (± mental health). Keep it confidential."},
+{m:"conf",q:"Which of the following makes a minor 'emancipated' and therefore able to consent to their own general medical care?",c:["Being married","Being 16 years old","Having a part-time job","A parent's verbal permission"],a:0,why:"Emancipation: married, in the military, financially self-supporting/living independently, a parent, or court-declared — then treated as an adult for consent.",p:"Emancipated = <b>Married, Military, financially independent, a parent</b>, or court-declared."},
+{m:"conf",q:"A psychiatric patient makes a credible, specific threat to kill a named individual. The physician's duty is to do what?",c:["Warn and protect the intended victim","Maintain strict confidentiality","Wait to see if the patient acts","Document it and do nothing further"],a:0,why:"Tarasoff duty to warn/protect: a serious, specific threat to an identifiable victim overrides confidentiality — notify the victim and/or authorities.",p:"<b>Tarasoff:</b> credible threat to a named person → duty to warn/protect. Safety > confidentiality."},
+{m:"conf",q:"A physician sees injuries on a child that are inconsistent with the caregiver's explanation and suspects abuse. They are required to do what?",c:["Report to child protective services","Gather definitive proof first","Confront the caregiver and drop it","Only act if the child confirms it"],a:0,why:"Suspected child (and elder/dependent) abuse is mandatorily reported on REASONABLE SUSPICION — proof is not required, and reporters are protected.",p:"Suspected child/elder abuse = <b>mandatory report on reasonable suspicion</b> (no proof needed)."},
+{m:"conf",q:"A patient is newly diagnosed with active tuberculosis. With respect to confidentiality, the physician must do what?",c:["Report it to the public health department","Keep it entirely confidential","Only report if the patient agrees","Report it only to the family"],a:0,why:"Certain communicable diseases (TB, syphilis, etc.) are reportable to public health — confidentiality yields to protecting the community.",p:"Reportable infectious diseases (TB, syphilis, measles...) = <b>notify public health</b>. Public safety exception."},
+{m:"conf",q:"A patient with newly diagnosed HIV refuses to tell their sexual partner. The physician should FIRST do what?",c:["Counsel and encourage the patient to disclose","Immediately call the partner","Do nothing — it's confidential","Report the patient to the police"],a:0,why:"First step: counsel/support the patient to inform the partner. If they still refuse and the partner is at clear risk, partner notification may be permitted/required per state law.",p:"HIV + unaware partner: <b>encourage the patient to disclose FIRST</b>; partner notification only if they refuse and risk persists."},
+{m:"conf",q:"Parents refuse a clearly life-saving blood transfusion for their young child on religious grounds. The physician should do what?",c:["Provide the transfusion (seek an emergency court order if needed)","Honor the parents' refusal","Discharge the child home","Delay until the parents reconsider"],a:0,why:"A child's life takes priority over parental autonomy — provide emergency life-saving treatment, obtaining a court order when time allows. (Competent ADULTS may refuse for themselves.)",p:"<b>Protect the child:</b> override parental refusal of life-saving care for a minor. Adults can refuse for themselves, not for their kids."},
+{m:"conf",q:"A 15-year-old privately discloses recreational drug use but is in no immediate danger. The physician should do what?",c:["Keep it confidential and counsel the teen","Tell the parents right away","Refuse to treat until parents are told","Report it to the school"],a:0,why:"Adolescent disclosures are kept confidential to preserve trust, unless there is serious/imminent danger to the patient or others.",p:"Teen confidentiality: <b>keep it private + counsel</b>, UNLESS serious danger (suicidality, abuse, driving impaired)."},
+
+/* ===== END OF LIFE / DECISION-MAKING ===== */
+{m:"eol",q:"A written document specifying a patient's wishes for future medical care should they lose the ability to decide is called what?",c:["An advance directive (living will)","A consent form","A discharge summary","A do-not-resuscitate bracelet"],a:0,why:"An advance directive / living will records care preferences in advance; it guides treatment if the patient becomes incapacitated.",p:"<b>Advance directive / living will</b> = written future-care wishes. A health-care proxy names a DECISION-MAKER."},
+{m:"eol",q:"A patient previously named a close friend as their health-care proxy. When the patient loses capacity, whose decisions take priority?",c:["The friend they named as proxy","The spouse","The adult children","The attending physician"],a:0,why:"A validly designated health-care proxy/agent outranks the default family hierarchy in making decisions for the patient.",p:"A <b>named proxy beats the family hierarchy</b> (even the spouse)."},
+{m:"eol",q:"Stopping a ventilator that is already in use (withdrawing care) compared with never starting it (withholding) is generally regarded as which of the following?",c:["Equivalent — both ethically and legally acceptable","Withdrawing is illegal; withholding is not","Withholding is illegal; withdrawing is not","Both are forms of euthanasia"],a:0,why:"Ethically and legally, withholding and withdrawing life-sustaining treatment are considered equivalent; neither is euthanasia.",p:"<b>Withholding = withdrawing</b> (ethically/legally equivalent). Neither is euthanasia."},
+{m:"eol",q:"When making decisions for an incapacitated patient who previously expressed clear wishes, the surrogate should use which standard?",c:["Substituted judgment","Best interest","The physician's preference","The family's majority vote"],a:0,why:"Substituted judgment = decide as the patient would have decided (using their known wishes/values). Best-interest standard applies only when wishes are unknown.",p:"Known wishes → <b>substituted judgment</b> (what the patient would want). Unknown → best interest."},
+{m:"eol",q:"A patient has no brainstem reflexes, a positive apnea test, and an irreversible known cause. Legally, this patient is considered what?",c:["Dead","In a coma","In a persistent vegetative state","Alive on life support"],a:0,why:"Brain death = irreversible loss of all brain function including the brainstem; it is legally equivalent to death (unlike a persistent vegetative state).",p:"<b>Brain death = legal death.</b> (PVS retains brainstem function and is NOT death.)"},
+{m:"eol",q:"When a requested intervention offers no physiologic benefit to the patient, the physician is generally NOT obligated to do what?",c:["Provide the futile treatment","Explain the prognosis","Offer comfort-focused care","Involve the ethics committee"],a:0,why:"Physicians are not obligated to provide non-beneficial (futile) interventions, though they should communicate, offer alternatives like palliative care, and may involve ethics.",p:"No duty to provide <b>futile/non-beneficial</b> treatment — but always communicate and offer comfort care."},
+{m:"eol",q:"A physician prescribes a lethal dose of medication that a terminally ill, competent patient then self-administers. This is termed what?",c:["Physician-assisted death","Euthanasia","Palliative sedation","Withdrawal of care"],a:0,why:"Physician-assisted death/suicide = the patient self-administers a clinician-prescribed lethal agent. Euthanasia = the physician administers it. Legality varies by jurisdiction.",p:"<b>Physician-assisted death</b> = patient self-administers. <b>Euthanasia</b> = physician administers."},
+{m:"eol",q:"Giving escalating opioids to relieve a dying patient's pain, accepting that doing so may hasten death, is justified by which principle?",c:["The principle of double effect","Euthanasia","The principle of justice","Substituted judgment"],a:0,why:"Double effect: an action with a good intended effect (pain relief) is permissible even if it has a foreseen but unintended bad effect (hastened death), provided the intent is relief.",p:"<b>Double effect:</b> opioids for comfort that may shorten life are OK — the INTENT is symptom relief, not death."},
+
+/* ===== COMMUNICATION ===== */
+{m:"comm",q:"Before disclosing a serious new diagnosis to a patient, the physician should FIRST do what?",c:["Assess what the patient already understands and wants to know","State the diagnosis bluntly","Lead with survival statistics","Tell the family before the patient"],a:0,why:"In the SPIKES framework, after Setting comes Perception — find out what the patient knows and how much they want to hear before delivering the news.",p:"SPIKES: <b>find out what they know FIRST</b> ('Ask before you tell'). Then get an Invitation, give Knowledge, address Emotion, Strategize."},
+{m:"comm",q:"A patient becomes tearful immediately after hearing a cancer diagnosis. The physician's BEST immediate response is to do what?",c:["Acknowledge and address the emotion","Continue with treatment details","Reassure that 'everything will be fine'","Step out to give them space"],a:0,why:"Respond to emotion before facts — an empathic statement ('I can see this is overwhelming') builds trust and lets the patient absorb information.",p:"<b>Address the emotion before the facts.</b> Name it, validate it, give space — then continue."},
+{m:"comm",q:"To best understand a patient's concerns at the start of a visit, the physician should primarily use which approach?",c:["Open-ended questions","Yes/no questions","Leading questions","A fixed checklist only"],a:0,why:"Open-ended questions ('Tell me more about...') elicit the patient's agenda and build rapport before narrowing down.",p:"Start with <b>open-ended questions</b> ('Tell me more...'). Narrow down later."},
+{m:"comm",q:"A patient is ambivalent about quitting smoking. The patient-centered technique of exploring their ambivalence and drawing out THEIR own reasons for change, rather than lecturing, is called what?",c:["Motivational interviewing","Confrontation","Directive counseling","Contingency contracting"],a:0,why:"Motivational interviewing = a collaborative, non-judgmental method that resolves ambivalence by eliciting the patient's own motivation for change.",p:"<b>Motivational interviewing</b> = explore ambivalence, elicit THEIR reasons. Don't lecture."},
+{m:"comm",q:"A patient is visibly angry about a long wait time. The best initial response is to do what?",c:["Acknowledge and validate their frustration","Become defensive and explain you're busy","Dismiss it and move on","Threaten to end the visit"],a:0,why:"Acknowledging and validating the emotion ('I'm sorry you waited so long; that's frustrating') de-escalates and preserves the relationship.",p:"Angry patient → <b>acknowledge + validate</b>, don't get defensive. Then problem-solve."},
+{m:"comm",q:"A medication error reached a patient and caused temporary harm. The physician should do what?",c:["Disclose the error honestly to the patient","Conceal it since the harm was temporary","Blame the nurse who administered it","Wait until the patient asks about it"],a:0,why:"Honest, prompt disclosure (with an apology) is ethically required and is associated with better trust and fewer lawsuits.",p:"Medical error → <b>disclose honestly + apologize</b>, regardless of harm severity."},
+{m:"comm",q:"A patient speaks limited English and an important treatment discussion is needed. The physician should communicate using whom?",c:["A professional medical interpreter","The patient's adult child","A bilingual family member","Hand gestures and simple words"],a:0,why:"Use a trained professional interpreter for accuracy and confidentiality; family members risk errors, bias, and breaches of privacy.",p:"Language barrier → <b>professional interpreter</b>, NOT family (accuracy + confidentiality)."},
+{m:"comm",q:"When a frightened patient asks if they are going to be fine, the physician should AVOID doing what?",c:["Giving false reassurance","Exploring the patient's specific fears","Providing honest information","Acknowledging uncertainty"],a:0,why:"Avoid false reassurance/empty promises ('everything will definitely be fine'); instead explore fears and give honest, compassionate information.",p:"Never give <b>false reassurance</b>. Explore the fear, be honest, acknowledge uncertainty."},
+
+/* ===== PROFESSIONALISM / SPECIAL SCENARIOS ===== */
+{m:"prof",q:"A physician notices that a colleague appears intoxicated just before starting a clinical shift. The appropriate action is to do what?",c:["Report to the supervisor / physician health program","Ignore it to avoid conflict","Quietly cover the colleague's patients","Confront them only after the shift"],a:0,why:"An impaired colleague is a patient-safety issue — report to a supervisor or physician health program; do not ignore it.",p:"Impaired colleague → <b>report</b> (supervisor / PHP). Patient safety first; ignoring it is unethical."},
+{m:"prof",q:"A patient offers an expensive personal gift that could create a sense of obligation. The physician should generally do what?",c:["Politely decline it","Accept it to avoid offending them","Accept it and reciprocate","Accept it if no one is watching"],a:0,why:"Small tokens may be accepted, but large or influence-creating gifts should be politely declined to preserve objectivity.",p:"Large/influential gifts → <b>politely decline</b>. Small tokens that don't impair judgment can be accepted."},
+{m:"prof",q:"A physician is asked to serve as the primary doctor for a close family member with a chronic illness. This is generally considered what?",c:["Inappropriate except for minor or emergency care","Encouraged for continuity","Required if no one else is available","Acceptable as long as it's free"],a:0,why:"Treating family/close friends compromises objectivity and confidentiality and is discouraged except for minor problems or emergencies.",p:"Treating family/friends = <b>discouraged</b> (objectivity, confidentiality). OK only for minor/emergency care."},
+{m:"prof",q:"A romantic or sexual relationship between a physician and a CURRENT patient is what?",c:["Always unethical and prohibited","Acceptable with mutual consent","Allowed if treatment is unrelated","Permissible after one visit"],a:0,why:"Sexual/romantic relationships with current patients are always prohibited due to the inherent power imbalance; even with former patients it's ethically fraught.",p:"Romance with a <b>current patient = never</b> (power imbalance). End the professional relationship first, and even then it's discouraged."},
+{m:"prof",q:"A physician sits on a drug company's paid advisory board and is also running a study of that same company's product. They must do what?",c:["Disclose the relationship","Keep it private to avoid bias claims","Quit the study secretly","Do nothing if results are honest"],a:0,why:"Financial relationships that could bias judgment must be disclosed to patients, institutions, and journals — transparency manages the conflict.",p:"Conflict of interest → <b>disclose it</b> (to patients, institution, journals). Transparency is the rule."},
+{m:"prof",q:"A competent, well-informed adult refuses a strongly recommended surgery. After confirming understanding, the physician should do what?",c:["Respect the decision and document it","Perform it anyway for their own good","Have the family override them","Discharge them for noncompliance"],a:0,why:"A capable, informed adult may refuse any treatment; the physician respects the choice, documents it, and keeps the door open.",p:"Capable adult refuses → <b>respect + document</b>. Autonomy beats beneficence here."},
+{m:"prof",q:"A competent adult Jehovah's Witness refuses a blood transfusion even though it could be life-saving. The physician must do what?",c:["Respect the refusal","Transfuse once the patient is unconscious","Get a court order to transfuse","Wait until the family agrees"],a:0,why:"A competent adult's informed refusal must be honored — autonomy applies even when refusal risks death. (This differs from refusing care for a minor child.)",p:"Competent adult JW → <b>respect the refusal</b> (autonomy). NOT the same as a parent refusing for a child."},
+{m:"prof",q:"A patient asks the physician to leave a sensitive but clinically relevant diagnosis OUT of the medical record. The physician should do what?",c:["Explain why accurate documentation is necessary and record it","Omit it as the patient requested","Record it in a separate hidden file","Refuse to keep treating the patient"],a:0,why:"The medical record must be accurate and complete; the physician explains the need for honest documentation (and the protections on records) rather than falsifying the chart.",p:"Can't falsify the chart → <b>document accurately</b> and explain why (continuity + safety + legal integrity)."}
+];
+
+const VAULT=[
+{t:"The Four Principles",b:"<b>Autonomy</b> (self-determination — usually wins) · <b>Beneficence</b> (do good) · <b>Nonmaleficence</b> (do no harm) · <b>Justice</b> (fair distribution).",g:"Principles"},
+{t:"Capacity vs Competence",b:"<b>Capacity</b> = clinical, decision-specific (any physician decides): Communicate, Understand, Appreciate, Reason. <b>Competence</b> = global legal status (a court decides). Disagreeing with you ≠ incapacity.",g:"Capacity"},
+{t:"Informed Consent",b:"Requires <b>capacity + disclosure + understanding + voluntariness</b> (no coercion). Exceptions: emergencies, waiver, therapeutic privilege (rare), incompetence.",g:"Consent"},
+{t:"Surrogate Hierarchy",b:"A <b>named proxy</b> outranks everyone. Otherwise: <b>spouse → adult children → parents → siblings → other relatives</b>. Use substituted judgment (their wishes) before best interest.",g:"Decision-making"},
+{t:"Minors Who Consent Alone",b:"Minors can usually consent on their own for: <b>STIs, contraception, pregnancy care, substance abuse</b> (± mental health). <b>Emancipated</b> = Married, Military, financially independent, a parent, or court-declared.",g:"Consent"},
+{t:"When to Break Confidentiality",b:"Confidentiality is the rule; SAFETY is the exception: <b>harm to self/others (Tarasoff), reportable infections (TB/syphilis), suspected child/elder abuse, impaired drivers</b> (some states).",g:"Confidentiality"},
+{t:"Protect the Child",b:"Override parental refusal of <b>life-saving</b> care for a MINOR (court order if needed). But a competent ADULT may refuse any treatment for themselves (e.g., Jehovah's Witness transfusion).",g:"Consent"},
+{t:"End-of-Life Equivalences",b:"<b>Withholding = withdrawing</b> (ethically/legally equal; neither is euthanasia). <b>Brain death = legal death</b> (PVS is not). No duty to provide <b>futile</b> care.",g:"End of life"},
+{t:"Assisted Death Terms",b:"<b>Physician-assisted death</b> = patient self-administers. <b>Euthanasia</b> = physician administers. <b>Double effect</b> = opioids for comfort that may hasten death (intent = relief) are acceptable.",g:"End of life"},
+{t:"SPIKES (Breaking Bad News)",b:"<b>S</b>etting · <b>P</b>erception (ask what they know FIRST) · <b>I</b>nvitation · <b>K</b>nowledge · <b>E</b>motion (respond to it) · <b>S</b>trategy/summary.",g:"Communication"},
+{t:"Communication Golden Rules",b:"<b>Ask before you tell</b> · <b>address EMOTION before facts</b> · use <b>open-ended questions</b> · acknowledge the angry patient · never give <b>false reassurance</b>.",g:"Communication"},
+{t:"Professional Musts",b:"<b>Report</b> impaired colleagues · <b>disclose</b> errors honestly · use a <b>professional interpreter</b> (not family) · <b>never</b> date a current patient · <b>disclose</b> conflicts of interest · don't treat your own family.",g:"Professionalism"},
+{t:"The Step-1 'Always' Answers",b:"On vignettes, the right answer usually: <b>asks/listens</b> (not tells), <b>addresses the emotion</b>, <b>respects a capable adult's autonomy</b>, <b>protects a child</b>, and <b>tells the truth</b>.",g:"Strategy"}
+];
+
+const MODES={
+  daily:{name:"Daily Consult",ic:"📋",desc:"15 random questions across all ethics & communication topics.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Dilemmas",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  prin:{name:"Principles & Capacity",ic:"⚖️",desc:"Ethics has no anatomy — THIS is the core: the four principles, capacity, consent, surrogates.",pick:()=>shuffle(QBANK.filter(q=>q.m==="prin"))},
+  conf:{name:"Consent & Confidentiality",ic:"🔒",desc:"Minors, emancipation, Tarasoff, mandatory reporting, the child-vs-adult rule.",pick:()=>shuffle(QBANK.filter(q=>q.m==="conf"))},
+  eol:{name:"End of Life",ic:"🕊️",desc:"Advance directives, withholding vs withdrawing, brain death, double effect.",pick:()=>shuffle(QBANK.filter(q=>q.m==="eol"))},
+  comm:{name:"Communication",ic:"💬",desc:"SPIKES, addressing emotion, motivational interviewing, error disclosure, interpreters.",pick:()=>shuffle(QBANK.filter(q=>q.m==="comm"))},
+  prof:{name:"Professionalism",ic:"🎓",desc:"Impaired colleagues, gifts, boundaries, conflicts of interest, refusal of care.",pick:()=>shuffle(QBANK.filter(q=>q.m==="prof"))}
+};
+const MODE_TAGS={prin:"Principles / Capacity",conf:"Consent / Confidentiality",eol:"End of Life",comm:"Communication",prof:"Professionalism"};
+
+const SAVE_KEY="the_right_call_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">§</div>
+    <h1>The Right Call</h1>
+    <div class="sub">Medical Ethics · Communication — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("prin",m.prin,"special")}${tile("conf",m.conf,"")}${tile("eol",m.eol,"")}${tile("comm",m.comm,"")}${tile("prof",m.prof,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy ethics tools — the four principles, capacity vs competence, confidentiality exceptions, SPIKES, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
+}
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:34px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">Ethics memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
+});
+menu();
+</script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CYTOKINE CITY — Immunology</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0a14;
+  --bg2:#13101f;
+  --panel:#1a1530;
+  --panel-hi:#241d40;
+  --cyan:#fbbf24;        /* gold primary (sentinel) */
+  --cyan-dim:#a16207;
+  --amber:#818cf8;       /* indigo accent */
+  --amber-hi:#a5b4fc;
+  --red:#f87171;
+  --green:#34d399;
+  --text:#f3ecda;
+  --dim:#968b76;
+  --line:rgba(251,191,36,.15);
+  --glow:rgba(251,191,36,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Be Vietnam Pro',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 17% 0%,rgba(251,191,36,.10),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(129,140,248,.08),transparent 55%),
+    linear-gradient(180deg,#0c0a14,#13101f);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--line) 1px,transparent 1px);
+  background-size:28px 28px;
+  mask-image:radial-gradient(ellipse at center,#000 33%,transparent 88%);
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;
+  background:linear-gradient(150deg,var(--cyan),var(--cyan-dim));color:#1a1530;
+  font-family:'Bricolage Grotesque';font-weight:800;font-size:32px;margin-bottom:8px;box-shadow:0 0 24px var(--glow)}
+h1{font-family:'Bricolage Grotesque';font-weight:800;font-size:36px;letter-spacing:.5px;color:var(--cyan)}
+.sub{font-family:'Spline Sans Mono';font-size:11px;color:var(--dim);letter-spacing:2px;margin-top:3px;text-transform:uppercase}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.6}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Bricolage Grotesque';font-weight:700;font-size:17px;margin:8px 0 5px;letter-spacing:.2px}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'Spline Sans Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'Spline Sans Mono';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'Spline Sans Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'Spline Sans Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'Spline Sans Mono';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(52,211,153,.13)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(248,113,113,.13)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'Spline Sans Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(129,140,248,.10);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Bricolage Grotesque';font-weight:700}
+
+.btn{font-family:'Bricolage Grotesque';font-weight:700;letter-spacing:.5px;border:none;border-radius:10px;padding:13px 22px;cursor:pointer;font-size:16px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#1a1530;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Bricolage Grotesque';font-weight:800;font-size:72px;color:var(--cyan);line-height:1}
+.rank{font-family:'Spline Sans Mono';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:8px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'Spline Sans Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:26px;color:var(--text);font-family:'Bricolage Grotesque';font-weight:800}
+
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Bricolage Grotesque';font-weight:700;color:var(--amber-hi);font-size:17px;margin-bottom:7px;letter-spacing:.2px}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'Spline Sans Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'Spline Sans Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'Spline Sans Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== IMMUNE CELLS / ANATOMY ===== */
+{m:"cells",q:"T lymphocytes mature and undergo positive and negative selection in which organ?",c:["Thymus","Bone marrow","Spleen","Lymph node"],a:0,why:"The thymus (3rd pharyngeal pouch) is where T cells mature; B cells mature in the bone marrow.",p:"<b>T cells mature in the Thymus</b>; B cells in the Bone marrow. (T before B in 'thymus' selection.)"},
+{m:"cells",q:"During T-cell development, positive selection (testing the ability to bind self-MHC) occurs in which region of the thymus?",c:["Cortex","Medulla","Paracortex","Germinal center"],a:0,why:"Positive selection = thymic cortex (T cells that can't bind self-MHC die). Negative selection = medulla.",p:"<b>Cortex = positive selection</b> (keep cells that see MHC). Medulla = negative selection."},
+{m:"cells",q:"Negative selection — deleting T cells that bind self-antigen too strongly, mediated by the AIRE protein — occurs in which region of the thymus?",c:["Medulla","Cortex","Subcapsular zone","Hassall corpuscle lumen"],a:0,why:"Negative selection = thymic medulla; AIRE drives expression of self-antigens so autoreactive T cells are deleted (AIRE defect → APECED).",p:"<b>Medulla = negative selection</b> (AIRE shows self-antigens). AIRE mutation → autoimmune polyendocrinopathy."},
+{m:"cells",q:"MHC class I molecules present endogenous (intracellular, e.g., viral) antigens to which T cells?",c:["CD8+ cytotoxic T cells","CD4+ helper T cells","B cells","NK cells"],a:0,why:"MHC I (on all nucleated cells) presents intracellular peptides to CD8+ T cells. Rule of 8: MHC I × CD8.",p:"MHC <b>I → CD8</b> (1×8). All nucleated cells, endogenous antigen."},
+{m:"cells",q:"MHC class II molecules, expressed on antigen-presenting cells, present exogenous antigens to which T cells?",c:["CD4+ helper T cells","CD8+ cytotoxic T cells","NK cells","Plasma cells"],a:0,why:"MHC II (on APCs: dendritic cells, macrophages, B cells) presents extracellular peptides to CD4+ T cells. Rule of 8: MHC II × CD4.",p:"MHC <b>II → CD4</b> (2×4=8). APCs only, exogenous antigen."},
+{m:"cells",q:"Which cells kill virus-infected or tumor cells that have DOWNREGULATED MHC class I, without requiring prior sensitization?",c:["Natural killer (NK) cells","Cytotoxic T cells","Plasma cells","Neutrophils"],a:0,why:"NK cells (innate) kill cells lacking MHC I ('missing self') using perforin/granzyme; also do antibody-dependent cytotoxicity.",p:"NK cells = innate, kill <b>'missing self'</b> (low MHC I). Perforin + granzyme. Enhanced by IL-2/IL-12."},
+{m:"cells",q:"Th1 helper cells secrete IFN-γ and activate macrophages and cytotoxic T cells. Which cytokine drives differentiation toward the Th1 subset?",c:["IL-12","IL-4","IL-10","TGF-β"],a:0,why:"IL-12 (from macrophages/dendritic cells) drives Th1; IL-4 drives Th2. Th1 makes IFN-γ; Th2 makes IL-4/5/13.",p:"<b>IL-12 → Th1</b> (cell-mediated, IFN-γ). IL-4 → Th2 (humoral, IgE/eosinophils)."},
+{m:"cells",q:"Regulatory T cells that suppress immune responses are identified by which transcription factor, defective in the IPEX syndrome?",c:["FOXP3","T-bet","GATA-3","RORγt"],a:0,why:"Tregs are CD4+CD25+ and express FOXP3; they secrete IL-10/TGF-β. FOXP3 defect → IPEX (autoimmunity).",p:"Treg marker = <b>FOXP3</b>. Defect → IPEX. Tregs secrete IL-10 + TGF-β (anti-inflammatory)."},
+
+/* ===== CYTOKINES ===== */
+{m:"cyto",q:"Which cytokine, released by macrophages, is a key endogenous pyrogen that causes fever and acute inflammation?",c:["IL-1","IL-2","IL-4","IL-10"],a:0,why:"IL-1 (with IL-6 and TNF-α) is an endogenous pyrogen and acute-phase mediator from macrophages.",p:"<b>'Hot T-bone stEAk':</b> IL-1 = fever (Hot)."},
+{m:"cyto",q:"Which cytokine, secreted by helper T cells, stimulates the growth and proliferation of T cells?",c:["IL-2","IL-1","IL-5","IL-8"],a:0,why:"IL-2 is the T-cell growth factor (autocrine/paracrine); also expands NK cells and Tregs.",p:"IL-2 = stimulates <b>T cells</b> (the 'T-bone' of Hot T-bone stEAk)."},
+{m:"cyto",q:"Which cytokine promotes B-cell class switching to IgE and drives Th2 differentiation?",c:["IL-4","IL-2","IL-8","TNF-α"],a:0,why:"IL-4 induces IgE class switching, promotes Th2, and (with IL-13) drives allergic responses.",p:"IL-<b>4 → IgE</b> (and Th2). 'stEAk': IL-4 = IgE."},
+{m:"cyto",q:"Which cytokine stimulates eosinophil production and B-cell class switching to IgA?",c:["IL-5","IL-1","IL-12","TNF-α"],a:0,why:"IL-5 promotes eosinophils and IgA class switching — central to parasite defense and allergic eosinophilia.",p:"IL-<b>5 → eosinophils + IgA</b>. 'stEAk': E = eosinophils, A = IgA."},
+{m:"cyto",q:"Which cytokine stimulates the liver to produce acute-phase reactants such as C-reactive protein and fibrinogen?",c:["IL-6","IL-2","IL-4","IL-5"],a:0,why:"IL-6 drives hepatic acute-phase protein synthesis and is also a pyrogen.",p:"IL-<b>6 = acute-phase reactants</b> (CRP, fibrinogen, hepcidin) + fever."},
+{m:"cyto",q:"Which cytokine is a major chemoattractant that recruits neutrophils to a site of infection?",c:["IL-8","IL-2","IL-4","IL-10"],a:0,why:"IL-8 (CXCL8) is the principal neutrophil chemotactic factor.",p:"IL-<b>8 = recruits Neutrophils</b> ('clean up on aisle 8')."},
+{m:"cyto",q:"Which cytokine, secreted by regulatory and Th2 cells, is anti-inflammatory and dampens the immune response?",c:["IL-10","IL-1","IL-6","TNF-α"],a:0,why:"IL-10 (with TGF-β) is the major anti-inflammatory cytokine — it inhibits Th1 and macrophage activation.",p:"IL-<b>10 = anti-inflammatory</b> ('cool down'). Pairs with TGF-β."},
+{m:"cyto",q:"Which cytokine mediates septic shock and cachexia, and maintains granulomas — so that blocking it can reactivate latent tuberculosis?",c:["TNF-α","IL-2","IL-4","IL-5"],a:0,why:"TNF-α causes septic shock, cachexia, and granuloma maintenance; anti-TNF biologics (infliximab) require TB screening.",p:"<b>TNF-α</b> = septic shock + cachexia + granulomas. Anti-TNF → screen for latent TB."},
+
+/* ===== HYPERSENSITIVITY ===== */
+{m:"hyper",q:"Anaphylaxis and atopic allergy, mediated by IgE-triggered mast-cell degranulation, are which hypersensitivity type?",c:["Type I","Type II","Type III","Type IV"],a:0,why:"Type I = immediate, IgE-mediated mast cell/basophil degranulation → histamine release; anaphylaxis, atopy, asthma.",p:"<b>ACID — Type I = Anaphylaxis/Allergic</b> (IgE, immediate)."},
+{m:"hyper",q:"Autoimmune hemolytic anemia and Goodpasture syndrome, where antibodies bind antigens on specific cells or tissues, are which hypersensitivity type?",c:["Type II","Type I","Type III","Type IV"],a:0,why:"Type II = antibody (IgG/IgM) directed at fixed cell-surface/tissue antigens → cytotoxicity (also Graves, myasthenia, rheumatic fever).",p:"<b>ACID — Type II = antiBody/Cytotoxic</b> (antibody vs a specific cell)."},
+{m:"hyper",q:"Serum sickness and the immune-complex deposition seen in systemic lupus erythematosus represent which hypersensitivity type?",c:["Type III","Type I","Type II","Type IV"],a:0,why:"Type III = antigen-antibody (immune) complexes deposit in tissues → complement activation, neutrophil damage (SLE, serum sickness, PSGN).",p:"<b>ACID — Type III = Immune Complex</b> (Ag-Ab complexes deposit). SLE, serum sickness."},
+{m:"hyper",q:"The delayed, T-cell-mediated reaction of a positive PPD tuberculin skin test and contact dermatitis is which hypersensitivity type?",c:["Type IV","Type I","Type II","Type III"],a:0,why:"Type IV = delayed (48–72 h), T-cell mediated, NO antibodies; PPD, contact dermatitis, GVHD, granulomas.",p:"<b>ACID — Type IV = Delayed</b> (T cells, no antibody). PPD, poison ivy, GVHD."},
+{m:"hyper",q:"Which hypersensitivity reaction is the ONLY one not mediated by antibodies?",c:["Type IV","Type I","Type II","Type III"],a:0,why:"Type IV is purely T-cell mediated (CD4/CD8); types I–III all involve antibodies (IgE or IgG/IgM).",p:"Type <b>IV = no antibodies</b> (T cells only). Types I–III are all antibody-based."},
+{m:"hyper",q:"The immediate wheal-and-flare and bronchoconstriction of anaphylaxis are caused by release of which preformed mediator from mast cells?",c:["Histamine","Bradykinin","Complement C3a only","Interferon-gamma"],a:0,why:"Preformed histamine (and tryptase) from mast cell granules drives vasodilation, increased permeability, and bronchospasm.",p:"Anaphylaxis mediator = <b>histamine</b> (preformed, in mast cell granules). Tx: epinephrine."},
+{m:"hyper",q:"A localized type III reaction at the site of an intradermal antigen injection, with immune-complex deposition causing edema and necrosis, is called what?",c:["Arthus reaction","Anaphylaxis","Wheal-and-flare","Granuloma"],a:0,why:"The Arthus reaction is a local type III response (e.g., to a vaccine booster) → immune complexes, complement, local vasculitis/necrosis.",p:"Arthus reaction = <b>local type III</b> (immune complexes at injection site)."},
+{m:"hyper",q:"Rh incompatibility causing hemolytic disease of the newborn (maternal anti-D antibodies attacking fetal red cells) is which hypersensitivity type?",c:["Type II","Type I","Type III","Type IV"],a:0,why:"Anti-D IgG binds fetal RBC antigens → antibody-mediated cell destruction = type II.",p:"Hemolytic disease of the newborn = <b>type II</b> (antibody vs RBC antigen). Prevent with RhoGAM."},
+
+/* ===== IMMUNODEFICIENCIES ===== */
+{m:"def",q:"A boy develops recurrent bacterial infections after 6 months of age, with absent B cells and very low immunoglobulins of all classes, from a BTK mutation. What is the diagnosis?",c:["Bruton (X-linked) agammaglobulinemia","Selective IgA deficiency","DiGeorge syndrome","Chronic granulomatous disease"],a:0,why:"X-linked agammaglobulinemia = BTK defect → B cells can't mature → no germinal centers, absent tonsils, low all Ig; presents after maternal IgG wanes (~6 mo).",p:"Bruton = <b>BTK</b>, no B cells, absent tonsils, after 6 mo (maternal IgG gone). Boys."},
+{m:"def",q:"The most common primary immunodeficiency — often asymptomatic but causing anaphylaxis to blood products and recurrent sinopulmonary/GI infections — is what?",c:["Selective IgA deficiency","Bruton agammaglobulinemia","SCID","Chediak-Higashi syndrome"],a:0,why:"Selective IgA deficiency is the most common; many are asymptomatic, but transfused IgA can trigger anaphylaxis; mucosal infections, atopy, celiac association.",p:"Most common immunodeficiency = <b>selective IgA deficiency</b>. Anaphylaxis to IgA-containing blood products."},
+{m:"def",q:"Tetany from hypocalcemia, recurrent viral and fungal infections, and conotruncal cardiac defects from a 22q11.2 deletion describe which syndrome?",c:["DiGeorge syndrome","SCID","Wiskott-Aldrich syndrome","Job syndrome"],a:0,why:"DiGeorge = 22q11 deletion → failure of 3rd/4th pharyngeal pouches → thymic + parathyroid aplasia (no T cells, hypocalcemia) + cardiac/facial defects.",p:"DiGeorge = <b>22q11</b>, no thymus (↓T cells) + no parathyroids (hypocalcemia) + cardiac. 'CATCH-22.'"},
+{m:"def",q:"A newborn has recurrent severe viral, fungal, and bacterial infections, failure to thrive, and absent T- and B-cell function (e.g., from adenosine deaminase deficiency). What is the diagnosis?",c:["Severe combined immunodeficiency","Selective IgA deficiency","Chronic granulomatous disease","Leukocyte adhesion deficiency"],a:0,why:"SCID = defective T cells (and consequently B-cell help); causes include IL-2R γ-chain mutation (X-linked) and ADA deficiency; no thymic shadow; needs bone marrow transplant.",p:"SCID = <b>no T and B function</b> (ADA deficiency or IL-2Rγ). 'Bubble boy.' No thymic shadow. BMT cures."},
+{m:"def",q:"Recurrent infections with catalase-positive organisms (Staph aureus, Serratia, Aspergillus) and an abnormal dihydrorhodamine flow-cytometry test indicate a defect in which enzyme?",c:["NADPH oxidase","Myeloperoxidase","Adenosine deaminase","Lysosomal trafficking regulator (LYST)"],a:0,why:"Chronic granulomatous disease = NADPH oxidase defect → no respiratory burst → susceptibility to catalase-positive organisms; DHR/nitroblue tetrazolium test abnormal.",p:"CGD = <b>NADPH oxidase</b>, catalase-positive bugs, abnormal DHR test."},
+{m:"def",q:"Partial albinism, recurrent pyogenic infections, peripheral neuropathy, and giant granules in neutrophils (from a LYST mutation) describe which syndrome?",c:["Chediak-Higashi syndrome","Chronic granulomatous disease","Leukocyte adhesion deficiency","Wiskott-Aldrich syndrome"],a:0,why:"Chediak-Higashi = LYST defect → impaired phagolysosome fusion → giant granules, partial albinism, neuropathy, recurrent infections, bleeding.",p:"Chediak-Higashi = <b>LYST</b>, giant granules, partial albinism, neuropathy."},
+{m:"def",q:"Delayed umbilical cord separation, recurrent skin infections WITHOUT pus formation, and a markedly elevated neutrophil count indicate which deficiency?",c:["Leukocyte adhesion deficiency","Chronic granulomatous disease","DiGeorge syndrome","Selective IgA deficiency"],a:0,why:"LAD = defective CD18 (integrin) → neutrophils can't adhere/extravasate → no pus, delayed cord separation, leukocytosis.",p:"LAD = <b>CD18/integrin defect</b>: delayed cord separation, NO pus, high neutrophil count."},
+{m:"def",q:"An X-linked disease with the triad of thrombocytopenia, eczema, and recurrent infections (from a WAS gene mutation) is what?",c:["Wiskott-Aldrich syndrome","DiGeorge syndrome","Bruton agammaglobulinemia","Chediak-Higashi syndrome"],a:0,why:"Wiskott-Aldrich = WAS gene defect (X-linked) → triad of thrombocytopenia, eczema, recurrent infections; ↑IgE/IgA, ↓IgM.",p:"Wiskott-Aldrich = <b>WATER</b>: Wiskott-Aldrich, Thrombocytopenia, Eczema, Recurrent infections. X-linked."},
+
+/* ===== ANTIBODIES / MHC / COMPLEMENT ===== */
+{m:"ig",q:"Which immunoglobulin is the most abundant in serum, crosses the placenta, opsonizes, and mediates the secondary immune response?",c:["IgG","IgM","IgA","IgE"],a:0,why:"IgG = most abundant; crosses placenta (neonatal immunity), fixes complement, opsonizes, dominates the secondary response.",p:"IgG = <b>most abundant, crosses placenta, secondary response, opsonization</b>."},
+{m:"ig",q:"Which immunoglobulin is a pentamer, appears first in the primary response, and is the most efficient at fixing complement?",c:["IgM","IgG","IgA","IgD"],a:0,why:"IgM = pentamer (10 binding sites), first antibody made in the primary response, best complement activator; too big to cross the placenta.",p:"IgM = <b>pentaMer, priMary response, coMpleMent</b> (lots of M's)."},
+{m:"ig",q:"Which immunoglobulin is found in secretions (saliva, tears, breast milk) as a dimer with a secretory component and protects mucosal surfaces?",c:["IgA","IgG","IgM","IgE"],a:0,why:"IgA = secretory dimer (J chain + secretory component) guarding mucosa; passed in breast milk (passive immunity).",p:"IgA = <b>mucosal/secretory dimer</b>, breast milk. Deficiency = most common immunodeficiency."},
+{m:"ig",q:"Which immunoglobulin binds mast cells and basophils to mediate type I hypersensitivity and defends against parasites?",c:["IgE","IgG","IgA","IgM"],a:0,why:"IgE binds Fc receptors on mast cells/basophils → degranulation in allergy/anaphylaxis; also mediates antiparasitic (eosinophil) responses.",p:"IgE = <b>allergy + parasites</b> (lowest serum concentration). Binds mast cells/basophils."},
+{m:"ig",q:"T-cell activation requires signal 1 (TCR engaging MHC-peptide) plus a costimulatory signal 2 between which two molecules?",c:["B7 and CD28","Fas and FasL","MHC II and CD4","ICAM-1 and LFA-1"],a:0,why:"Signal 2 = B7 (CD80/86 on APC) binding CD28 (on T cell); without it, the T cell becomes anergic.",p:"T-cell activation: signal 1 = TCR–MHC; signal 2 = <b>B7–CD28</b>. No signal 2 → anergy."},
+{m:"ig",q:"B-cell class switching requires the helper T cell's costimulatory ligand to engage which receptor on the B cell (defective in hyper-IgM syndrome)?",c:["CD40","CD28","B7","MHC class I"],a:0,why:"CD40L (on activated Th cells) binds CD40 on B cells → enables class switching; defective CD40L → hyper-IgM syndrome (high IgM, low IgG/IgA/IgE).",p:"Class switch = T cell's ligand binds <b>CD40</b> on B cells. Defect → hyper-IgM syndrome."},
+{m:"ig",q:"The CLASSICAL complement pathway is activated by which trigger?",c:["Antigen-bound IgG or IgM","Spontaneous hydrolysis on microbial surfaces","Mannose on pathogen surfaces","Lipopolysaccharide alone"],a:0,why:"Classical pathway = C1 binding antigen-antibody complexes (IgG or IgM). Alternative = microbial surfaces; lectin = mannose-binding.",p:"Classical = <b>IgG/IgM immune complexes</b> ('GM makes classic cars'). Alternative = microbes. Lectin = mannose."},
+{m:"ig",q:"A deficiency of the late complement components (C5–C9, which form the membrane attack complex) most characteristically predisposes to infection with which organism?",c:["Neisseria","Streptococcus pneumoniae","Pseudomonas","Candida"],a:0,why:"MAC (C5–C9) is needed to lyse Neisseria; terminal complement deficiency → recurrent Neisseria meningitis/gonococcemia.",p:"Late complement (C5–9 / MAC) deficiency = <b>recurrent Neisseria</b>."}
+];
+
+const VAULT=[
+{t:"Hot T-Bone stEAk (Cytokines)",b:"<b>IL-1</b> = fever (Hot) · <b>IL-2</b> = stimulates T cells (T-bone) · <b>IL-3</b> = bone marrow · <b>IL-4</b> = IgE · <b>IL-5</b> = eosinophils + IgA (stEAk).",g:"Cytokines"},
+{t:"Clean Up on Aisle 6 & 8",b:"<b>IL-6</b> = acute-phase reactants (CRP, fibrinogen) + fever. <b>IL-8</b> = recruits Neutrophils. <b>IL-10 + TGF-β</b> = anti-inflammatory (cool down). <b>IL-12</b> = Th1.",g:"Cytokines"},
+{t:"TNF-α",b:"Mediates <b>septic shock + cachexia + granuloma maintenance</b>. Anti-TNF biologics (infliximab) → screen for latent TB (reactivation risk).",g:"Cytokines"},
+{t:"MHC Rule of 8",b:"<b>MHC I × CD8 = 8</b> (all nucleated cells, endogenous antigen, → cytotoxic T cells). <b>MHC II × CD4 = 8</b> (APCs only, exogenous antigen, → helper T cells).",g:"Cell biology"},
+{t:"Thymic Selection",b:"<b>Cortex = positive</b> selection (keep cells that bind self-MHC). <b>Medulla = negative</b> selection (delete autoreactive cells; AIRE shows self-antigens).",g:"T cells"},
+{t:"Two-Signal Activation",b:"<b>T cell:</b> signal 1 = TCR–MHC-peptide; signal 2 = <b>B7–CD28</b> (no signal 2 → anergy). <b>Class switch:</b> CD40L–CD40 (defect → hyper-IgM).",g:"Activation"},
+{t:"Hypersensitivity = ACID",b:"<b>I</b> = Anaphylaxis/Allergy (IgE). <b>II</b> = antiBody/Cytotoxic (IgG/IgM vs a cell). <b>III</b> = Immune Complex (SLE, serum sickness). <b>IV</b> = Delayed (T cells only, PPD, contact).",g:"Hypersensitivity"},
+{t:"Antibody Isotypes",b:"<b>IgG</b> = most abundant, placenta, opsonize, secondary. <b>IgM</b> = pentamer, primary, complement. <b>IgA</b> = mucosa/dimer/breast milk. <b>IgE</b> = allergy/parasites. <b>IgD</b> = naive B cell.",g:"Antibodies"},
+{t:"B-Cell Defects (encapsulated bugs)",b:"<b>Bruton</b> = BTK, no B cells, after 6 mo, boys. <b>Selective IgA</b> = most common, anaphylaxis to blood products. <b>Hyper-IgM</b> = CD40L defect. <b>CVID</b> = adult-onset, ↑lymphoma/autoimmune.",g:"Immunodeficiency"},
+{t:"T-Cell & Combined Defects",b:"<b>DiGeorge</b> = 22q11, no thymus (↓T) + hypocalcemia + cardiac ('CATCH-22'). <b>SCID</b> = no T and B (ADA or IL-2Rγ), bubble boy, BMT cures.",g:"Immunodeficiency"},
+{t:"Phagocyte Defects",b:"<b>CGD</b> = NADPH oxidase, catalase-positive bugs, abnormal DHR. <b>Chediak-Higashi</b> = LYST, giant granules, albinism. <b>LAD</b> = CD18, no pus, delayed cord, ↑neutrophils.",g:"Immunodeficiency"},
+{t:"Complement Deficiencies",b:"<b>C3</b> = severe pyogenic + immune-complex disease. <b>C5–C9 (MAC)</b> = recurrent Neisseria. <b>C1 inhibitor</b> = hereditary angioedema (avoid ACE inhibitors).",g:"Complement"},
+{t:"Wiskott-Aldrich = WATER",b:"<b>W</b>iskott-<b>A</b>ldrich, <b>T</b>hrombocytopenia, <b>E</b>czema, <b>R</b>ecurrent infections. X-linked, WAS gene, ↑IgE/IgA, ↓IgM.",g:"Immunodeficiency"}
+];
+
+const MODES={
+  daily:{name:"Daily Defense",ic:"🛡️",desc:"15 random questions across all immunology topics. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Response",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  cells:{name:"Immune Anatomy & Cells",ic:"🦴",desc:"Thymic selection, MHC I/II, T-cell subsets, NK cells, Tregs.",pick:()=>shuffle(QBANK.filter(q=>q.m==="cells"))},
+  cyto:{name:"Cytokine Lab",ic:"📡",desc:"The high-yield interleukins, interferons, and TNF (Hot T-bone stEAk).",pick:()=>shuffle(QBANK.filter(q=>q.m==="cyto"))},
+  hyper:{name:"Hypersensitivity",ic:"⚡",desc:"Types I–IV (ACID) with the classic disease examples.",pick:()=>shuffle(QBANK.filter(q=>q.m==="hyper"))},
+  def:{name:"Immunodeficiencies",ic:"🚨",desc:"B-cell, T-cell, combined, phagocyte, and complement defects.",pick:()=>shuffle(QBANK.filter(q=>q.m==="def"))},
+  ig:{name:"Antibodies & MHC",ic:"🧩",desc:"Ig isotypes, MHC rule of 8, costimulation, complement pathways.",pick:()=>shuffle(QBANK.filter(q=>q.m==="ig"))}
+};
+const MODE_TAGS={cells:"Immune Cells / Anatomy",cyto:"Cytokines",hyper:"Hypersensitivity",def:"Immunodeficiency",ig:"Antibodies / MHC"};
+
+const SAVE_KEY="cytokine_city_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">Y</div>
+    <h1>CYTOKINE CITY</h1>
+    <div class="sub">Immunology · Cytokines · Hypersensitivity — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("cells",m.cells,"special")}${tile("cyto",m.cyto,"")}${tile("hyper",m.hyper,"")}${tile("def",m.def,"")}${tile("ig",m.ig,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy immuno tools — Hot T-bone stEAk, MHC rule of 8, ACID hypersensitivity, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
+}
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:30px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">Immunology memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
+});
+menu();
+</script>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HEME HUSTLE — Hematology / Oncology</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Schibsted+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0608;
+  --bg2:#140a0d;
+  --panel:#1c0f13;
+  --panel-hi:#2a151b;
+  --cyan:#fb3a5c;        /* crimson primary (blood) */
+  --cyan-dim:#be123c;
+  --amber:#fbbf24;       /* gold accent */
+  --amber-hi:#fde047;
+  --red:#64748b;         /* WRONG = slate (avoids clash with crimson theme) */
+  --green:#34d399;       /* correct */
+  --text:#fbe9ec;
+  --dim:#a08188;
+  --line:rgba(251,58,92,.15);
+  --glow:rgba(251,58,92,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Schibsted Grotesk',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 18% 0%,rgba(251,58,92,.12),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(251,191,36,.06),transparent 55%),
+    linear-gradient(180deg,#0b0608,#140a0d);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--line) 1px,transparent 1px);
+  background-size:27px 27px;
+  mask-image:radial-gradient(ellipse at center,#000 33%,transparent 88%);
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50% 50% 50% 8%;
+  background:linear-gradient(150deg,var(--cyan),var(--cyan-dim));color:#fff;
+  font-family:'Syne';font-weight:800;font-size:23px;margin-bottom:8px;box-shadow:0 0 24px var(--glow);transform:rotate(-4deg)}
+h1{font-family:'Syne';font-weight:800;font-size:38px;letter-spacing:1px;color:var(--cyan)}
+.sub{font-family:'Fira Code';font-size:11px;color:var(--dim);letter-spacing:2px;margin-top:3px;text-transform:uppercase}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.6}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Syne';font-weight:700;font-size:18px;margin:7px 0 5px;letter-spacing:.3px}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'Fira Code';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'Fira Code';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'Fira Code';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'Fira Code';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'Fira Code';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(52,211,153,.13)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(100,116,139,.16)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'Fira Code';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(251,191,36,.10);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Syne';font-weight:700}
+
+.btn{font-family:'Syne';font-weight:700;letter-spacing:.5px;border:none;border-radius:10px;padding:13px 22px;cursor:pointer;font-size:17px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#fff;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Syne';font-weight:800;font-size:74px;color:var(--cyan);line-height:1}
+.rank{font-family:'Fira Code';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:8px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'Fira Code';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:26px;color:var(--text);font-family:'Syne';font-weight:800}
+
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Syne';font-weight:700;color:var(--amber-hi);font-size:18px;margin-bottom:7px;letter-spacing:.3px}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'Fira Code';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'Fira Code';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'Fira Code';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== HEME ANATOMY & CELL LINES ===== */
+{m:"anat",q:"Which region of the spleen filters the blood and removes aged or damaged red blood cells?",c:["Red pulp","White pulp","Marginal zone","Splenic hilum"],a:0,why:"Red pulp = mechanical filter (cords of Billroth + sinusoids) removing senescent RBCs. White pulp = immune.",p:"<b>Red pulp = filters RBCs.</b> White pulp = immune. Asplenia → Howell-Jolly bodies."},
+{m:"anat",q:"The periarteriolar lymphoid sheath (PALS) of the splenic white pulp is populated predominantly by which cells?",c:["T cells","B cells","Megakaryocytes","Reticulocytes"],a:0,why:"PALS = T cells; the adjacent follicles hold B cells. Marginal zone = APCs catching antigen.",p:"<b>PALS = T cells</b>; follicles = B cells. (Same logic as a lymph node.)"},
+{m:"anat",q:"Within a lymph node, the germinal centers of the follicles in the outer cortex contain primarily which cells?",c:["B cells","T cells","Neutrophils","Plasma cells only"],a:0,why:"Follicles/germinal centers = B cells (active proliferation). Paracortex = T cells.",p:"Lymph node: <b>Follicle = B cells</b>, Paracortex = T cells, Medulla = plasma cells/macrophages."},
+{m:"anat",q:"The paracortex of a lymph node (T-cell zone) is underdeveloped in DiGeorge syndrome and enlarges most dramatically in which setting?",c:["An extreme cellular (viral) immune response","A pure antibody response","Iron deficiency","No immune activity"],a:0,why:"The paracortex (T cells) expands in cell-mediated responses (e.g., viral infections, mono); it's hypoplastic in DiGeorge (no thymus).",p:"Paracortex enlarges with <b>viral/cellular</b> responses; hypoplastic in <b>DiGeorge</b>."},
+{m:"anat",q:"In the second trimester, the primary site of fetal hematopoiesis is which organ?",c:["Liver","Yolk sac","Bone marrow","Thymus"],a:0,why:"Sequence: yolk sac (early) → liver (and spleen, mid) → bone marrow (late/adult).",p:"<b>Young Liver Synthesizes Blood:</b> Yolk sac → Liver → Spleen → Bone marrow."},
+{m:"anat",q:"Platelets are produced from the cytoplasmic fragmentation of which bone marrow cell?",c:["Megakaryocyte","Reticulocyte","Myeloblast","Plasma cell"],a:0,why:"Megakaryocytes shed cytoplasm into platelets; thrombopoietin (from liver) drives this.",p:"Platelets bud off <b>megakaryocytes</b> (driven by thrombopoietin)."},
+{m:"anat",q:"Normal adult hemoglobin A is composed of which globin chains?",c:["2 alpha + 2 beta","2 alpha + 2 gamma","2 alpha + 2 delta","4 gamma"],a:0,why:"HbA = α2β2 (~97% of adult Hb). HbA2 = α2δ2; HbF = α2γ2.",p:"HbA = <b>α2β2</b>. HbF = α2γ2 (higher O2 affinity)."},
+{m:"anat",q:"Fetal hemoglobin (HbF), which has higher oxygen affinity than adult hemoglobin, consists of which chains?",c:["2 alpha + 2 gamma","2 alpha + 2 beta","2 alpha + 2 delta","2 beta + 2 gamma"],a:0,why:"HbF = α2γ2; less binding of 2,3-BPG → higher O2 affinity → pulls O2 from maternal blood.",p:"HbF = <b>α2γ2</b>, higher affinity (binds 2,3-BPG poorly) → grabs O2 from mom."},
+{m:"anat",q:"An elevated reticulocyte count after blood loss or hemolysis tells you what about the bone marrow?",c:["It is responding appropriately (increased production)","It has failed","Iron stores are overloaded","B12 is deficient"],a:0,why:"Reticulocytes are young RBCs; a high count = appropriate marrow response. A low count in anemia = inadequate production.",p:"<b>High retics = marrow is working</b> (good response). Low retics + anemia = production problem."},
+{m:"anat",q:"Erythropoietin, the hormone that drives red blood cell production, is produced mainly by which organ?",c:["Kidney","Liver","Spleen","Bone marrow"],a:0,why:"EPO is made by peritubular interstitial cells of the kidney in response to hypoxia. (Liver makes thrombopoietin.)",p:"<b>EPO = kidney</b> (peritubular cells). Why CKD → anemia."},
+
+/* ===== ANEMIAS ===== */
+{m:"anemia",q:"A microcytic anemia with LOW ferritin and HIGH total iron-binding capacity (TIBC) indicates what?",c:["Iron deficiency anemia","Anemia of chronic disease","Thalassemia","Sideroblastic anemia"],a:0,why:"IDA: depleted stores → low ferritin; the body upregulates transferrin → high TIBC; low serum iron, high RDW.",p:"IDA = <b>↓ferritin, ↑TIBC</b>. The opposite pattern of chronic disease."},
+{m:"anemia",q:"A microcytic/normocytic anemia with HIGH ferritin, LOW TIBC, and elevated hepcidin describes what?",c:["Anemia of chronic disease","Iron deficiency anemia","Hereditary spherocytosis","Folate deficiency"],a:0,why:"Inflammation → hepcidin sequesters iron in storage → high ferritin, low TIBC, low serum iron (iron is hidden, not absent).",p:"ACD = <b>↑ferritin, ↓TIBC</b>, high hepcidin (iron locked away)."},
+{m:"anemia",q:"A microcytic anemia with a NORMAL iron panel, target cells, and an abnormal hemoglobin electrophoresis suggests what?",c:["Thalassemia","Iron deficiency anemia","Sideroblastic anemia","Anemia of chronic disease"],a:0,why:"Thalassemia = decreased globin synthesis; iron studies normal, target cells, often increased RBC count, abnormal electrophoresis.",p:"Thalassemia = <b>normal iron, target cells</b>, ↑RBC count, abnormal electrophoresis."},
+{m:"anemia",q:"A microcytic anemia with RINGED SIDEROBLASTS on marrow staining and iron overload — sometimes caused by lead poisoning or B6 deficiency — is what?",c:["Sideroblastic anemia","Iron deficiency anemia","Thalassemia","Aplastic anemia"],a:0,why:"Sideroblastic anemia = defective heme synthesis → iron trapped in mitochondria around the nucleus (ringed sideroblasts); ↑iron/ferritin.",p:"Sideroblastic = <b>ringed sideroblasts</b>, iron overload. Causes: lead, B6 deficiency, alcohol, isoniazid."},
+{m:"anemia",q:"A macrocytic anemia with hypersegmented neutrophils AND neurologic symptoms, with an elevated methylmalonic acid level, indicates deficiency of what?",c:["Vitamin B12","Folate","Iron","Vitamin B6"],a:0,why:"B12 deficiency: megaloblastic anemia + neuro signs (subacute combined degeneration); methylmalonic acid is elevated (folate's is normal).",p:"B12 = megaloblastic + <b>neuro signs + ↑MMA</b>. Folate = no neuro, normal MMA."},
+{m:"anemia",q:"A macrocytic anemia with hypersegmented neutrophils but NO neurologic deficits and a NORMAL methylmalonic acid level indicates deficiency of what?",c:["Folate","Vitamin B12","Iron","Copper"],a:0,why:"Folate deficiency = megaloblastic anemia, ↑homocysteine, normal MMA, no neurologic findings; common in alcoholics/pregnancy.",p:"Folate = megaloblastic, <b>no neuro, normal MMA</b>, ↑homocysteine."},
+{m:"anemia",q:"A hemolytic anemia with spherocytes, increased MCHC, and a positive osmotic fragility test — improved by splenectomy — is what?",c:["Hereditary spherocytosis","G6PD deficiency","Sickle cell disease","Thalassemia"],a:0,why:"HS = membrane defect (spectrin/ankyrin) → spherocytes, ↑MCHC, ↑osmotic fragility, splenomegaly; EMA-binding test confirms.",p:"HS = <b>spherocytes, ↑MCHC, osmotic fragility</b>. Splenectomy helps. Spectrin/ankyrin."},
+{m:"anemia",q:"An X-linked hemolytic anemia triggered by oxidative stress (sulfa drugs, fava beans, infection), with Heinz bodies and 'bite cells,' is what?",c:["G6PD deficiency","Hereditary spherocytosis","Pyruvate kinase deficiency","Sickle cell trait"],a:0,why:"G6PD deficiency → can't regenerate NADPH/glutathione → oxidized Hb precipitates (Heinz bodies); splenic macrophages bite them off.",p:"G6PD = X-linked, <b>Heinz bodies + bite cells</b>, episodic hemolysis with oxidant stress."},
+{m:"anemia",q:"Sickle cell disease results from a single amino acid substitution — valine replacing glutamic acid — at position 6 of which globin chain?",c:["Beta globin","Alpha globin","Gamma globin","Delta globin"],a:0,why:"HbS = Glu→Val at position 6 of the β-globin chain → polymerization when deoxygenated → sickling.",p:"Sickle = <b>β-globin, position 6, Glu→Val</b>. HbF protects (why symptoms start ~6 mo)."},
+{m:"anemia",q:"Complement-mediated intravascular hemolysis from loss of GPI-anchored CD55/CD59 (a PIGA mutation), with thrombosis and dark morning urine, is what?",c:["Paroxysmal nocturnal hemoglobinuria","Autoimmune hemolytic anemia","Hereditary spherocytosis","Microangiopathic hemolytic anemia"],a:0,why:"PNH = acquired PIGA defect → no CD55/CD59 → complement lyses RBCs; thrombosis is the main killer; eculizumab treats it.",p:"PNH = <b>loss of CD55/CD59</b> (PIGA), complement hemolysis, thrombosis. Tx: eculizumab."},
+{m:"anemia",q:"Autoimmune hemolytic anemia mediated by IgG antibodies (associated with SLE, CLL, and certain drugs) reacting at body temperature is which type?",c:["Warm AIHA","Cold AIHA","Microangiopathic hemolysis","Paroxysmal cold hemoglobinuria"],a:0,why:"Warm AIHA = IgG, extravascular (spleen), seen with SLE/CLL/drugs (methyldopa); cold AIHA = IgM (Mycoplasma, mono).",p:"<b>Warm = IgG</b> (SLE, CLL, drugs). <b>Cold = IgM</b> (Mycoplasma, EBV). 'Warm weather is Great (IgG).'"},
+
+/* ===== COAGULATION / BLEEDING ===== */
+{m:"coag",q:"Mucocutaneous bleeding — petechiae, epistaxis, and gum bleeding — points to a defect in which part of hemostasis?",c:["Platelets (primary hemostasis)","Coagulation factors","Fibrinolysis","Endothelial repair"],a:0,why:"Platelet/primary-hemostasis problems → superficial mucocutaneous bleeding + petechiae. Factor (secondary) problems → deep bleeds.",p:"<b>Platelet problem = petechiae + mucocutaneous.</b> Factor problem = deep/joint bleeds."},
+{m:"coag",q:"A boy has hemarthrosis and a prolonged PTT with a normal PT and platelet count. A deficiency of which factor is most likely?",c:["Factor VIII","Factor IX","Factor VII","von Willebrand factor"],a:0,why:"Hemophilia A = factor VIII deficiency (X-linked); intrinsic pathway → ↑PTT, normal PT/platelets, deep/joint bleeds.",p:"Hemophilia <b>A = VIII (8), B = IX (9)</b>. X-linked, ↑PTT, hemarthrosis."},
+{m:"coag",q:"The most common inherited bleeding disorder, with mucocutaneous bleeding and an abnormal ristocetin cofactor assay, is what?",c:["Von Willebrand disease","Hemophilia A","Immune thrombocytopenia","Bernard-Soulier syndrome"],a:0,why:"vWD: ↑bleeding time (platelet adhesion), often mildly ↑PTT (vWF stabilizes factor VIII); abnormal ristocetin test. Autosomal dominant.",p:"vWD = most common inherited bleed; <b>abnormal ristocetin</b>, ↑bleeding time. Tx: desmopressin."},
+{m:"coag",q:"Isolated thrombocytopenia with antiplatelet (anti-GpIIb/IIIa) antibodies and INCREASED marrow megakaryocytes — often post-viral in children — is what?",c:["Immune thrombocytopenic purpura","Thrombotic thrombocytopenic purpura","Disseminated intravascular coagulation","Aplastic anemia"],a:0,why:"ITP = autoantibodies against GpIIb/IIIa → splenic destruction of platelets; marrow compensates (↑megakaryocytes).",p:"ITP = <b>isolated low platelets</b>, anti-GpIIb/IIIa, ↑megakaryocytes. Everything else normal."},
+{m:"coag",q:"A deficiency of the metalloprotease ADAMTS13 causing platelet microthrombi, schistocytes, neurologic signs, and thrombocytopenia is which disorder?",c:["Thrombotic thrombocytopenic purpura","Hemolytic uremic syndrome","Immune thrombocytopenia","Hemophilia B"],a:0,why:"TTP: ADAMTS13 can't cleave vWF multimers → platelet microthrombi; pentad = MAHA, thrombocytopenia, neuro, renal, fever.",p:"TTP = <b>ADAMTS13</b> deficiency, neuro signs prominent. (HUS = renal + Shiga toxin.)"},
+{m:"coag",q:"A child develops acute kidney injury, schistocytes, and thrombocytopenia after bloody diarrhea caused by E. coli O157:H7. What is the diagnosis?",c:["Hemolytic uremic syndrome","Thrombotic thrombocytopenic purpura","Henoch-Schönlein purpura","DIC"],a:0,why:"HUS triad = microangiopathic hemolysis + thrombocytopenia + AKI, after Shiga-toxin E. coli; renal failure dominates.",p:"HUS = <b>Shiga toxin (O157:H7)</b>, triad with renal failure, kids after bloody diarrhea."},
+{m:"coag",q:"Diffuse simultaneous bleeding and clotting with prolonged PT and PTT, low platelets, LOW fibrinogen, and high D-dimer indicates what?",c:["Disseminated intravascular coagulation","Immune thrombocytopenia","Hemophilia A","Vitamin K deficiency"],a:0,why:"DIC: widespread activation consumes platelets and factors → bleeding + microthrombi; ↑PT/PTT, ↓fibrinogen, ↑D-dimer, schistocytes.",p:"DIC = <b>everything consumed</b>: ↑PT/PTT, ↓platelets, ↓fibrinogen, ↑D-dimer. Causes: sepsis, OB, cancer, trauma."},
+{m:"coag",q:"Which clotting factors require vitamin K for gamma-carboxylation (and are reduced by warfarin)?",c:["II, VII, IX, X (plus proteins C and S)","I, V, VIII","XI, XII, prekallikrein","V and VIII only"],a:0,why:"Vitamin K–dependent factors: II, VII, IX, X and anticoagulants C & S. Warfarin inhibits epoxide reductase.",p:"Vit K factors = <b>2, 7, 9, 10 + C, S</b>. Warfarin blocks them (VII falls first — shortest half-life)."},
+{m:"coag",q:"The prothrombin time (PT/INR) primarily evaluates the extrinsic pathway and is used to monitor which anticoagulant?",c:["Warfarin","Unfractionated heparin","Aspirin","Clopidogrel"],a:0,why:"PT/INR = extrinsic pathway (factor VII) → monitors warfarin. aPTT = intrinsic → monitors heparin.",p:"<b>PT = extrinsic = Warfarin</b> ('WEPT': Warfarin, Extrinsic, PT). PTT = intrinsic = heparin."},
+{m:"coag",q:"The activated partial thromboplastin time (aPTT) evaluates the intrinsic pathway and is used to monitor which anticoagulant?",c:["Unfractionated heparin","Warfarin","Tissue plasminogen activator","Vitamin K"],a:0,why:"aPTT = intrinsic pathway → monitors unfractionated heparin. (LMWH usually needs no monitoring.)",p:"<b>PTT = intrinsic = heParin.</b> ('Play Table Tennis inside' → PTT = intrinsic.)"},
+{m:"coag",q:"The most common inherited cause of hypercoagulability, due to a factor V variant that resists inactivation by protein C, is what?",c:["Factor V Leiden","Antithrombin III deficiency","Protein C deficiency","Prothrombin G20210A"],a:0,why:"Factor V Leiden: mutated factor V can't be cleaved by activated protein C → unchecked clotting; most common inherited thrombophilia.",p:"Factor V Leiden = <b>APC resistance</b> = most common inherited hypercoagulable state."},
+
+/* ===== LEUKEMIA / LYMPHOMA / MYELOMA ===== */
+{m:"leuk",q:"The most common childhood leukemia, with TdT-positive lymphoblasts and a favorable prognosis associated with t(12;21), is what?",c:["Acute lymphoblastic leukemia","Acute myeloid leukemia","Chronic lymphocytic leukemia","Chronic myeloid leukemia"],a:0,why:"ALL = pediatric, TdT+ (and CD10+ in B-ALL); responds well; can infiltrate CNS and testes; ↑risk in Down syndrome.",p:"ALL = <b>kids, TdT+</b>, t(12;21) good. Spreads to CNS/testes. Down syndrome risk."},
+{m:"leuk",q:"An acute leukemia with Auer rods and myeloperoxidase-positive blasts — where the t(15;17) subtype is treated with all-trans retinoic acid — is what?",c:["Acute myeloid leukemia","Acute lymphoblastic leukemia","Chronic myeloid leukemia","Hairy cell leukemia"],a:0,why:"AML = myeloblasts with Auer rods (MPO+); APL [t(15;17)] responds to ATRA but risks DIC.",p:"AML = <b>Auer rods, MPO+</b>. APL t(15;17) → <b>ATRA</b> (watch for DIC)."},
+{m:"leuk",q:"The most common leukemia in older adults, with smudge cells and an accumulation of mature but nonfunctional B lymphocytes, is what?",c:["Chronic lymphocytic leukemia","Acute lymphoblastic leukemia","Chronic myeloid leukemia","Multiple myeloma"],a:0,why:"CLL = mature B cells (CD5+/CD20+), smudge cells on smear; can cause autoimmune hemolytic anemia; Richter transformation to DLBCL.",p:"CLL = <b>smudge cells</b>, older adults, mature B cells. Richter = transforms to aggressive lymphoma."},
+{m:"leuk",q:"A myeloproliferative leukemia defined by the Philadelphia chromosome (BCR-ABL fusion) and treated with a tyrosine kinase inhibitor is what?",c:["Chronic myeloid leukemia","Acute myeloid leukemia","Chronic lymphocytic leukemia","Polycythemia vera"],a:0,why:"CML = t(9;22) BCR-ABL → constitutive tyrosine kinase; ↑neutrophils/basophils, low LAP score; imatinib; risk of blast crisis.",p:"CML = <b>Philadelphia t(9;22), BCR-ABL</b> → imatinib. Low LAP. Can blast-crisis."},
+{m:"leuk",q:"A lymphoma defined by Reed-Sternberg cells (CD15+/CD30+ 'owl-eye' cells) that spreads in a contiguous, node-to-node pattern is which category?",c:["Hodgkin lymphoma","Burkitt lymphoma","Follicular lymphoma","Multiple myeloma"],a:0,why:"Hodgkin = Reed-Sternberg cells, bimodal age, contiguous spread, B symptoms, EBV association; better prognosis than many NHLs.",p:"Hodgkin = <b>Reed-Sternberg (CD15/CD30, owl eyes)</b>, contiguous spread, bimodal age, EBV."},
+{m:"leuk",q:"A highly aggressive B-cell lymphoma with a 'starry sky' histologic appearance and the t(8;14) c-myc translocation is what?",c:["Burkitt lymphoma","Follicular lymphoma","Hodgkin lymphoma","Marginal zone lymphoma"],a:0,why:"Burkitt = fastest-growing tumor; t(8;14) c-myc; 'starry sky' (macrophages amid tumor cells); EBV; jaw (African) or abdomen (sporadic).",p:"Burkitt = <b>starry sky, t(8;14) c-myc</b>, EBV. Jaw (endemic) / abdomen (sporadic)."},
+{m:"leuk",q:"An indolent non-Hodgkin B-cell lymphoma with the t(14;18) translocation overexpressing the anti-apoptotic protein BCL-2 is what?",c:["Follicular lymphoma","Burkitt lymphoma","Mantle cell lymphoma","Hodgkin lymphoma"],a:0,why:"Follicular lymphoma = t(14;18) puts BCL-2 under the Ig heavy-chain promoter → blocked apoptosis; waxing-and-waning lymphadenopathy.",p:"Follicular = <b>t(14;18), BCL-2</b> (anti-apoptosis), indolent. Mantle = t(11;14) cyclin D1."},
+{m:"leuk",q:"An elderly patient has bone pain, lytic 'punched-out' skull lesions, hypercalcemia, and a monoclonal IgG spike. What is the diagnosis?",c:["Multiple myeloma","Chronic lymphocytic leukemia","Hodgkin lymphoma","Waldenström macroglobulinemia"],a:0,why:"Multiple myeloma = malignant plasma cells; CRAB features, M-spike (IgG), Bence Jones proteins, rouleaux, punched-out lesions.",p:"Myeloma = <b>CRAB</b> (hyperCalcemia, Renal, Anemia, Bone lesions) + M-spike + Bence Jones + rouleaux."}
+];
+
+const VAULT=[
+{t:"Spleen & Lymph Node Zones",b:"<b>Spleen:</b> red pulp filters RBCs, white pulp = immune (PALS = T cells, follicles = B cells). <b>Lymph node:</b> follicle = B, paracortex = T (hypoplastic in DiGeorge).",g:"Anatomy"},
+{t:"Young Liver Synthesizes Blood",b:"Fetal hematopoiesis order: <b>Y</b>olk sac → <b>L</b>iver → <b>S</b>pleen → <b>B</b>one marrow.",g:"Cell lines"},
+{t:"Microcytic Iron Studies",b:"<b>IDA</b> = ↓ferritin, ↑TIBC. <b>Chronic disease</b> = ↑ferritin, ↓TIBC (hepcidin). <b>Thalassemia</b> = normal iron, ↑RBC, target cells. <b>Sideroblastic</b> = ↑iron, ringed sideroblasts.",g:"Anemia"},
+{t:"B12 vs Folate",b:"Both: megaloblastic + hypersegmented neutrophils. <b>B12</b> = neuro signs + ↑methylmalonic acid. <b>Folate</b> = no neuro, normal MMA, ↑homocysteine.",g:"Anemia"},
+{t:"Hemolysis Smear Buzzwords",b:"<b>Spherocytes</b> = HS/warm AIHA. <b>Bite cells + Heinz bodies</b> = G6PD. <b>Schistocytes</b> = MAHA (DIC/TTP/HUS). <b>Target cells</b> = thalassemia, liver dz, asplenia.",g:"Anemia"},
+{t:"Hemophilia A vs B",b:"<b>A = factor VIII (8), B = factor IX (9)</b> — 'A before B, 8 before 9.' X-linked, ↑PTT, normal PT/platelets, hemarthrosis.",g:"Bleeding"},
+{t:"Platelet vs Factor Bleeding",b:"<b>Platelet/primary</b> defect = mucocutaneous bleeding + petechiae (ITP, vWD). <b>Factor/secondary</b> defect = deep tissue + joint bleeds (hemophilia).",g:"Bleeding"},
+{t:"TTP vs HUS",b:"<b>TTP</b> = ADAMTS13 deficiency, neuro signs prominent, any age. <b>HUS</b> = Shiga toxin (E. coli O157:H7), renal failure, kids after bloody diarrhea. Both = schistocytes + low platelets.",g:"Microangiopathy"},
+{t:"DIC Labs",b:"Everything gets consumed: <b>↑PT, ↑PTT, ↓platelets, ↓fibrinogen, ↑D-dimer</b>, schistocytes. Triggers: sepsis, obstetric, malignancy, trauma.",g:"Coagulation"},
+{t:"Vit K Factors + Lab Monitoring",b:"Vit K factors = <b>2, 7, 9, 10 + protein C/S</b>. <b>PT = extrinsic = Warfarin</b> (WEPT). <b>PTT = intrinsic = heParin.</b>",g:"Coagulation"},
+{t:"Leukemia by Age (ALL ages)",b:"<15 = <b>ALL</b>. 15–40 = <b>AML</b>. 40–60 = <b>CML</b>. >60 = <b>CLL</b>.",g:"Leukemia"},
+{t:"Translocation Cheat Sheet",b:"<b>CML</b> t(9;22) BCR-ABL · <b>APL</b> t(15;17) → ATRA · <b>Burkitt</b> t(8;14) c-myc · <b>Follicular</b> t(14;18) BCL-2 · <b>Mantle</b> t(11;14) cyclin D1.",g:"Onc genetics"},
+{t:"Lymphoma/Leukemia Cells",b:"<b>Reed-Sternberg</b> (owl eyes, CD15/30) = Hodgkin. <b>Smudge cells</b> = CLL. <b>Auer rods</b> = AML/APL. <b>Starry sky</b> = Burkitt.",g:"Onc"},
+{t:"Myeloma = CRAB",b:"hyper<b>C</b>alcemia, <b>R</b>enal failure, <b>A</b>nemia, <b>B</b>one lytic lesions. Plus M-spike (IgG), Bence Jones protein, rouleaux, punched-out skull.",g:"Plasma cell"}
+];
+
+const MODES={
+  daily:{name:"Daily CBC",ic:"🩸",desc:"15 random questions across all heme/onc topics. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Smear",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  anat:{name:"Heme Anatomy & Cell Lines",ic:"🦴",desc:"Spleen, lymph node zones, hematopoiesis, hemoglobin types, EPO.",pick:()=>shuffle(QBANK.filter(q=>q.m==="anat"))},
+  anemia:{name:"Anemia Bay",ic:"🔻",desc:"Micro/macrocytic iron studies, B12 vs folate, the hemolytic anemias.",pick:()=>shuffle(QBANK.filter(q=>q.m==="anemia"))},
+  coag:{name:"Coagulation & Bleeding",ic:"🩹",desc:"Hemophilia, vWD, ITP, TTP vs HUS, DIC, PT/PTT, factor V Leiden.",pick:()=>shuffle(QBANK.filter(q=>q.m==="coag"))},
+  leuk:{name:"Leukemia & Lymphoma",ic:"🎗️",desc:"ALL/AML/CLL/CML, Hodgkin vs NHL, translocations, myeloma.",pick:()=>shuffle(QBANK.filter(q=>q.m==="leuk"))}
+};
+const MODE_TAGS={anat:"Heme Anatomy / Cell Lines",anemia:"Anemias",coag:"Coagulation / Bleeding",leuk:"Leukemia / Lymphoma"};
+
+const SAVE_KEY="heme_hustle_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">Hb</div>
+    <h1>HEME HUSTLE</h1>
+    <div class="sub">Hematology · Oncology · Coag — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("anat",m.anat,"special")}${tile("anemia",m.anemia,"")}${tile("coag",m.coag,"")}${tile("leuk",m.leuk,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy heme tools — iron studies grid, hemolysis smears, leukemia-by-age, translocations, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
+}
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:34px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">Heme/Onc memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
+});
+menu();
+</script>
+</body>
+</html>

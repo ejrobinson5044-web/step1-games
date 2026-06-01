@@ -3,1238 +3,305 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MICROBE MAYHEM — Step 1 Microbiology</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>MICROBE MAYHEM — Microbiology</title>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Mulish:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg-deep: #04090a;
-  --bg-mid: #0a1418;
-  --bg-card: #122028;
-  --bio-yellow: #ffe600;
-  --plague-green: #7fff00;
-  --lab-blue: #00d4ff;
-  --petri-pink: #ff4d8d;
-  --hazard-orange: #ff9500;
-  --crimson: #ff3838;
-  --text: #f0fff8;
-  --text-dim: #6b8a85;
-  --grid: rgba(127, 255, 0, 0.06);
+:root{
+  --bg:#0c0814;
+  --bg2:#120a1c;
+  --panel:#1a1228;
+  --panel-hi:#241834;
+  --cyan:#a855f7;        /* crystal-violet purple primary */
+  --cyan-dim:#7e22ce;
+  --amber:#fbbf24;       /* agar-amber accent */
+  --amber-hi:#fde047;
+  --red:#f87171;
+  --green:#34d399;
+  --text:#f3e8ff;
+  --dim:#9a86b4;
+  --line:rgba(168,85,247,.15);
+  --glow:rgba(168,85,247,.45);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  background: var(--bg-deep);
-  color: var(--text);
-  font-family: 'VT323', monospace;
-  font-size: 18px;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-body {
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Mulish',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
   background:
-    radial-gradient(ellipse at 20% 10%, rgba(127, 255, 0, 0.10), transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(255, 230, 0, 0.10), transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(0, 212, 255, 0.05), transparent 60%),
-    linear-gradient(180deg, #04090a 0%, #0a1418 100%);
-  position: relative;
+    radial-gradient(ellipse at 17% 0%,rgba(168,85,247,.13),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(251,191,36,.06),transparent 55%),
+    linear-gradient(180deg,#0c0814,#120a1c);
 }
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 50px 50px;
-  pointer-events: none;
-  z-index: 0;
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--line) 2px,transparent 2px);
+  background-size:34px 34px;
+  mask-image:radial-gradient(ellipse at center,#000 32%,transparent 88%);
 }
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background: repeating-linear-gradient(0deg,
-    rgba(0,0,0,0.13) 0px, rgba(0,0,0,0.13) 1px,
-    transparent 1px, transparent 3px);
-  pointer-events: none;
-  z-index: 1000;
-  mix-blend-mode: multiply;
-}
-#app {
-  position: relative;
-  z-index: 1;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px;
-}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
 
-/* HEADER */
-.title-bar {
-  text-align: center;
-  margin-bottom: 24px;
-  padding: 16px 0 24px;
-  border-bottom: 2px solid var(--plague-green);
-  box-shadow: 0 4px 20px rgba(127, 255, 0, 0.15);
-}
-h1.game-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 36px;
-  background: linear-gradient(90deg, var(--bio-yellow), var(--plague-green), var(--lab-blue));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  letter-spacing: 4px;
-  text-shadow: 0 0 20px rgba(127, 255, 0, 0.4);
-  animation: titleGlow 3s ease-in-out infinite alternate;
-}
-@keyframes titleGlow {
-  from { filter: drop-shadow(0 0 8px rgba(127, 255, 0, 0.4)); }
-  to { filter: drop-shadow(0 0 20px rgba(255, 230, 0, 0.6)); }
-}
-.subtitle {
-  color: var(--bio-yellow);
-  font-size: 22px;
-  margin-top: 8px;
-  letter-spacing: 2px;
-}
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(150deg,var(--cyan),var(--cyan-dim));color:#1a1228;
+  font-family:'Hanken Grotesk';font-weight:800;font-size:30px;margin-bottom:8px;box-shadow:0 0 24px var(--glow)}
+h1{font-family:'Hanken Grotesk';font-weight:800;font-size:33px;letter-spacing:.2px;color:var(--cyan)}
+.sub{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:2px;margin-top:5px;text-transform:uppercase}
 
-/* HUD */
-.hud { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-.hud-cell {
-  background: rgba(18, 32, 40, 0.7);
-  border: 1px solid var(--lab-blue);
-  border-radius: 4px;
-  padding: 10px 14px;
-  position: relative;
-  box-shadow: inset 0 0 12px rgba(0, 212, 255, 0.15);
-}
-.hud-label {
-  font-size: 13px;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-family: 'Press Start 2P', monospace;
-}
-.hud-value { font-size: 28px; margin-top: 4px; font-weight: bold; font-family: 'JetBrains Mono', monospace; }
-.hud-value.hp { color: var(--crimson); }
-.hud-value.xp { color: var(--plague-green); }
-.hud-value.streak { color: var(--bio-yellow); }
-.hud-value.lvl { color: var(--lab-blue); }
-.hearts { display: inline-flex; gap: 4px; }
-.heart { font-size: 24px; filter: drop-shadow(0 0 4px var(--crimson)); }
-.heart.lost { filter: grayscale(1) brightness(0.3); }
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.6}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Hanken Grotesk';font-weight:800;font-size:17px;margin:7px 0 5px;letter-spacing:.1px;line-height:1.25}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'JetBrains Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
 
-/* PANEL */
-.panel {
-  background: rgba(18, 32, 40, 0.85);
-  border: 2px solid var(--plague-green);
-  border-radius: 6px;
-  padding: 28px;
-  position: relative;
-  box-shadow: 0 0 30px rgba(127, 255, 0, 0.18), inset 0 0 20px rgba(127, 255, 0, 0.04);
-  backdrop-filter: blur(4px);
-  min-height: 400px;
-}
-.panel::before {
-  content: '';
-  position: absolute;
-  top: -2px; left: 12px;
-  width: 14px; height: 6px;
-  background: var(--bg-deep);
-  border-left: 2px solid var(--plague-green);
-  border-right: 2px solid var(--plague-green);
-}
+.section-label{font-family:'JetBrains Mono';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
 
-/* BIOHAZARD CORNER ICON */
-.panel::after {
-  content: '☣';
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  font-size: 26px;
-  color: var(--bio-yellow);
-  filter: drop-shadow(0 0 6px var(--bio-yellow));
-  opacity: 0.6;
-}
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'JetBrains Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'JetBrains Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'JetBrains Mono';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(52,211,153,.13)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(248,113,113,.13)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
 
-/* MENU */
-.menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.menu-card {
-  background: linear-gradient(135deg, rgba(127, 255, 0, 0.06), rgba(0, 212, 255, 0.08));
-  border: 2px solid var(--lab-blue);
-  border-radius: 4px;
-  padding: 24px 18px;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-}
-.menu-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.4);
-  border-color: var(--plague-green);
-}
-.menu-card:hover::after {
-  content: '';
-  position: absolute;
-  top: -100%; left: -100%;
-  width: 300%; height: 300%;
-  background: linear-gradient(45deg, transparent 30%, rgba(127, 255, 0, 0.18) 50%, transparent 70%);
-  animation: shimmer 1s linear;
-}
-@keyframes shimmer { to { transform: translate(50%, 50%); } }
-.menu-icon { font-size: 40px; margin-bottom: 12px; display: block; }
-.menu-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 13px;
-  color: var(--bio-yellow);
-  margin-bottom: 8px;
-  letter-spacing: 1px;
-}
-.menu-desc { color: var(--text-dim); font-size: 16px; line-height: 1.4; }
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'JetBrains Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(251,191,36,.10);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Hanken Grotesk';font-weight:800;font-size:13px}
 
-/* QUESTION */
-.question-area { animation: fadeIn 0.4s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.q-tag {
-  display: inline-block;
-  background: var(--petri-pink);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 3px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
-  margin-bottom: 16px;
-  letter-spacing: 1px;
-}
-.q-text {
-  font-size: 22px;
-  line-height: 1.5;
-  margin-bottom: 24px;
-  color: var(--text);
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.3);
-  border-left: 4px solid var(--plague-green);
-  border-radius: 2px;
-}
-.choices { display: flex; flex-direction: column; gap: 10px; }
-.choice {
-  background: rgba(18, 32, 40, 0.9);
-  border: 2px solid var(--text-dim);
-  color: var(--text);
-  padding: 14px 18px;
-  border-radius: 4px;
-  font-family: 'VT323', monospace;
-  font-size: 19px;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.choice:hover:not(.disabled) {
-  border-color: var(--plague-green);
-  background: rgba(127, 255, 0, 0.06);
-  transform: translateX(4px);
-}
-.choice .key {
-  background: var(--plague-green);
-  color: var(--bg-deep);
-  font-family: 'Press Start 2P', monospace;
-  font-size: 12px;
-  padding: 6px 10px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-.choice.correct {
-  background: rgba(127, 255, 0, 0.15);
-  border-color: var(--plague-green);
-  animation: pulseGreen 0.5s;
-}
-.choice.correct .key { background: var(--plague-green); }
-.choice.wrong {
-  background: rgba(255, 56, 56, 0.15);
-  border-color: var(--crimson);
-  animation: shake 0.4s;
-}
-.choice.wrong .key { background: var(--crimson); }
-.choice.disabled { cursor: default; opacity: 0.5; }
-@keyframes pulseGreen {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(127, 255, 0, 0); }
-  50% { box-shadow: 0 0 30px 4px rgba(127, 255, 0, 0.4); }
-}
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-6px); }
-  40%, 80% { transform: translateX(6px); }
-}
+.btn{font-family:'Hanken Grotesk';font-weight:800;letter-spacing:.2px;border:none;border-radius:10px;padding:13px 22px;cursor:pointer;font-size:15px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#1a1228;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
 
-/* PEARL */
-.pearl-box {
-  margin-top: 24px;
-  background: linear-gradient(135deg, rgba(255, 230, 0, 0.06), rgba(255, 77, 141, 0.08));
-  border: 2px dashed var(--bio-yellow);
-  padding: 18px;
-  border-radius: 4px;
-  animation: fadeIn 0.5s 0.2s both;
-}
-.pearl-label {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 11px;
-  color: var(--bio-yellow);
-  letter-spacing: 2px;
-  margin-bottom: 10px;
-  text-shadow: 0 0 6px rgba(255, 230, 0, 0.5);
-}
-.pearl-text { font-size: 19px; line-height: 1.5; color: #fff; }
-.pearl-text strong { color: var(--petri-pink); }
-.pearl-text em { color: var(--plague-green); font-style: normal; }
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Hanken Grotesk';font-weight:800;font-size:64px;color:var(--cyan);line-height:1}
+.rank{font-family:'JetBrains Mono';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:10px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'JetBrains Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:26px;color:var(--text);font-family:'Hanken Grotesk';font-weight:800}
 
-/* CONTROLS */
-.controls { display: flex; justify-content: space-between; margin-top: 24px; gap: 12px; flex-wrap: wrap; }
-.btn {
-  background: var(--plague-green);
-  color: var(--bg-deep);
-  border: none;
-  padding: 12px 24px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 13px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  border-radius: 3px;
-  transition: all 0.15s;
-  text-transform: uppercase;
-}
-.btn:hover {
-  background: var(--bio-yellow);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 230, 0, 0.4);
-}
-.btn-secondary {
-  background: transparent;
-  color: var(--plague-green);
-  border: 2px solid var(--plague-green);
-}
-.btn-secondary:hover { background: var(--plague-green); color: var(--bg-deep); }
-.btn-danger { background: var(--crimson); color: white; }
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Hanken Grotesk';font-weight:800;color:var(--amber-hi);font-size:16px;margin-bottom:7px;letter-spacing:.1px;line-height:1.25}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'JetBrains Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
 
-/* PROGRESS */
-.system-progress { margin-top: 24px; }
-.system-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-.system-name { width: 200px; font-size: 16px; color: var(--text-dim); }
-.bar-track {
-  flex: 1;
-  background: rgba(255,255,255,0.05);
-  height: 18px;
-  border-radius: 2px;
-  overflow: hidden;
-  border: 1px solid rgba(127, 255, 0, 0.2);
-}
-.bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--plague-green), var(--bio-yellow));
-  transition: width 0.5s ease;
-  position: relative;
-}
-.bar-fill::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  animation: barShine 2s linear infinite;
-}
-@keyframes barShine { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
-.system-pct {
-  width: 80px;
-  text-align: right;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  color: var(--lab-blue);
-}
-
-/* TOAST */
-.toast {
-  position: fixed;
-  top: 30px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-200%);
-  background: var(--plague-green);
-  color: var(--bg-deep);
-  padding: 12px 30px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 14px;
-  border-radius: 4px;
-  box-shadow: 0 4px 20px rgba(127, 255, 0, 0.5);
-  z-index: 9999;
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-.toast.error { background: var(--crimson); color: white; }
-.toast.xp { background: var(--bio-yellow); color: var(--bg-deep); }
-
-/* PETRI DISH BAR (decorative) */
-.petri-bar {
-  height: 56px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: 8px;
-}
-.petri {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid var(--lab-blue);
-  background: radial-gradient(circle at 30% 30%, rgba(127, 255, 0, 0.3), rgba(127, 255, 0, 0.1));
-  position: relative;
-  filter: drop-shadow(0 0 6px var(--plague-green));
-  animation: petriPulse 2.5s ease-in-out infinite;
-}
-.petri::before {
-  content: '';
-  position: absolute;
-  width: 8px; height: 8px;
-  background: var(--bio-yellow);
-  border-radius: 50%;
-  top: 6px; left: 8px;
-  filter: blur(1px);
-}
-.petri::after {
-  content: '';
-  position: absolute;
-  width: 6px; height: 6px;
-  background: var(--petri-pink);
-  border-radius: 50%;
-  bottom: 8px; right: 10px;
-  filter: blur(1px);
-}
-.petri:nth-child(2n) { background: radial-gradient(circle at 30% 30%, rgba(255, 230, 0, 0.3), rgba(255, 230, 0, 0.1)); border-color: var(--bio-yellow); animation-delay: 0.4s; }
-.petri:nth-child(3n) { background: radial-gradient(circle at 30% 30%, rgba(255, 77, 141, 0.3), rgba(255, 77, 141, 0.1)); border-color: var(--petri-pink); animation-delay: 0.8s; }
-@keyframes petriPulse {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.08); opacity: 1; }
-}
-
-/* MODAL */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(4, 9, 10, 0.85);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1001;
-  backdrop-filter: blur(6px);
-  animation: fadeIn 0.3s;
-}
-.modal {
-  background: var(--bg-mid);
-  border: 2px solid var(--lab-blue);
-  padding: 32px;
-  border-radius: 6px;
-  max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
-}
-.modal h2 {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 18px;
-  color: var(--bio-yellow);
-  margin-bottom: 16px;
-}
-.modal p { font-size: 18px; line-height: 1.5; margin-bottom: 12px; }
-.achievement-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 16px 0; }
-.achievement {
-  padding: 10px;
-  border: 1px solid var(--text-dim);
-  border-radius: 3px;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.achievement.unlocked {
-  border-color: var(--bio-yellow);
-  background: rgba(255, 230, 0, 0.08);
-  color: var(--bio-yellow);
-}
-.achievement.locked { opacity: 0.4; }
-.ach-icon { font-size: 22px; }
-
-/* RESULTS */
-.results-screen { text-align: center; padding: 20px; }
-.results-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 28px;
-  color: var(--bio-yellow);
-  margin-bottom: 24px;
-  text-shadow: 0 0 20px var(--bio-yellow);
-}
-.results-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
-.stat-block {
-  padding: 16px;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--plague-green);
-  border-radius: 4px;
-}
-.stat-num {
-  font-size: 36px;
-  font-family: 'Press Start 2P', monospace;
-  color: var(--plague-green);
-  display: block;
-}
-.stat-label { font-size: 14px; color: var(--text-dim); letter-spacing: 1px; }
-.rank-badge {
-  display: inline-block;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 32px;
-  padding: 16px 32px;
-  margin: 16px 0;
-  border: 3px solid;
-  border-radius: 6px;
-}
-
-@media (max-width: 700px) {
-  h1.game-title { font-size: 22px; letter-spacing: 2px; }
-  .hud { grid-template-columns: repeat(2, 1fr); }
-  .menu-grid { grid-template-columns: 1fr; }
-  .system-name { width: 130px; font-size: 14px; }
-  .results-stats { grid-template-columns: 1fr; }
-  .panel { padding: 18px; }
-  .q-text { font-size: 18px; }
-}
+.back{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'JetBrains Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
 </style>
 </head>
 <body>
-
-<div class="toast" id="toast"></div>
-
-<div id="app">
-  <div class="title-bar">
-    <h1 class="game-title">MICROBE MAYHEM</h1>
-    <div class="subtitle">★ IDENTIFY THE INVADER ★</div>
-    <div class="petri-bar">
-      <div class="petri"></div><div class="petri"></div><div class="petri"></div>
-      <div class="petri"></div><div class="petri"></div><div class="petri"></div>
-      <div class="petri"></div><div class="petri"></div><div class="petri"></div>
-      <div class="petri"></div><div class="petri"></div><div class="petri"></div>
-    </div>
-  </div>
-
-  <div class="hud">
-    <div class="hud-cell"><div class="hud-label">HP</div><div class="hud-value hp"><span class="hearts" id="hearts"></span></div></div>
-    <div class="hud-cell"><div class="hud-label">XP</div><div class="hud-value xp" id="xp-display">0</div></div>
-    <div class="hud-cell"><div class="hud-label">LEVEL</div><div class="hud-value lvl" id="lvl-display">1</div></div>
-    <div class="hud-cell"><div class="hud-label">STREAK</div><div class="hud-value streak" id="streak-display">0🔥</div></div>
-  </div>
-
-  <div class="panel" id="panel"></div>
-</div>
-
+<div id="app"></div>
 <script>
-// ============================================================================
-// QUESTION BANK — comprehensive HY Microbiology
-// Categories: Bacteria, Viruses, Fungi/Parasites, Vignette→Bug, Treatment
-// Tags: BUZZWORD, GRAM, TX, IMG-clue, TOX-mediated
-// ============================================================================
-const QBANK = [
-  // ── GRAM POSITIVE COCCI ─────────────────────────────────────────────
-  { topic:"Bacteria", tag:"GRAM+", q:"Lobar pneumonia + dullness to percussion + rust-colored sputum. Gram stain shows?",
-    c:["Gram(+) cocci in clusters","Gram(+) diplococci (lancet-shaped)","Gram(-) diplococci","Gram(-) rods"], a:1,
-    p:"<strong>S. pneumoniae = gram(+) lancet-shaped diplococci</strong> = #1 cause of typical CAP (also #1 meningitis in adults, #1 otitis media). Optochin SENSITIVE, bile soluble, alpha-hemolytic. Polysaccharide capsule = #1 virulence. <em>Asplenia/sickle cell → encapsulated bug risk: S. pneumo, H. flu, N. meningitidis</em>." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Pneumonia after recent flu + gram(+) cocci in CLUSTERS?",
-    c:["S. pneumoniae","S. aureus","S. epidermidis","Enterococcus"], a:1,
-    p:"<strong>Post-influenza bacterial pneumonia → S. aureus</strong>. <em>Gram(+) cocci in CLUSTERS = staph; in CHAINS/PAIRS = strep</em>. S. aureus is catalase(+), coagulase(+). Other S. aureus vignettes: <em>IVDU endocarditis (tricuspid), osteomyelitis, toxic shock syndrome (TSST-1 superantigen)</em>." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Endocarditis in patient with recent dental work. Most likely organism?",
-    c:["S. aureus","Strep viridans (subacute, damaged valve)","S. pneumoniae","Enterococcus"], a:1,
-    p:"<strong>Subacute endocarditis (damaged valve, dental procedure) = S. viridans</strong>. <em>Acute endocarditis (normal valve, IVDU) = S. aureus → tricuspid</em>. <em>Endocarditis + colon cancer = S. gallolyticus (bovis) → colonoscopy</em>. HACEK (Haemophilus, Aggregatibacter, Cardiobacterium, Eikenella, Kingella) = culture-negative." },
-  { topic:"Bacteria", tag:"GRAM+", q:"Neonate with sepsis + gram(+) cocci. Mom never tested for which organism?",
-    c:["S. pneumoniae","Group B Strep (S. agalactiae)","Listeria","E. coli"], a:1,
-    p:"<strong>Neonate sepsis: GBS, E. coli, Listeria</strong>. <em>Gram(+) cocci → GBS; gram(-) rods → E. coli; gram(+) rods → Listeria</em>. GBS = bacitracin RESISTANT, hippurate(+), CAMP(+). Universal screen at 36-37 wks; intrapartum penicillin/ampicillin if positive." },
-  { topic:"Bacteria", tag:"TOX-mediated", q:"Strep pyogenes (Group A Strep) post-infectious complications?",
-    c:["Hemolytic uremic syndrome","Rheumatic fever (type II HS) + post-strep glomerulonephritis (type III)","Reactive arthritis","Erythema multiforme"], a:1,
-    p:"<strong>GAS sequelae: rheumatic fever (PHARYNGITIS) + PSGN (skin OR pharyngitis)</strong>. RF mnemonic <em>JONES</em>: Joints, Heart (myo/endo/peri), Nodules, Erythema marginatum, Sydenham chorea. PSGN: 'cola-colored urine' 1-3 wks after strep. <em>Treat strep pharyngitis with penicillin to prevent RF (NOT PSGN — that's already immune complex driven)</em>." },
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== MICROBIAL BASICS ===== */
+{m:"basics",q:"Gram-POSITIVE bacteria appear purple because their thick cell wall retains crystal violet. What molecule forms this thick wall?",c:["Peptidoglycan","Lipopolysaccharide","Mycolic acid","Chitin"],a:0,why:"Gram-positive walls have a thick peptidoglycan layer that traps crystal violet (purple). Gram-negative walls have thin peptidoglycan plus an outer LPS membrane → pink with safranin.",p:"G+ = thick <b>peptidoglycan</b> → purple. G− = thin peptidoglycan + outer LPS membrane → pink."},
+{m:"basics",q:"The outer membrane of Gram-NEGATIVE bacteria contains lipopolysaccharide, whose lipid A component acts as what?",c:["Endotoxin","An exotoxin","A capsule","A spore"],a:0,why:"Lipid A of LPS is endotoxin → triggers TNF, IL-1, and IL-6 → fever and septic shock. It is released on bacterial lysis, not secreted.",p:"LPS lipid A = <b>endotoxin</b> (Gram-negative) → TNF/IL-1 → septic shock. Released on lysis."},
+{m:"basics",q:"A secreted bacterial protein with a specific mechanism that can be inactivated into a vaccine 'toxoid' is which type of toxin?",c:["Exotoxin","Endotoxin","Lipid A","Peptidoglycan"],a:0,why:"Exotoxins are secreted proteins (from Gram-positive AND some Gram-negative bacteria), highly potent and specific, heat-labile, and can be made into toxoid vaccines (tetanus, diphtheria).",p:"Exotoxin = secreted protein, specific, heat-labile, <b>toxoid vaccine</b> (tetanus/diphtheria). Endotoxin = LPS, no toxoid."},
+{m:"basics",q:"Which stain is used to identify Mycobacteria, whose mycolic-acid-rich wall resists ordinary Gram staining?",c:["Acid-fast (Ziehl-Neelsen) stain","Gram stain","India ink","Silver stain"],a:0,why:"Acid-fast staining detects mycolic-acid organisms (Mycobacteria, Nocardia). India ink → Cryptococcus; silver → fungi/Pneumocystis/Legionella.",p:"<b>Acid-fast</b> = Mycobacteria + Nocardia (mycolic acid). India ink = Cryptococcus; silver = fungi/PCP/Legionella."},
+{m:"basics",q:"A bacterial capsule promotes virulence mainly by doing what?",c:["Resisting phagocytosis","Producing exotoxins","Invading host cells","Forming spores"],a:0,why:"The polysaccharide capsule is antiphagocytic; asplenic and sickle-cell patients are at high risk from encapsulated organisms, so opsonizing antibodies/vaccines are key.",p:"Capsule = <b>antiphagocytic</b>. Asplenia/sickle cell at risk → vaccinate against encapsulated bugs."},
+{m:"basics",q:"Obligate anaerobes (Clostridium, Bacteroides) cannot survive in oxygen because they lack which protective enzymes?",c:["Catalase and superoxide dismutase","Coagulase and protease","Urease and oxidase","DNA gyrase and ligase"],a:0,why:"Obligate anaerobes lack catalase and/or superoxide dismutase, so reactive oxygen species kill them; this is why aminoglycosides (which need O2 for uptake) don't work against them.",p:"Anaerobes lack <b>catalase + superoxide dismutase</b> → killed by O2. Aminoglycosides don't work (need O2)."},
+{m:"basics",q:"Which two Gram-positive genera form heat-resistant endospores?",c:["Bacillus and Clostridium","Staphylococcus and Streptococcus","Escherichia and Klebsiella","Mycobacterium and Nocardia"],a:0,why:"Only Bacillus and Clostridium (both Gram-positive) form endospores, which survive heat and disinfectants (require autoclaving).",p:"Spore-formers = <b>Bacillus + Clostridium</b> (heat-resistant; need autoclave)."},
+{m:"basics",q:"Treponema, Borrelia, and Leptospira share which characteristic shape?",c:["Spiral (spirochete)","Round cocci","Straight rods","Branching filaments"],a:0,why:"Spirochetes are spiral-shaped (Treponema, Borrelia, Leptospira). Treponema is too thin for light microscopy → seen on dark-field.",p:"Treponema/Borrelia/Leptospira = <b>spirochetes</b> (spiral). Treponema needs dark-field."},
 
-  // ── GRAM POSITIVE RODS ─────────────────────────────────────────────
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Watery diarrhea/vomiting after eating REHEATED rice?",
-    c:["Salmonella","Bacillus cereus","E. coli ETEC","Norovirus"], a:1,
-    p:"<strong>Reheated rice → Bacillus cereus</strong>. Heating germinates spores. Two toxins: <em>emetic (preformed, vomiting fast)</em> + <em>diarrheal (delayed, watery)</em>. Also can cause endophthalmitis after eye surgery (only gram(+) rod that does this). Vomiting 1-6 hrs = pre-formed toxin (B. cereus, S. aureus)." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Pregnant woman + soft cheese consumption + neonatal sepsis. Organism?",
-    c:["GBS","Listeria monocytogenes","E. coli","Salmonella"], a:1,
-    p:"<strong>Listeria = gram(+) rod, soft cheeses + deli meats + unpasteurized milk</strong>. <em>Tumbling motility</em>, intracellular, β-hemolytic. Causes meningitis in <em>neonates, elderly, immunocompromised, pregnancy</em>. Tx: ampicillin (cephalosporins don't cover!). <em>Why amp + ceftriaxone empirically for neonatal/elderly meningitis</em>." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Watery diarrhea + LLQ cramping 7 days after starting oral antibiotics?",
-    c:["Salmonella","C. difficile","Yersinia","C. perfringens"], a:1,
-    p:"<strong>C. diff = pseudomembranous colitis after antibiotics</strong>. Any antibiotic can cause it. Dx: <em>stool toxin assay</em> (NOT culture). Tx: <em>ORAL vancomycin or fidaxomicin</em>. <em>Yersinia = bloody RLQ pain (mimics appendicitis), unpasteurized milk</em>. Don't confuse." },
-  { topic:"Bacteria", tag:"TOX-mediated", q:"Floppy baby syndrome + ate honey?",
-    c:["C. tetani","C. botulinum","Listeria","C. perfringens"], a:1,
-    p:"<strong>Infant botulism = honey → C. botulinum spores</strong>. <em>Toxin = blocks ACh release at NMJ</em> → flaccid paralysis (floppy baby), descending paralysis. Tx: human botulism Ig (BabyBIG); ventilator support. <em>NEVER honey before age 1</em>." },
-  { topic:"Bacteria", tag:"TOX-mediated", q:"Patient stepped on rusty nail. Trismus + risus sardonicus. Mechanism?",
-    c:["α-toxin / phospholipase","Tetanospasmin blocks GABA/glycine release at Renshaw cells","Diphtheria toxin","TSST-1"], a:1,
-    p:"<strong>Tetanus = C. tetani toxin (tetanospasmin) blocks GABA + glycine release</strong> from Renshaw cells in spinal cord → spastic paralysis. <em>Lockjaw, opisthotonos, risus sardonicus</em>. Prevent with vaccine + booster Q10y. Tx: anti-toxin + metronidazole + benzodiazepines + wound debridement." },
+/* ===== GRAM-POSITIVE ===== */
+{m:"gpos",q:"A catalase-positive, COAGULASE-positive Gram-positive cluster causing skin abscesses, toxic shock, and rapid-onset food poisoning is which organism?",c:["Staphylococcus aureus","Staphylococcus epidermidis","Streptococcus pyogenes","Enterococcus faecalis"],a:0,why:"S. aureus = catalase+, coagulase+, golden, β-hemolytic; causes abscesses, endocarditis, TSS (TSST-1), and preformed-toxin food poisoning (rapid onset). MRSA is a major concern.",p:"S. aureus = catalase+/<b>coagulase+</b>, abscesses, TSS, rapid food poisoning (preformed toxin)."},
+{m:"gpos",q:"A beta-hemolytic, bacitracin-SENSITIVE Group A streptococcus causing pharyngitis, rheumatic fever, and post-streptococcal glomerulonephritis is which organism?",c:["Streptococcus pyogenes","Streptococcus agalactiae","Streptococcus pneumoniae","Enterococcus faecium"],a:0,why:"S. pyogenes (Group A) = β-hemolytic, bacitracin-sensitive; causes pharyngitis, scarlet fever, impetigo, necrotizing fasciitis, and the sequelae rheumatic fever and PSGN.",p:"Group A (S. pyogenes) = β-hemolytic, <b>bacitracin-sensitive</b>. Rheumatic fever + PSGN + necrotizing fasciitis."},
+{m:"gpos",q:"An alpha-hemolytic, optochin-SENSITIVE, encapsulated lancet-shaped diplococcus — the most common cause of community-acquired pneumonia — is which organism?",c:["Streptococcus pneumoniae","Streptococcus viridans","Staphylococcus aureus","Haemophilus influenzae"],a:0,why:"S. pneumoniae = α-hemolytic, optochin-sensitive, bile-soluble, encapsulated lancet diplococcus; #1 cause of CAP, otitis media, meningitis, and sinusitis (MOPS).",p:"S. pneumoniae = α-hemolytic, <b>optochin-sensitive</b>, encapsulated. MOPS (Meningitis, Otitis, Pneumonia, Sinusitis)."},
+{m:"gpos",q:"A beta-hemolytic Group B streptococcus causing neonatal sepsis and meningitis (screened for at 35–37 weeks of pregnancy) is which organism?",c:["Streptococcus agalactiae","Streptococcus pyogenes","Listeria monocytogenes","Enterococcus faecalis"],a:0,why:"S. agalactiae (Group B) = β-hemolytic, bacitracin-resistant, hippurate+; the leading cause of neonatal sepsis/meningitis/pneumonia. Pregnant women are screened and given intrapartum penicillin.",p:"Group B (S. agalactiae) = neonatal sepsis/meningitis. Screen at <b>35–37 weeks</b>; intrapartum penicillin."},
+{m:"gpos",q:"Watery diarrhea and pseudomembranous colitis following antibiotic use, caused by toxins A and B, is due to which organism?",c:["Clostridioides difficile","Clostridium botulinum","Bacillus cereus","Vibrio cholerae"],a:0,why:"C. difficile overgrows after antibiotics (clindamycin, fluoroquinolones, cephalosporins) → toxins A/B → pseudomembranous colitis. Treat with oral vancomycin or fidaxomicin.",p:"Antibiotic-associated pseudomembranous colitis = <b>C. difficile</b> (toxins A/B). Tx: oral vancomycin/fidaxomicin."},
+{m:"gpos",q:"Lockjaw and spastic (rigid) paralysis, from a toxin that blocks the release of inhibitory neurotransmitters (GABA and glycine), is caused by which organism?",c:["Clostridium tetani","Clostridium botulinum","Clostridium perfringens","Listeria monocytogenes"],a:0,why:"C. tetani's tetanospasmin blocks release of inhibitory GABA/glycine from Renshaw cells → unopposed muscle contraction → spastic paralysis, lockjaw, risus sardonicus.",p:"C. tetani = tetanospasmin blocks <b>GABA/glycine</b> → SPASTIC paralysis (lockjaw). Tetanus toxoid vaccine."},
+{m:"gpos",q:"Descending FLACCID paralysis, from a toxin that blocks acetylcholine release (e.g., from canned food or honey in infants), is caused by which organism?",c:["Clostridium botulinum","Clostridium tetani","Campylobacter jejuni","Corynebacterium diphtheriae"],a:0,why:"C. botulinum's toxin blocks acetylcholine release at the neuromuscular junction → descending flaccid paralysis (the 4 D's: diplopia, dysphagia, dysarthria, descending); infant botulism from honey.",p:"C. botulinum blocks <b>ACh release</b> → FLACCID descending paralysis. No honey for infants <1 year."},
+{m:"gpos",q:"A Gram-positive rod with tumbling motility, acquired from unpasteurized dairy, causing meningitis in neonates, pregnant women, and the elderly, is which organism?",c:["Listeria monocytogenes","Bacillus anthracis","Corynebacterium diphtheriae","Streptococcus agalactiae"],a:0,why:"Listeria = Gram-positive rod, tumbling motility, intracellular (actin 'rocket' propulsion), from unpasteurized dairy/deli meats; causes neonatal and immunocompromised meningitis. Treat with ampicillin.",p:"Listeria = G+ rod, <b>tumbling motility</b>, unpasteurized dairy, intracellular (actin rockets). Neonatal/elderly meningitis → ampicillin."},
 
-  // ── GRAM NEGATIVE ──────────────────────────────────────────────────
-  { topic:"Bacteria", tag:"GRAM-", q:"Meningitis in college freshman in dorm + petechial rash + DIC?",
-    c:["S. pneumoniae","N. meningitidis","H. influenzae","Listeria"], a:1,
-    p:"<strong>N. meningitidis = gram(-) diplococci, college dorms/military barracks</strong>. <em>Waterhouse-Friderichsen = bilateral adrenal hemorrhage + DIC + shock</em>. Vaccinate: 11-12 yo + booster 16 yo. <em>Asplenia/complement (C5-C9) deficiency → recurrent Neisseria infections</em>. Tx: ceftriaxone; close contacts get rifampin/cipro." },
-  { topic:"Bacteria", tag:"GRAM-", q:"Asthma exacerbation + COPD exacerbation. Most common bacteria?",
-    c:["S. aureus","H. influenzae (non-typeable) + Moraxella","Pseudomonas","Mycoplasma"], a:1,
-    p:"<strong>COPD/asthma exacerbation triggers: H. influenzae, Moraxella, Strep pneumo, viruses</strong>. <em>Non-typeable H. flu = no capsule, doesn't cause meningitis</em>. Type B (Hib) = epiglottitis, meningitis (rare since vaccine). Hib vaccine in kids. Tx: amoxicillin or augmentin." },
-  { topic:"Bacteria", tag:"GRAM-", q:"UTI in young woman. #1 cause?",
-    c:["Staph saprophyticus","E. coli (UPEC)","Klebsiella","Proteus"], a:1,
-    p:"<strong>UTI #1 = E. coli (uropathogenic)</strong>. #2 in young sexually active women = <em>S. saprophyticus</em> (gram(+) cocci, novobiocin-resistant). <em>Proteus = struvite stones (urease, alkaline urine, staghorn calculi)</em>. Klebsiella = currant jelly sputum, alcoholics, aspiration. Pseudomonas = hospital UTI, catheter." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Pneumonia in cystic fibrosis adult. Most likely?",
-    c:["S. pneumo","Pseudomonas aeruginosa","Mycoplasma","Legionella"], a:1,
-    p:"<strong>CF lung infection: S. aureus < age 10, then Pseudomonas takes over</strong>. <em>Pseudomonas = gram(-) rod, oxidase(+), grape-like odor, blue-green pyocyanin pigment</em>. Other Pseudomonas: hot tub folliculitis, burn wound infections, malignant otitis externa in diabetics, ventilator-associated pneumonia. Tx: piperacillin-tazobactam, cefepime, ceftazidime, fluoroquinolones." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Pneumonia + diarrhea + hyponatremia + business conference?",
-    c:["S. pneumoniae","Legionella pneumophila","Mycoplasma","Chlamydia"], a:1,
-    p:"<strong>Legionella = pneumonia + diarrhea + hypoNa</strong>. Air conditioners, water systems, cruise ships, residential homes. <em>Silver stain</em>; charcoal-yeast extract agar. Dx: <em>urinary antigen</em>. Tx: macrolide or fluoroquinolone." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Bloody diarrhea + recent ground beef + HUS (anemia, thrombocytopenia, AKI)?",
-    c:["E. coli ETEC","E. coli O157:H7 (EHEC) → Shiga-like toxin","Salmonella","Campylobacter"], a:1,
-    p:"<strong>EHEC O157:H7 → HUS</strong> (microangiopathic hemolytic anemia + thrombocytopenia + AKI). Shiga-like toxin damages endothelium. Sources: <em>undercooked beef, petting zoos, contaminated water</em>. <em>NEVER give antibiotics — increases toxin release + HUS risk</em>. Supportive care only." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Watery diarrhea while traveling abroad. Most common bug?",
-    c:["EHEC","ETEC (heat-labile + heat-stable toxins)","Vibrio cholerae","Shigella"], a:1,
-    p:"<strong>Traveler's diarrhea = ETEC</strong>. Two toxins: <em>LT (cAMP↑) + ST (cGMP↑)</em>. Massive watery diarrhea. <em>Cholera = rice-water stools, also LT-mechanism, AB toxin permanently activates Gs</em>. Tx: oral rehydration, bismuth or fluoroquinolone." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Bloody diarrhea + reactive arthritis + Guillain-Barré association?",
-    c:["Shigella","Campylobacter jejuni","Yersinia","Salmonella"], a:1,
-    p:"<strong>Campylobacter = #1 bacterial diarrhea in US, #1 cause of GBS</strong>. <em>Comma/S-shaped, grows at 42°C</em>. Source: undercooked poultry, puppies. <em>Reactive arthritis (Reiter): can't see, can't pee, can't climb a tree</em> — also from Salmonella, Shigella, Chlamydia, Yersinia." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Pneumonia in cattle farmer. Organism?",
-    c:["Mycoplasma","Coxiella burnetii (Q fever)","Francisella","Brucella"], a:1,
-    p:"<strong>Cattle farmer pneumonia = Coxiella burnetii (Q fever)</strong>. No vector — inhaled spore-like particles. <em>Rabbits = Francisella tularensis. Bird owner = Chlamydia psittaci. Goats/sheep = Brucella (undulant fever)</em>. The animal-association vignettes are pure buzzword recognition." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Bilateral interstitial pneumonia + cold agglutinins + young adult?",
-    c:["S. pneumo","Mycoplasma pneumoniae","Legionella","Coxiella"], a:1,
-    p:"<strong>Mycoplasma = walking pneumonia + cold agglutinins (IgM against RBCs → hemolysis)</strong>. <em>Patchy bilateral interstitial infiltrates</em> >>> classic lobar. Common in college students, military barracks. <em>No cell wall → β-lactams useless</em>. Tx: macrolide or doxy or fluoroquinolone." },
+/* ===== GRAM-NEGATIVE ===== */
+{m:"gneg",q:"Gram-negative diplococci causing a petechial rash, possible adrenal hemorrhage (Waterhouse-Friderichsen), and outbreaks in crowded dorms are which organism?",c:["Neisseria meningitidis","Neisseria gonorrhoeae","Haemophilus influenzae","Moraxella catarrhalis"],a:0,why:"N. meningitidis = encapsulated Gram-negative diplococci (maltose fermenter); causes meningococcemia with petechiae and Waterhouse-Friderichsen (adrenal hemorrhage). Vaccine available; prophylax close contacts.",p:"N. meningitidis = encapsulated, maltose+, petechiae + Waterhouse-Friderichsen. Vaccine + rifampin prophylaxis."},
+{m:"gneg",q:"Gram-negative diplococci causing urethritis, septic arthritis in young adults, and neonatal conjunctivitis, with NO available vaccine (no polysaccharide capsule), are which organism?",c:["Neisseria gonorrhoeae","Neisseria meningitidis","Chlamydia trachomatis","Treponema pallidum"],a:0,why:"N. gonorrhoeae = no capsule (so no vaccine, no lasting immunity), maltose-NEGATIVE; causes gonorrhea, septic arthritis, PID, and ophthalmia neonatorum (prevented with erythromycin eye ointment).",p:"N. gonorrhoeae = NO capsule/vaccine, maltose−. Gonorrhea, septic arthritis, ophthalmia neonatorum."},
+{m:"gneg",q:"The most common cause of urinary tract infections — a lactose-fermenting Gram-negative rod (some strains make Shiga toxin → hemolytic uremic syndrome) — is which organism?",c:["Escherichia coli","Klebsiella pneumoniae","Proteus mirabilis","Pseudomonas aeruginosa"],a:0,why:"E. coli = #1 UTI, lactose+ (pink on MacConkey); also causes neonatal meningitis and diarrhea. EHEC O157:H7 makes Shiga toxin → HUS (don't give antibiotics).",p:"E. coli = #1 UTI, lactose+. EHEC O157:H7 → Shiga toxin → <b>HUS</b> (avoid antibiotics)."},
+{m:"gneg",q:"An oxidase-positive, non-lactose-fermenting Gram-negative rod producing a blue-green pigment, infecting burn wounds and cystic fibrosis lungs, is which organism?",c:["Pseudomonas aeruginosa","Escherichia coli","Klebsiella pneumoniae","Serratia marcescens"],a:0,why:"Pseudomonas = aerobic, oxidase+, non-lactose, pyocyanin (blue-green) and a grape-like odor; causes burn/CF infections, hot-tub folliculitis, and nosocomial pneumonia. Often multidrug-resistant.",p:"Pseudomonas = oxidase+, blue-green pyocyanin, fruity smell. Burns, CF, hot tub, nosocomial."},
+{m:"gneg",q:"A curved, urease-positive Gram-negative rod causing chronic gastritis, peptic ulcers, and gastric adenocarcinoma/MALT lymphoma is which organism?",c:["Helicobacter pylori","Campylobacter jejuni","Vibrio cholerae","Salmonella enteritidis"],a:0,why:"H. pylori = curved/helical, urease+ (basis of urea breath test); causes gastritis, duodenal/gastric ulcers, and is a risk factor for gastric adenocarcinoma and MALT lymphoma. Triple therapy cures it.",p:"H. pylori = curved, <b>urease+</b>, ulcers + gastric cancer/MALT. Tx: PPI + clarithromycin + amoxicillin."},
+{m:"gneg",q:"A fever with rose spots, a step-ladder fever pattern, and a chronic gallbladder carrier state, from an invasive motile Gram-negative rod, is caused by which organism?",c:["Salmonella typhi","Shigella dysenteriae","Vibrio cholerae","Yersinia enterocolitica"],a:0,why:"S. typhi causes typhoid fever (rose spots, stepwise fever, GI symptoms) and can establish a chronic gallbladder carrier state. It is motile and has a Vi capsule. (Non-typhoidal Salmonella → sickle-cell osteomyelitis.)",p:"S. typhi = rose spots + step-ladder fever + gallbladder carrier. Non-typhoidal Salmonella → sickle-cell osteomyelitis."},
+{m:"gneg",q:"Profuse 'rice-water' diarrhea from a comma-shaped Gram-negative rod whose toxin overactivates adenylate cyclase (raising cAMP) is caused by which organism?",c:["Vibrio cholerae","Escherichia coli","Shigella sonnei","Clostridioides difficile"],a:0,why:"V. cholerae = comma-shaped, oxidase+; cholera toxin permanently activates Gs → ↑cAMP → massive chloride/water secretion → rice-water stools and severe dehydration. Treat with oral rehydration.",p:"V. cholerae = rice-water diarrhea, comma-shaped, toxin → <b>↑cAMP</b>. Tx: oral rehydration."},
+{m:"gneg",q:"Atypical pneumonia with high fever, diarrhea, and hyponatremia, acquired from contaminated water/air-conditioning and diagnosed by urine antigen, is caused by which organism?",c:["Legionella pneumophila","Mycoplasma pneumoniae","Streptococcus pneumoniae","Chlamydophila pneumoniae"],a:0,why:"Legionella = atypical ('walking') pneumonia with GI symptoms and hyponatremia; from water/AC systems; needs silver stain or charcoal-yeast agar; diagnosed by urine antigen. Treat with macrolides/fluoroquinolones.",p:"Legionella = atypical pneumonia + diarrhea + hyponatremia, water/AC source. Dx = <b>urine antigen</b>."},
 
-  // ── ATYPICAL & SPIROCHETES ─────────────────────────────────────────
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Painless genital chancre. Test of choice?",
-    c:["KOH prep","Dark-field microscopy (T. pallidum)","Wet mount","Gram stain"], a:1,
-    p:"<strong>Primary syphilis = painless chancre → dark-field microscopy</strong> (Treponema doesn't gram-stain). <em>Secondary: 6 wks-6 mo later, body rash including PALMS+SOLES, condylomata lata</em>. <em>Tertiary: gummas, tabes dorsalis, Argyll-Robertson pupil ('prostitute's pupil' — accommodates but doesn't react)</em>. Screen RPR/VDRL → confirm FTA-ABS. Tx: penicillin." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Bull's eye rash (erythema migrans) after camping in Connecticut?",
-    c:["Rocky Mountain spotted fever","Lyme (Borrelia burgdorferi → Ixodes tick)","Cellulitis","Tinea corporis"], a:1,
-    p:"<strong>Lyme = Borrelia burgdorferi via Ixodes scapularis tick (also carries Babesia, Anaplasma)</strong>. <em>Stage 1: erythema migrans + flu-like</em>. <em>Stage 2: Bell's palsy, AV block, migratory arthritis</em>. <em>Stage 3: chronic arthritis, neuro</em>. Tx: <em>doxycycline (amoxicillin in kids/pregnancy)</em>." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Rash on PALMS+SOLES + fever + headache after tick bite in NC/Virginia?",
-    c:["Lyme","Rocky Mountain Spotted Fever (Rickettsia rickettsii)","Syphilis","Coxsackie"], a:1,
-    p:"<strong>RMSF = Rickettsia rickettsii via Dermacentor tick</strong>. <em>Rash: starts on wrists/ankles → spreads to palms/soles + trunk</em> (opposite of meningococcus). Tx: <em>doxycycline (even in kids — risk > benefit here)</em>. <strong>Palms/soles rash DDx</strong>: RMSF, syphilis (2°), coxsackie (hand-foot-mouth)." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Cervical lymphadenopathy + cat scratch. Organism?",
-    c:["Bartonella henselae","Pasteurella multocida","Yersinia pestis","Toxoplasma"], a:0,
-    p:"<strong>Cat scratch disease = Bartonella henselae</strong>. Tender lymphadenopathy near scratch site. <em>Cat/dog BITE = Pasteurella multocida (cellulitis fast, within 24hr)</em>. <em>Bartonella in HIV → bacillary angiomatosis (red papules, mistaken for Kaposi)</em>." },
-  { topic:"Bacteria", tag:"BUZZWORD", q:"Mycobacterium tuberculosis: caseating granulomas + Ghon complex. Drug regimen?",
-    c:["Vancomycin","RIPE (Rifampin, Isoniazid, Pyrazinamide, Ethambutol) × 2 mo, then RI × 4 mo","TMP-SMX","Levofloxacin"], a:1,
-    p:"<strong>Active TB: RIPE × 2 mo, then RI × 4 mo (6 mo total)</strong>. Latent TB: <em>9 mo INH + B6</em>. <strong>Side effect quick reference</strong>: R = orange body fluids + P450 inducer; I = neuropathy (give B6) + hepatitis + drug-induced lupus; P = hyperuricemia (gout); E = optic neuritis (red-green color blindness). Always give B6 with INH." },
+/* ===== VIRUSES ===== */
+{m:"virus",q:"Recurrent cold sores and genital ulcers, with latency in sensory ganglia and possible temporal-lobe encephalitis, are caused by which virus?",c:["Herpes simplex virus","Cytomegalovirus","Coxsackievirus","Human papillomavirus"],a:0,why:"HSV-1 (oral, temporal-lobe encephalitis) and HSV-2 (genital) establish latency in trigeminal and sacral ganglia; Tzanck smear shows multinucleated giant cells.",p:"HSV = cold sores/genital ulcers, latency in ganglia, <b>temporal-lobe encephalitis</b> (HSV-1). Tzanck smear."},
+{m:"virus",q:"Chickenpox followed years later by a painful dermatomal vesicular rash (shingles), from reactivation in dorsal root ganglia, is caused by which virus?",c:["Varicella-zoster virus","Herpes simplex virus","Measles virus","Parvovirus B19"],a:0,why:"VZV causes chickenpox, then lies dormant in dorsal root/trigeminal ganglia and reactivates as zoster (shingles) in a dermatomal pattern; postherpetic neuralgia can follow.",p:"VZV = chickenpox → latent in dorsal root ganglia → <b>shingles</b> (dermatomal). Vaccine prevents zoster."},
+{m:"virus",q:"Infectious mononucleosis with atypical lymphocytes and a positive monospot, also linked to Burkitt lymphoma, is caused by which virus?",c:["Epstein-Barr virus","Cytomegalovirus","HIV","Hepatitis B virus"],a:0,why:"EBV infects B cells via CD21 → mononucleosis (fatigue, pharyngitis, posterior cervical nodes, splenomegaly, atypical/reactive T lymphocytes, +monospot); linked to Burkitt and nasopharyngeal carcinoma. Avoid ampicillin (rash).",p:"EBV = mono (+monospot, atypical lymphocytes) + Burkitt/nasopharyngeal CA. Infects B cells (CD21)."},
+{m:"virus",q:"Owl-eye intranuclear inclusions, the most common congenital viral infection, and retinitis in AIDS, are caused by which virus?",c:["Cytomegalovirus","Epstein-Barr virus","Rubella virus","Herpes simplex virus"],a:0,why:"CMV shows 'owl-eye' inclusions; it is the most common congenital infection (hearing loss, periventricular calcifications) and causes retinitis, colitis, and esophagitis in AIDS. Mono is monospot-NEGATIVE.",p:"CMV = owl-eye inclusions, #1 congenital infection, AIDS retinitis. Monospot-NEGATIVE mono."},
+{m:"virus",q:"A retrovirus that infects CD4 T cells via gp120 and uses reverse transcriptase, causing progressive loss of cell-mediated immunity, is which virus?",c:["Human immunodeficiency virus","Cytomegalovirus","Epstein-Barr virus","Human T-lymphotropic virus"],a:0,why:"HIV is a retrovirus that binds CD4 + a coreceptor (CCR5/CXCR4) via gp120, reverse-transcribes its RNA, and depletes CD4 T cells → opportunistic infections (AIDS when CD4 <200).",p:"HIV = retrovirus, infects <b>CD4 T cells</b> (gp120 + CCR5/CXCR4), reverse transcriptase. AIDS = CD4 <200."},
+{m:"virus",q:"Sudden pandemics of influenza ('antigenic shift') are caused by what?",c:["Reassortment of genome segments between strains","Gradual point mutations","No genetic change at all","Bacterial superinfection"],a:0,why:"Influenza has a segmented genome; antigenic SHIFT = reassortment of segments (often between human/animal strains) → major novel surface proteins → pandemics. Antigenic DRIFT = minor point mutations → seasonal epidemics.",p:"Shift = <b>reassortment</b> of segments → pandemic. Drift = point mutations → seasonal epidemic."},
+{m:"virus",q:"A bullet-shaped virus that travels retrograde up axons to the central nervous system, producing Negri bodies and hydrophobia, is which virus?",c:["Rabies virus","Polio virus","West Nile virus","JC virus"],a:0,why:"Rabies (bullet-shaped rhabdovirus) travels retrograde along axons to the CNS → Negri bodies (hippocampus/Purkinje), hydrophobia, encephalitis; from bat/dog/raccoon bites. Post-exposure prophylaxis works before symptoms.",p:"Rabies = bullet-shaped, retrograde axonal transport, <b>Negri bodies</b>, hydrophobia. Post-exposure prophylaxis."},
+{m:"virus",q:"Most DNA viruses replicate in which part of the host cell (poxviruses being the exception)?",c:["The nucleus","The cytoplasm","The mitochondria","The plasma membrane"],a:0,why:"Most DNA viruses replicate in the nucleus (using host machinery); poxviruses are the exception (cytoplasm, carry their own polymerase). Most RNA viruses replicate in the cytoplasm (except influenza and retroviruses).",p:"DNA viruses replicate in the <b>nucleus</b> (except poxvirus = cytoplasm). RNA = cytoplasm (except flu/retro)."},
 
-  // ── HERPES VIRUSES ─────────────────────────────────────────────────
-  { topic:"Virus", tag:"HSV", q:"DNA, enveloped, LINEAR. Causes encephalitis with temporal lobe RBCs in CSF?",
-    c:["HepB","Herpes simplex (HSV-1)","CMV","Adenovirus"], a:1,
-    p:"<strong>Herpesviridae = DNA, enveloped, ds-LINEAR</strong>. (HepB = DNA, enveloped, CIRCULAR — common Step 1 distinction.) HSV-1 encephalitis: <em>fever + confusion + RBCs in CSF (temporal lobe hemorrhage)</em>. EEG: temporal spikes. Tx: IV acyclovir. Latency in trigeminal ganglion (HSV-1) or sacral (HSV-2)." },
-  { topic:"Virus", tag:"HSV", q:"Mononucleosis = fever + lymphadenopathy + tonsillar exudate + splenomegaly. Cell type the virus invades?",
-    c:["T cells","B cells (via CD21)","NK cells","Macrophages"], a:1,
-    p:"<strong>EBV mono → infects B cells via CD21</strong>. CD8 'reactive/atypical lymphocytes' attack infected B cells. Heterophile antibody test (Monospot) +. <em>If amoxicillin given for presumed strep → diffuse rash (not penicillin allergy)</em>. <em>Splenomegaly → no contact sports for 3-4 wks (rupture risk)</em>. Cancer associations: Burkitt, Hodgkin, nasopharyngeal CA." },
-  { topic:"Virus", tag:"HSV", q:"Owl's eye intranuclear inclusions on biopsy. Virus?",
-    c:["HSV","CMV","EBV","HHV-8"], a:1,
-    p:"<strong>CMV = 'owl's eye' intranuclear inclusions</strong>. <em>Most common congenital infection (TORCH)</em>: periventricular calcifications + sensorineural hearing loss + chorioretinitis. <em>HIV with CD4<50: CMV retinitis (cottage cheese with ketchup) → ganciclovir</em>. Heterophile-NEGATIVE mono. Transplant patients: CMV PCR monitoring." },
-  { topic:"Virus", tag:"HSV", q:"Dermatomal vesicular rash that doesn't cross midline. Reactivation of?",
-    c:["HSV-1","Varicella zoster virus (latent in dorsal root ganglia)","Smallpox","Coxsackie"], a:1,
-    p:"<strong>Shingles = VZV reactivation from dorsal root ganglia</strong>. <em>Dermatomal, doesn't cross midline</em>. Risks: age, immunocompromise, stress. Complications: post-herpetic neuralgia, <em>ophthalmic zoster (V1 — Hutchinson sign on tip of nose)</em>, Ramsay Hunt (CN VII facial palsy + ear vesicles). Tx within 72hr: acyclovir/valacyclovir. Vaccine: shingrix at 50+." },
-
-  // ── OTHER VIRUSES ──────────────────────────────────────────────────
-  { topic:"Virus", tag:"BUZZWORD", q:"5th disease ('slapped cheek' rash) in kid. Adult complication?",
-    c:["Roseola","Parvovirus B19 → aplastic crisis (esp. sickle cell), hydrops fetalis, arthritis","Measles","Coxsackie"], a:1,
-    p:"<strong>Parvovirus B19 = ssDNA, naked virus</strong>. <em>5th disease (slapped cheek)</em> in kids; <em>arthritis</em> in adults; <em>aplastic anemia</em> in sickle cell (infects RBC precursors via P antigen); <em>hydrops fetalis</em> if pregnancy. The only HY ssDNA virus." },
-  { topic:"Virus", tag:"BUZZWORD", q:"Vesicular lesions on hands, feet, AND mouth in kids. Virus?",
-    c:["HSV","Coxsackie A (Picornavirus)","VZV","Parvovirus"], a:1,
-    p:"<strong>Hand-foot-mouth = Coxsackie A</strong>. Daycare/summer. Self-limited. <em>Coxsackie B = dilated cardiomyopathy, pericarditis, pleurodynia, T1DM</em>. Picornavirus family also includes: <em>polio, echovirus, rhinovirus, HepA</em>. All ssRNA(+)." },
-  { topic:"Virus", tag:"BUZZWORD", q:"Rotavirus = #1 cause of?",
-    c:["Adult viral diarrhea","Severe diarrhea in kids 6mo–2yr","Bloody diarrhea","Bronchiolitis"], a:1,
-    p:"<strong>Rotavirus = #1 viral diarrhea in kids 6mo–2yr</strong>. <em>dsRNA, naked, segmented (Reoviridae)</em>. Watery diarrhea, dehydration. Live oral vaccine (RotaTeq) — risk of intussusception (very rare). <em>Norovirus = #1 viral gastro in adults (cruise ships)</em>." },
-  { topic:"Virus", tag:"BUZZWORD", q:"Bronchiolitis in infant <2yo + bilateral wheezing in winter. Virus?",
-    c:["Influenza","RSV","Adenovirus","Coronavirus"], a:1,
-    p:"<strong>RSV = #1 cause of bronchiolitis + pneumonia in <1yr</strong>. <em>Treat supportively</em>; ribavirin reserved for severe. <em>Palivizumab</em> = monoclonal anti-F protein for high-risk preemies (prophylaxis only). Croup ('barking cough', steeple sign) = parainfluenza. Hand-foot-mouth = Coxsackie A." },
-  { topic:"Virus", tag:"BUZZWORD", q:"Hydrophobia + pharyngeal spasms after dog bite. Virus + post-exposure?",
-    c:["Tetanus; toxoid","Rabies (Rhabdovirus); IG + vaccine + wash wound","Influenza; Tamiflu","HIV; PEP"], a:1,
-    p:"<strong>Rabies = bullet-shaped Rhabdovirus, ssRNA(-)</strong>. <em>Negri bodies (eosinophilic cytoplasmic) in hippocampus/cerebellum</em>. Travels retrograde via dynein along nerves. <strong>Post-exposure: wash wound + rabies Ig (passive) + vaccine series (active)</strong>. Almost universally fatal once symptomatic. US: bats > raccoons > foxes." },
-  { topic:"Virus", tag:"BUZZWORD", q:"Influenza viral structure?",
-    c:["Naked DNA","Enveloped, segmented ssRNA(-) → reassortment causes pandemics","Enveloped DNA","Naked RNA"], a:1,
-    p:"<strong>Influenza = Orthomyxovirus, enveloped, segmented ssRNA(-)</strong>. <em>Antigenic DRIFT</em> = point mutations → seasonal epidemics. <em>Antigenic SHIFT</em> = segment reassortment (human + animal strain) → pandemics. <em>Hemagglutinin = entry; neuraminidase = exit (oseltamivir blocks)</em>. Vaccine targets HA. Post-flu pneumonia → S. aureus." },
-  { topic:"Virus", tag:"BUZZWORD", q:"HepB serology: HBsAg(+), HBeAg(+), HBcAb IgM(+), HBsAb(-). Stage?",
-    c:["Window period","Acute infection (high infectivity)","Chronic infection","Resolved/immune"], a:1,
-    p:"<strong>HepB serology cheat sheet</strong>:<br>• <em>Acute</em>: HBsAg(+), HBeAg(+), HBcAb IgM(+) — highly infectious.<br>• <em>Window</em>: HBsAg(-), HBsAb(-), HBcAb IgM(+) — only marker of infection.<br>• <em>Chronic</em>: HBsAg(+) >6 mo, HBcAb IgG(+).<br>• <em>Resolved</em>: HBsAb(+), HBcAb IgG(+).<br>• <em>Vaccinated</em>: HBsAb(+) only.<br><strong>HBeAg = high infectivity marker.</strong>" },
-  { topic:"Virus", tag:"BUZZWORD", q:"Most common cause of acute hepatitis in US (community)?",
-    c:["HepA","HepB","HepC","HepE"], a:0,
-    p:"<strong>HepA = most common acute hepatitis in US</strong> (community-acquired, fecal-oral, travel-related). <em>RNA, naked, picornavirus</em>. IgM = acute; IgG = recovered. <em>HepC = most common CHRONIC hepatitis in US</em>. <em>HepE = fulminant hepatitis in PREGNANT women</em>. <em>HepD requires HepB to infect (envelope)</em>." },
-  { topic:"Virus", tag:"BUZZWORD", q:"HIV: how does drug entry inhibitor maraviroc work?",
-    c:["Blocks gp41 fusion","Blocks CCR5 chemokine receptor","Blocks reverse transcriptase","Blocks integrase"], a:1,
-    p:"<strong>HIV entry inhibitors</strong>: <em>maraviroc = CCR5 chemokine receptor antagonist</em>; <em>enfuvirtide = gp41 fusion inhibitor</em>. HIV uses CD4 + co-receptor (CCR5 early, CXCR4 late). <em>CCR5 Δ32 homozygote = resistance to HIV infection</em>. HAART components: 2 NRTIs + 1 of (NNRTI / PI / INSTI)." },
-
-  // ── FUNGI ──────────────────────────────────────────────────────────
-  { topic:"Fungi", tag:"BUZZWORD", q:"AIDS patient + bilateral ground-glass infiltrates + CD4<200. Bug?",
-    c:["TB","Pneumocystis jirovecii","Cryptococcus","Histoplasma"], a:1,
-    p:"<strong>PCP = Pneumocystis jirovecii pneumonia</strong>. CD4<200. <em>Bilateral ground-glass on CXR</em>. Dx: <em>bronchoalveolar lavage with silver stain (or DFA)</em>. Tx + prophylaxis: <strong>TMP-SMX</strong>. Steroids if PaO2<70 or A-a gradient>35. Pentamidine if sulfa allergy." },
-  { topic:"Fungi", tag:"BUZZWORD", q:"Immunocompromised patient + meningitis + India ink shows encapsulated yeast?",
-    c:["Histoplasma","Cryptococcus neoformans","Candida","Coccidioides"], a:1,
-    p:"<strong>Cryptococcus neoformans = HIV meningitis</strong>. <em>India ink: clear halo around yeast (capsule)</em>. Dx: <em>latex agglutination for cryptococcal antigen</em> (preferred over India ink if listed). Source: <em>pigeon droppings</em>. Tx: <em>amphotericin B + flucytosine, then fluconazole maintenance</em>." },
-  { topic:"Fungi", tag:"BUZZWORD", q:"Pneumonia + flu-like illness in Mississippi/Ohio River valley + spelunker (caves)?",
-    c:["Coccidioides","Histoplasma capsulatum","Blastomyces","Cryptococcus"], a:1,
-    p:"<strong>Histoplasma = Mississippi/Ohio River, bird/bat droppings, caves</strong>. <em>Macrophages with intracellular yeast forms (Histo HIDES inside macrophages)</em>. Often asymptomatic or flu-like. Severe disseminated in HIV. Tx: itraconazole (mild) or amphotericin (severe)." },
-  { topic:"Fungi", tag:"BUZZWORD", q:"Pneumonia in Southwest US + dust exposure (earthquake, archaeology)?",
-    c:["Histoplasma","Coccidioides immitis","Blastomyces","Aspergillus"], a:1,
-    p:"<strong>Coccidioides = San Joaquin Valley fever, Southwest US, after earthquakes/dust</strong>. <em>Spherules with endospores</em>. Often pulmonary; can cause erythema nodosum or multiforme. Rx: itraconazole or fluconazole; amphotericin if severe/disseminated." },
-  { topic:"Fungi", tag:"BUZZWORD", q:"Diabetic in DKA + black necrotic eschar in nose/sinus?",
-    c:["Aspergillus","Mucormycosis (Rhizopus, Mucor)","Coccidioides","Sporothrix"], a:1,
-    p:"<strong>Mucor/Rhizopus → rhinocerebral mucormycosis in DKA + neutropenic patients</strong>. <em>Broad, NON-septate hyphae with right-angle branching</em>. Aggressively invasive. Tx: <em>surgical debridement + amphotericin B</em> (start ASAP). Compare: <em>Aspergillus = septate, acute (45°) angle branching</em>." },
-
-  // ── PARASITES ──────────────────────────────────────────────────────
-  { topic:"Parasites", tag:"BUZZWORD", q:"Hiker drinks from stream → fatty diarrhea + bloating. Bug?",
-    c:["Cryptosporidium","Giardia lamblia","Entamoeba","E. coli"], a:1,
-    p:"<strong>Giardia = stream water + campers/hikers/daycare</strong>. <em>Trophozoites with 4 flagella + 2 nuclei (look like clown faces)</em>. Steatorrhea (fat-soluble vitamin malabsorption), foul-smelling. <em>Common in IgA deficiency</em>. Tx: <em>metronidazole</em>. <em>Cryptosporidium = AIDS diarrhea, acid-fast oocysts, no good Rx</em>." },
-  { topic:"Parasites", tag:"BUZZWORD", q:"AIDS patient + ring-enhancing brain lesion(s)?",
-    c:["Primary CNS lymphoma","Toxoplasma gondii (if not on TMP-SMX prophylaxis)","Cryptococcus","Cysticercosis"], a:1,
-    p:"<strong>HIV + ring-enhancing lesion</strong>:<br>• <em>If not on TMP-SMX prophylaxis</em> → Toxoplasma → Tx: <em>sulfadiazine + pyrimethamine</em>.<br>• <em>If on TMP-SMX</em> (CD4<100) → primary CNS lymphoma (EBV-driven).<br>• <em>Single lesion, periventricular</em> → favors lymphoma.<br>• <em>Multiple lesions</em> → favors Toxo.<br>Source: undercooked meat or cat litter." },
-  { topic:"Parasites", tag:"BUZZWORD", q:"Cyclic fevers + travel to sub-Saharan Africa. Most dangerous species?",
-    c:["P. vivax","P. falciparum (cerebral malaria, RBCs at all stages)","P. ovale","P. malariae"], a:1,
-    p:"<strong>Plasmodium falciparum = most dangerous → cerebral malaria, no liver hypnozoite</strong>. <em>Vivax + ovale = hypnozoites in liver → relapse → need primaquine (check G6PD first)</em>. Dx: <em>thick + thin blood smears (Giemsa)</em>. Tx: chloroquine if sensitive area; <em>artesunate or atovaquone-proguanil for falciparum</em>." },
-  { topic:"Parasites", tag:"BUZZWORD", q:"Perianal itching at night in school-age kid. Tape test positive. Bug?",
-    c:["Ascaris","Enterobius vermicularis (pinworm)","Trichinella","Schistosoma"], a:1,
-    p:"<strong>Pinworm = Enterobius vermicularis</strong>. <em>Scotch-tape test in early AM</em>. Most common helminth in US. Tx: <em>pyrantel pamoate or albendazole</em> for patient AND household. <em>Ascaris = travels to lungs (Loeffler syndrome) then back to GI</em>." },
-  { topic:"Parasites", tag:"BUZZWORD", q:"Travel + cysts in brain on imaging + history of eating undercooked pork?",
-    c:["Toxoplasma","Neurocysticercosis (Taenia solium)","Echinococcus","Strongyloides"], a:1,
-    p:"<strong>Neurocysticercosis = Taenia solium (pork tapeworm)</strong>. <em>Multiple cysts on MRI</em>, often with calcifications. #1 cause of adult-onset seizures in endemic areas (Latin America). Tx: <em>albendazole or praziquantel + steroids (to prevent inflammation from dying parasites)</em>. <em>Echinococcus = hydatid cyst in liver — DON'T aspirate (anaphylaxis risk)</em>." },
-  { topic:"Parasites", tag:"BUZZWORD", q:"Vaginal discharge: yellow-green, frothy + strawberry cervix?",
-    c:["Candida","Trichomonas vaginalis (flagellated protozoan)","BV","Gonorrhea"], a:1,
-    p:"<strong>Trichomonas = yellow-green frothy + strawberry cervix + motile flagellated trophs on wet mount</strong>. <em>Tx: metronidazole for patient AND partner</em>. Compare: <em>BV (Gardnerella) = thin gray, fishy, clue cells, +whiff test</em>; <em>Candida = thick white cottage cheese, KOH shows pseudohyphae</em>." },
-
-  // ── VIGNETTE → BUG ─────────────────────────────────────────────────
-  { topic:"Vignette", tag:"BUZZWORD", q:"Pneumonia + bird/parrot owner. Bug?",
-    c:["Coxiella","Chlamydia psittaci","Francisella","Aspergillus"], a:1,
-    p:"<strong>Bird owner pneumonia = Chlamydia psittaci</strong>. <em>Animal-association cheat sheet</em>:<br>• Birds → C. psittaci<br>• Cats (scratch) → Bartonella henselae<br>• Cats (litter) → Toxoplasma<br>• Cattle → Coxiella burnetii (Q fever)<br>• Rabbits → Francisella tularensis<br>• Goats → Brucella<br>• Dog/cat bite → Pasteurella multocida<br>• Rat bite → Spirillum minor<br>• Bats/caves → Histoplasma" },
-  { topic:"Vignette", tag:"BUZZWORD", q:"Whipple disease finding?",
-    c:["Anti-endomysial antibodies","PAS-positive macrophages in lamina propria (Tropheryma whipplei)","Acid-fast bacilli","Birefringent crystals"], a:1,
-    p:"<strong>Whipple = Tropheryma whipplei → PAS(+) macrophages in lamina propria</strong>. Sx: arthritis, weight loss, malabsorptive diarrhea, neuro/cardiac involvement. Older men. Tx: <em>ceftriaxone IV → TMP-SMX × 1 year</em>." },
-  { topic:"Vignette", tag:"BUZZWORD", q:"Pseudomembrane in throat + myocarditis. Toxin mechanism?",
-    c:["Blocks ACh release","Diphtheria toxin: ADP-ribosylates EF-2 → inhibits protein synthesis","TSST-1 superantigen","Endotoxin/LPS"], a:1,
-    p:"<strong>Diphtheria (C. diphtheriae) → ADP-ribosylates EF-2</strong>. <em>Pseudomembrane in throat (gray, bleeds on removal) + cervical lymphadenopathy ('bull neck') + myocarditis + neuropathy</em>. Same mechanism: <em>Pseudomonas exotoxin A</em>. Dx: <em>Loeffler/tellurite media, Elek test for toxin</em>. Tx: anti-toxin + erythromycin/penicillin. DTaP vaccine." },
-  { topic:"Vignette", tag:"BUZZWORD", q:"Whooping cough — 100-day cough + paroxysmal cough with inspiratory whoop. Toxin mechanism?",
-    c:["Inhibits protein synthesis","Pertussis toxin: ADP-ribosylates Gi → ↑cAMP → ↑lymphocytosis","Blocks GABA","Damages NMJ"], a:1,
-    p:"<strong>Pertussis = Bordetella pertussis</strong>. Pertussis toxin <em>ADP-ribosylates Gi → ↑cAMP → lymphocytosis</em>. <em>3 phases: catarrhal (URI symptoms) → paroxysmal (whoop) → convalescent</em>. Tx: <em>macrolide (azithromycin)</em>. DTaP vaccine; Tdap booster in pregnancy + adolescents." },
-  { topic:"Vignette", tag:"BUZZWORD", q:"Kid with sickle cell + osteomyelitis. Most likely organism?",
-    c:["S. aureus","Salmonella","E. coli","Pseudomonas"], a:1,
-    p:"<strong>Osteomyelitis decision tree</strong>:<br>• <em>General population → S. aureus #1</em><br>• <em>Sickle cell → Salmonella</em><br>• <em>Sexually active young adult → N. gonorrhoeae</em><br>• <em>Diabetic foot / puncture wound through shoe → Pseudomonas</em><br>• <em>IV drug user → S. aureus, Pseudomonas</em><br>• <em>Cat/dog bite → Pasteurella</em>" },
-  { topic:"Vignette", tag:"BUZZWORD", q:"Abscess in kid with chronic granulomatous disease (CGD). Bug?",
-    c:["S. pneumoniae","Catalase(+) organisms (S. aureus, Aspergillus, Burkholderia, Serratia, Nocardia)","Listeria","Strep viridans"], a:1,
-    p:"<strong>CGD = NADPH oxidase defect → can't make ROS → susceptible to catalase(+) organisms</strong>. Mnemonic <em>'Cats Need PLACESS to Belch their Hairballs'</em>: Nocardia, Pseudomonas, Listeria, Aspergillus, Candida, E. coli, S. aureus, Serratia, Burkholderia, H. pylori. Dx: <em>dihydrorhodamine (DHR) test</em>. Tx: TMP-SMX prophylaxis + interferon-γ." },
-  { topic:"Vignette", tag:"BUZZWORD", q:"Asplenic patient. Vaccinate against which 3 organisms?",
-    c:["S. aureus, E. coli, Pseudomonas","Encapsulated: S. pneumoniae, H. influenzae, N. meningitidis","HIV, HepB, HepC","HSV, VZV, EBV"], a:1,
-    p:"<strong>Asplenia → vaccinate against ENCAPSULATED organisms</strong>: S. pneumoniae, H. influenzae type B, N. meningitidis. Mnemonic: <em>SHiN</em>. Spleen normally clears encapsulated bugs via opsonization. Same vaccines for sickle cell (auto-splenectomy by age 5)." },
-
-  // ── TREATMENT FOCUS ────────────────────────────────────────────────
-  { topic:"Treatment", tag:"TX", q:"MRSA skin/soft tissue infection (outpatient)?",
-    c:["Cephalexin","TMP-SMX or doxycycline or clindamycin","Amoxicillin","Vancomycin PO"], a:1,
-    p:"<strong>MRSA outpatient skin: TMP-SMX, doxycycline, or clindamycin</strong>. <strong>Severe/inpatient MRSA: vancomycin, linezolid, daptomycin, ceftaroline</strong>. <em>Daptomycin doesn't work for pneumonia</em> (inactivated by surfactant). MRSA = mecA gene (PBP2a, low affinity for β-lactams)." },
-  { topic:"Treatment", tag:"TX", q:"Empiric meningitis treatment in adult?",
-    c:["Vancomycin alone","Ceftriaxone + vancomycin (+ ampicillin if >50, immunocompromised, neonate)","Meropenem","Amoxicillin"], a:1,
-    p:"<strong>Empiric meningitis adult: ceftriaxone + vancomycin</strong> (+ steroids if S. pneumo confirmed). <em>Add ampicillin for Listeria coverage if: neonate, >50, pregnant, immunocompromised</em>. <em>Neonate: ampicillin + gentamicin OR ampicillin + cefotaxime (NOT ceftriaxone — bilirubin displacement)</em>." },
-  { topic:"Treatment", tag:"TX", q:"Gonorrhea treatment?",
-    c:["Doxycycline alone","IM ceftriaxone PLUS doxycycline (or azithromycin) — covers possible co-Chlamydia","Azithromycin alone","Penicillin"], a:1,
-    p:"<strong>Gonorrhea = ceftriaxone + doxycycline (or azithromycin)</strong>. <em>Chlamydia co-infection assumed because it's intracellular and won't show on gram stain</em>. Treat partners. <em>If patient develops PID despite ceftriaxone alone → 'improper antibiotic treatment' (didn't co-treat Chlamydia)</em>." },
-  { topic:"Treatment", tag:"TX", q:"Latent TB treatment?",
-    c:["RIPE × 6 mo","INH + B6 × 9 months","INH alone × 6 mo","Rifampin × 4 mo (alternative)"], a:1,
-    p:"<strong>Latent TB: INH + B6 × 9 months</strong> (USMLE-preferred). Alternatives: rifampin × 4 mo; INH + rifapentine × 3 mo. <em>Always B6 with INH (prevents neuropathy + sideroblastic anemia)</em>. PPD positive thresholds: <em>5mm (HIV/immunocompromised), 10mm (high-risk groups), 15mm (general population)</em>." },
-  { topic:"Treatment", tag:"TX", q:"Babesia (tick-borne parasite, malaria-like, NE United States) treatment?",
-    c:["Doxycycline","Atovaquone + azithromycin","Chloroquine","Mefloquine"], a:1,
-    p:"<strong>Babesia = atovaquone + azithromycin</strong>. Carried by Ixodes tick (same as Lyme). <em>Maltese cross intra-erythrocytic forms on blood smear</em>. More severe in asplenic/elderly. Don't confuse with Lyme (doxycycline) even though same tick." },
-  { topic:"Treatment", tag:"TX", q:"Acyclovir mechanism?",
-    c:["DNA polymerase intercalation","Activated by viral thymidine kinase → guanine analog → chain termination","Reverse transcriptase","Integrase inhibitor"], a:1,
-    p:"<strong>Acyclovir activated by VIRAL thymidine kinase → selective for HSV/VZV-infected cells</strong>. Then host kinases finish phosphorylation → competes with dGTP → chain termination. <em>Resistance: altered viral TK</em>. Doesn't work for CMV (uses UL97 kinase → ganciclovir or foscarnet). SE: nephrotoxicity (crystalluria) — hydrate." },
-  { topic:"Treatment", tag:"TX", q:"Herpes encephalitis treatment?",
-    c:["Oral acyclovir","IV acyclovir","Ganciclovir","Foscarnet"], a:1,
-    p:"<strong>HSV encephalitis = IV acyclovir (high-dose, ASAP)</strong>. <em>Don't wait for confirmatory PCR — start empirically</em>. Mortality ~70% untreated, drops to ~20-30% with prompt treatment. Even survivors often have neurologic deficits." }
+/* ===== FUNGI / PARASITES / ATYPICALS ===== */
+{m:"fung",q:"A heavily encapsulated yeast (India-ink positive) causing meningitis in AIDS patients, acquired from pigeon droppings, is which organism?",c:["Cryptococcus neoformans","Candida albicans","Histoplasma capsulatum","Aspergillus fumigatus"],a:0,why:"Cryptococcus neoformans = encapsulated yeast with narrow-based budding; India ink and latex agglutination (capsular antigen) positive; causes meningitis in AIDS (CD4 <100). Soap-bubble brain lesions.",p:"Cryptococcus = encapsulated yeast, <b>India ink</b>+, pigeon droppings, AIDS meningitis. Latex antigen test."},
+{m:"fung",q:"Oral thrush, esophagitis in AIDS, and vaginal yeast infections, caused by a germ-tube-forming yeast, are due to which organism?",c:["Candida albicans","Cryptococcus neoformans","Malassezia furfur","Sporothrix schenckii"],a:0,why:"Candida albicans forms germ tubes at body temperature; causes thrush, esophagitis (AIDS-defining), vulvovaginitis, diaper rash, and candidemia (especially with central lines/neutropenia).",p:"Candida = <b>germ tubes</b>, thrush/esophagitis (AIDS), vaginitis, line-associated candidemia."},
+{m:"fung",q:"Diffuse interstitial 'ground-glass' pneumonia in an AIDS patient with a CD4 count below 200, treated and prevented with TMP-SMX, is caused by which organism?",c:["Pneumocystis jirovecii","Mycobacterium tuberculosis","Cytomegalovirus","Streptococcus pneumoniae"],a:0,why:"Pneumocystis jirovecii (a fungus) causes PCP in AIDS (CD4 <200): dry cough, dyspnea, diffuse ground-glass infiltrates; silver stain shows disc/cup-shaped organisms. TMP-SMX treats and prophylaxes.",p:"PCP = ground-glass pneumonia in AIDS (CD4 <200). Silver stain. <b>TMP-SMX</b> treats + prophylaxis."},
+{m:"fung",q:"Cyclic fevers and chills with hemolysis, transmitted by the Anopheles mosquito and infecting red blood cells, indicate infection with which parasite?",c:["Plasmodium (malaria)","Babesia","Trypanosoma","Leishmania"],a:0,why:"Plasmodium (malaria) is transmitted by the female Anopheles mosquito, infects RBCs, and causes cyclic fevers and hemolysis; P. falciparum is the most severe (cerebral malaria). Sickle/thalassemia traits are protective.",p:"Malaria = <b>Anopheles</b> mosquito, cyclic fevers, RBC infection. P. falciparum = severe (cerebral)."},
+{m:"fung",q:"Ring-enhancing brain lesions in an AIDS patient, or congenital intracranial calcifications with chorioretinitis, are caused by which parasite?",c:["Toxoplasma gondii","Taenia solium","Naegleria fowleri","Trypanosoma cruzi"],a:0,why:"Toxoplasma gondii (cat feces, undercooked meat) → multiple ring-enhancing brain lesions in AIDS (CD4 <100) and congenital toxoplasmosis (intracranial calcifications, chorioretinitis, hydrocephalus).",p:"Toxoplasma = <b>ring-enhancing</b> brain lesions (AIDS) + congenital (calcifications, chorioretinitis). Cat feces."},
+{m:"fung",q:"Foul-smelling, fatty diarrhea and bloating after drinking from a mountain stream, caused by a pear-shaped flagellated protozoan, is due to which organism?",c:["Giardia lamblia","Entamoeba histolytica","Cryptosporidium","Vibrio cholerae"],a:0,why:"Giardia lamblia (pear-shaped, flagellated, from streams/daycare) causes fat malabsorption → foul, greasy, non-bloody diarrhea and bloating. Treat with metronidazole.",p:"Giardia = fatty/foul diarrhea after camping (streams). Pear-shaped flagellate. Tx: <b>metronidazole</b>."},
+{m:"fung",q:"A spirochete causing a painless genital chancre, then a diffuse rash (including palms and soles), detected by dark-field microscopy and VDRL/RPR, is which organism?",c:["Treponema pallidum","Borrelia burgdorferi","Leptospira interrogans","Chlamydia trachomatis"],a:0,why:"Treponema pallidum (syphilis): primary = painless chancre; secondary = diffuse rash including palms/soles, condylomata lata; tertiary = gummas, tabes dorsalis, aortitis. Dark-field microscopy; screen with VDRL/RPR.",p:"Treponema = painless chancre → rash on <b>palms/soles</b> → tertiary. Dark-field; VDRL/RPR screen."},
+{m:"fung",q:"A spirochete transmitted by the Ixodes tick causing a targetoid 'bull's-eye' rash (erythema migrans), then arthritis and carditis, is which organism?",c:["Borrelia burgdorferi","Treponema pallidum","Rickettsia rickettsii","Ehrlichia chaffeensis"],a:0,why:"Borrelia burgdorferi (Lyme disease) is spread by the Ixodes tick (deer/mouse reservoir): stage 1 erythema migrans, stage 2 carditis (AV block) and Bell palsy, stage 3 arthritis. Treat with doxycycline.",p:"Borrelia = Lyme, <b>Ixodes</b> tick, erythema migrans (bull's-eye) → carditis/Bell palsy → arthritis. Tx: doxycycline."}
 ];
 
-// ============================================================================
-// SYSTEMS
-// ============================================================================
-const SYSTEMS = ["Bacteria","Virus","Fungi","Parasites","Vignette","Treatment"];
+const VAULT=[
+{t:"Gram Stain & Stains",b:"<b>G+</b> = thick peptidoglycan → retains crystal violet (PURPLE). <b>G−</b> = thin peptidoglycan + outer LPS membrane → safranin (PINK). No wall = Mycoplasma. <b>Acid-fast</b> = Mycobacteria/Nocardia. <b>India ink</b> = Cryptococcus. <b>Silver</b> = fungi/PCP/Legionella.",g:"Basics"},
+{t:"Endotoxin vs Exotoxin",b:"<b>Endotoxin</b> = LPS/lipid A (G−, structural, heat-stable, released on lysis, TNF/IL-1 → shock, NO toxoid). <b>Exotoxin</b> = secreted protein (G+ and some G−, specific, heat-labile, very potent, toxoid vaccine).",g:"Basics"},
+{t:"Encapsulated Organisms",b:"'Some Killers Have Pretty Nice Capsules, Silly': S. pneumoniae, H. influenzae, Neisseria meningitidis, Klebsiella, GBS, Pseudomonas, Cryptococcus, Salmonella. Capsule = antiphagocytic. Asplenia/sickle cell at risk → vaccinate.",g:"Basics"},
+{t:"Strep & Staph ID",b:"<b>Catalase+</b> = Staph (coagulase+ = aureus). <b>α-hemolytic</b> (green): S. pneumoniae (optochin-S, bile-S) vs viridans (optochin-R). <b>β-hemolytic</b> (clear): GAS/pyogenes (bacitracin-S) vs GBS/agalactiae (bacitracin-R).",g:"Gram+"},
+{t:"Clostridia Toxins",b:"<b>C. tetani</b> = tetanospasmin blocks GABA/glycine → SPASTIC (lockjaw). <b>C. botulinum</b> = blocks ACh → FLACCID descending. <b>C. perfringens</b> = gas gangrene (α-toxin). <b>C. difficile</b> = pseudomembranous colitis (toxins A/B).",g:"Gram+"},
+{t:"Diarrhea: Watery vs Bloody",b:"<b>Watery</b> = Vibrio (rice-water, ↑cAMP), ETEC, Giardia, viruses. <b>Bloody/inflammatory</b> = Shigella, EHEC O157:H7 (→HUS, avoid antibiotics), Salmonella, Campylobacter, Entamoeba.",g:"Gram−"},
+{t:"Neisseria & Urease+",b:"<b>Meningitidis</b> = capsule, maltose+, vaccine, petechiae/Waterhouse-Friderichsen. <b>Gonorrhoeae</b> = no capsule/vaccine, maltose−, septic arthritis/ophthalmia neonatorum. <b>Urease+ (PUNCH-K):</b> Proteus, Ureaplasma, Nocardia, Cryptococcus, H. pylori, Klebsiella.",g:"Gram−"},
+{t:"Herpesviruses (dsDNA)",b:"<b>HSV-1</b> (oral, temporal encephalitis), <b>HSV-2</b> (genital), <b>VZV</b> (chickenpox→shingles), <b>EBV</b> (mono, Burkitt, CD21/B cells), <b>CMV</b> (owl-eye, congenital, AIDS retinitis), <b>HHV-8</b> (Kaposi). Theme = latency.",g:"Viruses"},
+{t:"DNA vs RNA Viruses",b:"<b>DNA</b> = mostly dsDNA, nucleus (except pox). 'HHAPPPy': Herpes, Hepadna, Adeno, Parvo, Papilloma, Polyoma, Pox. <b>RNA</b> = mostly ssRNA, cytoplasm (except influenza/retro). Influenza segmented → drift (mutation) vs shift (reassortment).",g:"Viruses"},
+{t:"AIDS Opportunists by CD4",b:"<b><200</b> = PCP (Pneumocystis; TMP-SMX prophylaxis). <b><100</b> = Toxoplasma (ring-enhancing), Cryptococcus (meningitis). <b><50</b> = CMV (retinitis), MAC. Candidal esophagitis is AIDS-defining.",g:"Fungi"},
+{t:"Dimorphic Fungi (mold cold, yeast heat)",b:"<b>Histoplasma</b> (Ohio/Mississippi, bird/bat, intracellular). <b>Blastomyces</b> (broad-based bud). <b>Coccidioides</b> (Southwest, spherules). <b>Paracoccidioides</b> (captain's wheel). Aspergillus = septate 45° hyphae; Mucor = broad nonseptate (DKA).",g:"Fungi"},
+{t:"Spirochetes & Vectors",b:"<b>Treponema pallidum</b> (syphilis: chancre → palms/soles rash → tertiary; dark-field, VDRL/RPR). <b>Borrelia</b> (Lyme, Ixodes tick, erythema migrans → carditis/Bell palsy → arthritis; doxycycline). <b>Rickettsia rickettsii</b> (RMSF, wrists/ankles → trunk).",g:"Atypicals"}
+];
 
-const STATE = {
-  hp: 3, maxHp: 3, xp: 0, level: 1, streak: 0, bestStreak: 0,
-  mode: 'menu', currentQ: null, modeQs: [], modeIdx: 0,
-  modeStats: { correct: 0, total: 0 },
-  systemMastery: {}, achievements: {},
-  totalAnswered: 0, totalCorrect: 0
+const MODES={
+  daily:{name:"Daily Culture",ic:"🦠",desc:"15 random questions across all of microbiology. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Outbreak",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  basics:{name:"Microbial Basics",ic:"🦴",desc:"The foundation: Gram stain, morphology, toxins, capsules, and classification.",pick:()=>shuffle(QBANK.filter(q=>q.m==="basics"))},
+  gpos:{name:"Gram-Positive",ic:"🟣",desc:"Staph & Strep ID, the Clostridia toxins, and Listeria.",pick:()=>shuffle(QBANK.filter(q=>q.m==="gpos"))},
+  gneg:{name:"Gram-Negative",ic:"🔴",desc:"Neisseria, the enterics, Pseudomonas, H. pylori, and Legionella.",pick:()=>shuffle(QBANK.filter(q=>q.m==="gneg"))},
+  virus:{name:"Viruses",ic:"🧬",desc:"Herpesviruses, EBV/CMV, HIV, influenza shift vs drift, and rabies.",pick:()=>shuffle(QBANK.filter(q=>q.m==="virus"))},
+  fung:{name:"Fungi, Parasites & Atypicals",ic:"🍄",desc:"Cryptococcus/Candida/PCP, malaria/Toxoplasma/Giardia, and the spirochetes.",pick:()=>shuffle(QBANK.filter(q=>q.m==="fung"))}
 };
-SYSTEMS.forEach(s => { STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
+const MODE_TAGS={basics:"Microbial Basics",gpos:"Gram-Positive",gneg:"Gram-Negative",virus:"Viruses",fung:"Fungi / Parasites / Atypicals"};
 
-const ACHIEVEMENTS = [
-  { id: 'first_culture', name: 'First Culture', desc: 'Answer your first question', icon: '🧫' },
-  { id: 'streak_5', name: 'Pure Culture', desc: '5-question streak', icon: '🔥' },
-  { id: 'streak_10', name: 'Sterile Field', desc: '10-question streak', icon: '⚡' },
-  { id: 'level_5', name: 'Lab Tech', desc: 'Reach Level 5', icon: '🥼' },
-  { id: 'level_10', name: 'Microbiologist', desc: 'Reach Level 10', icon: '🔬' },
-  { id: 'master_bacteria', name: 'Bacteria Boss', desc: 'Master Bacteria (90%+, 5+ seen)', icon: '🦠' },
-  { id: 'master_virus', name: 'Virologist', desc: 'Master Viruses (90%+, 4+ seen)', icon: '🧬' },
-  { id: 'master_vignette', name: 'Pattern Hunter', desc: 'Master Vignettes (90%+, 4+ seen)', icon: '🎯' },
-  { id: 'perfect_round', name: 'Outbreak Contained', desc: 'Perfect 10/10 round', icon: '💯' },
-  { id: 'survivor', name: 'Plague Survivor', desc: 'Endless: 20 in a row', icon: '🛡️' }
-];
+const SAVE_KEY="microbe_mayhem_v2";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
-// ============================================================================
-// PERSISTENCE
-// ============================================================================
-function loadSave() {
-  try {
-    const v = localStorage.getItem('microbe_mayhem_save');
-    if (v) {
-      const data = JSON.parse(v);
-      Object.assign(STATE, data);
-      SYSTEMS.forEach(s => { if (!STATE.systemMastery[s]) STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
-      toast('SAVE LOADED', 'xp');
-    }
-  } catch (e) {}
-}
-function save() {
-  try {
-    const data = {
-      hp: STATE.hp, maxHp: STATE.maxHp, xp: STATE.xp, level: STATE.level,
-      bestStreak: STATE.bestStreak, systemMastery: STATE.systemMastery,
-      achievements: STATE.achievements, totalAnswered: STATE.totalAnswered,
-      totalCorrect: STATE.totalCorrect
-    };
-    localStorage.setItem('microbe_mayhem_save', JSON.stringify(data));
-  } catch (e) {}
-}
+let session=null;
+const app=document.getElementById("app");
 
-// ============================================================================
-// UTILS
-// ============================================================================
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-function pickRandom(arr, n) { return shuffle(arr).slice(0, n); }
-function toast(msg, cls='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + cls;
-  setTimeout(() => t.className = 'toast ' + cls, 1800);
-}
-function unlock(id) {
-  if (STATE.achievements[id]) return;
-  const ach = ACHIEVEMENTS.find(a => a.id === id);
-  if (!ach) return;
-  STATE.achievements[id] = true;
-  toast(`🏆 ${ach.name}!`, 'xp');
-  save();
-}
-function checkAchievements() {
-  if (STATE.totalAnswered >= 1) unlock('first_culture');
-  if (STATE.streak >= 5) unlock('streak_5');
-  if (STATE.streak >= 10) unlock('streak_10');
-  if (STATE.level >= 5) unlock('level_5');
-  if (STATE.level >= 10) unlock('level_10');
-  ['Bacteria','Virus','Vignette'].forEach((sys, i) => {
-    const m = STATE.systemMastery[sys];
-    const threshold = i === 0 ? 5 : 4;
-    if (m.seen >= threshold && (m.correct/m.seen) >= 0.9) {
-      unlock(['master_bacteria','master_virus','master_vignette'][i]);
-    }
-  });
-}
-
-// ============================================================================
-// HUD
-// ============================================================================
-function renderHUD() {
-  let hearts = '';
-  for (let i = 0; i < STATE.maxHp; i++) {
-    hearts += `<span class="heart ${i < STATE.hp ? '' : 'lost'}">♥</span>`;
-  }
-  document.getElementById('hearts').innerHTML = hearts;
-  document.getElementById('xp-display').textContent = STATE.xp;
-  document.getElementById('lvl-display').textContent = STATE.level;
-  document.getElementById('streak-display').textContent = STATE.streak + '🔥';
-}
-function gainXP(amt) {
-  STATE.xp += amt;
-  const needed = STATE.level * 50;
-  if (STATE.xp >= needed) {
-    STATE.xp -= needed;
-    STATE.level++;
-    STATE.maxHp = Math.min(5, 3 + Math.floor(STATE.level / 5));
-    STATE.hp = STATE.maxHp;
-    toast(`LEVEL UP! Lvl ${STATE.level}`, 'xp');
-  }
-  renderHUD();
-}
-
-// ============================================================================
-// SCREENS
-// ============================================================================
-const panel = document.getElementById('panel');
-
-function renderMenu() {
-  STATE.mode = 'menu';
-  renderHUD();
-  panel.innerHTML = `
-    <h2 style="font-family:'Press Start 2P',monospace; font-size:18px; color:var(--bio-yellow); margin-bottom:8px; text-align:center;">★ SELECT MODE ★</h2>
-    <p style="text-align:center; color:var(--text-dim); margin-bottom:20px; font-size:16px;">Pattern recognition is the WHOLE GAME in micro. Drill the buzzwords.</p>
-    <div class="menu-grid">
-      <div class="menu-card" onclick="startMode('daily')">
-        <span class="menu-icon">🧫</span>
-        <div class="menu-title">DAILY PETRI</div>
-        <div class="menu-desc">10 random Qs. Daily warm-up.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('endless')">
-        <span class="menu-icon">☣️</span>
-        <div class="menu-title">OUTBREAK</div>
-        <div class="menu-desc">Endless gauntlet. Survive.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('vignette')">
-        <span class="menu-icon">🎯</span>
-        <div class="menu-title">BUZZWORD HUNT</div>
-        <div class="menu-desc">Vignette → bug. PURE pattern.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('bacteria')">
-        <span class="menu-icon">🦠</span>
-        <div class="menu-title">BACTERIA BATTLE</div>
-        <div class="menu-desc">Gram(+), Gram(-), atypicals.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('virus')">
-        <span class="menu-icon">🧬</span>
-        <div class="menu-title">VIRAL VAULT</div>
-        <div class="menu-desc">DNA, RNA, herpes, hep, HIV.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('fungiparasites')">
-        <span class="menu-icon">🍄</span>
-        <div class="menu-title">FUNGI & FRIENDS</div>
-        <div class="menu-desc">Fungi + parasites.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('treatment')">
-        <span class="menu-icon">💊</span>
-        <div class="menu-title">TREATMENT TIME</div>
-        <div class="menu-desc">Bug → drug.</div>
-      </div>
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">&mu;</div>
+    <h1>MICROBE MAYHEM</h1>
+    <div class="sub">Microbiology — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("basics",m.basics,"special")}${tile("gpos",m.gpos,"")}${tile("gneg",m.gneg,"")}${tile("virus",m.virus,"")}${tile("fung",m.fung,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy micro tools — Gram stain, the encapsulated list, Strep/Staph ID, AIDS opportunists, spirochetes, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
     </div>
-    <div class="system-progress">
-      <h3 style="font-family:'Press Start 2P',monospace; font-size:13px; color:var(--petri-pink); margin:24px 0 12px;">⊟ MICRO MASTERY ⊟</h3>
-      ${SYSTEMS.map(sys => {
-        const m = STATE.systemMastery[sys];
-        const pct = m.seen ? Math.round(m.correct / m.seen * 100) : 0;
-        return `
-          <div class="system-bar">
-            <div class="system-name">${sys}</div>
-            <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-            <div class="system-pct">${pct}% (${m.correct}/${m.seen})</div>
-          </div>`;
-      }).join('')}
-    </div>
-    <div class="controls">
-      <button class="btn btn-secondary" onclick="showAchievements()">🏆 ACHIEVEMENTS</button>
-      <button class="btn btn-secondary" onclick="showStats()">📊 STATS</button>
-      <button class="btn btn-secondary" onclick="showSyncModal()">🔄 SYNC</button>
-      <button class="btn btn-danger" onclick="resetSave()">⟲ RESET</button>
-    </div>
-  `;
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
 }
-
-function startMode(mode) {
-  STATE.mode = mode;
-  STATE.modeStats = { correct: 0, total: 0 };
-  STATE.modeIdx = 0;
-  STATE.hp = STATE.maxHp;
-
-  let pool = QBANK;
-  let limit = 10;
-  if (mode === 'bacteria') pool = QBANK.filter(q => q.topic === 'Bacteria');
-  else if (mode === 'virus') pool = QBANK.filter(q => q.topic === 'Virus');
-  else if (mode === 'fungiparasites') pool = QBANK.filter(q => ['Fungi','Parasites'].includes(q.topic));
-  else if (mode === 'vignette') pool = QBANK.filter(q => q.topic === 'Vignette' || q.tag === 'BUZZWORD');
-  else if (mode === 'treatment') pool = QBANK.filter(q => q.topic === 'Treatment' || q.tag === 'TX');
-  else if (mode === 'endless') { pool = QBANK; limit = 999; }
-
-  STATE.modeQs = mode === 'endless' ? shuffle(pool) : pickRandom(pool, Math.min(limit, pool.length));
-  STATE.modeStats.total = STATE.modeQs.length;
-  renderHUD();
-  nextQuestion();
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
 }
-
-function nextQuestion() {
-  if (STATE.hp <= 0) return endRound('LIFE LOST');
-  if (STATE.modeIdx >= STATE.modeQs.length) {
-    if (STATE.mode === 'endless') {
-      STATE.modeQs = shuffle(QBANK); STATE.modeIdx = 0;
-    } else return endRound('COMPLETE');
-  }
-  STATE.currentQ = STATE.modeQs[STATE.modeIdx];
-  renderQuestion();
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
 }
-
-function renderQuestion() {
-  const q = STATE.currentQ;
-  const progressTxt = STATE.mode === 'endless'
-    ? `Q${STATE.modeStats.correct + 1} • ENDLESS`
-    : `Q${STATE.modeIdx + 1} / ${STATE.modeQs.length}`;
-  panel.innerHTML = `
-    <div class="question-area">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-        <span class="q-tag">${q.tag} • ${q.topic}</span>
-        <span style="font-family:'JetBrains Mono',monospace; color:var(--text-dim); font-size:14px;">${progressTxt}</span>
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
       </div>
-      <div class="q-text">${q.q}</div>
-      <div class="choices" id="choices">
-        ${q.c.map((c, i) => `
-          <button class="choice" data-idx="${i}" onclick="answer(${i})">
-            <span class="key">${String.fromCharCode(65 + i)}</span>
-            <span>${c}</span>
-          </button>`).join('')}
-      </div>
-      <div id="feedback"></div>
-    </div>
-  `;
-}
-
-function answer(idx) {
-  const q = STATE.currentQ;
-  const isCorrect = idx === q.a;
-  document.querySelectorAll('.choice').forEach((el, i) => {
-    el.classList.add('disabled');
-    el.onclick = null;
-    if (i === q.a) el.classList.add('correct');
-    else if (i === idx) el.classList.add('wrong');
-  });
-
-  STATE.totalAnswered++;
-  STATE.systemMastery[q.topic].seen++;
-  if (isCorrect) {
-    STATE.totalCorrect++;
-    STATE.systemMastery[q.topic].correct++;
-    STATE.modeStats.correct++;
-    STATE.streak++;
-    if (STATE.streak > STATE.bestStreak) STATE.bestStreak = STATE.streak;
-    const xpGain = 10 + Math.min(STATE.streak * 2, 20);
-    gainXP(xpGain);
-    toast(`+${xpGain} XP`, 'xp');
-    if (STATE.mode === 'endless' && STATE.streak >= 20) unlock('survivor');
-  } else {
-    STATE.streak = 0;
-    STATE.hp--;
-    toast('-1 HP', 'error');
-  }
-  renderHUD();
-  checkAchievements();
-  save();
-
-  document.getElementById('feedback').innerHTML = `
-    <div class="pearl-box">
-      <div class="pearl-label">💎 MEHLMAN PEARL</div>
-      <div class="pearl-text">${q.p}</div>
-    </div>
-    <div class="controls">
-      <button class="btn btn-secondary" onclick="renderMenu()">◄ MENU</button>
-      <button class="btn" onclick="advance()">${STATE.modeIdx + 1 >= STATE.modeQs.length && STATE.mode !== 'endless' ? 'FINISH ►' : 'NEXT ►'}</button>
-    </div>
-  `;
-}
-
-function advance() {
-  STATE.modeIdx++;
-  nextQuestion();
-}
-
-function endRound(reason) {
-  const correct = STATE.modeStats.correct;
-  const total = STATE.modeStats.total;
-  const livePct = total > 0 ? Math.round(correct/total*100) : 0;
-
-  let rank, rankColor;
-  if (livePct === 100 && total >= 10) { rank = 'S'; rankColor = 'var(--bio-yellow)'; unlock('perfect_round'); }
-  else if (livePct >= 90) { rank = 'A'; rankColor = 'var(--plague-green)'; }
-  else if (livePct >= 75) { rank = 'B'; rankColor = 'var(--lab-blue)'; }
-  else if (livePct >= 60) { rank = 'C'; rankColor = 'var(--petri-pink)'; }
-  else { rank = 'D'; rankColor = 'var(--crimson)'; }
-
-  const reasonMsg = reason === 'LIFE LOST' ? 'CONTAINMENT BREACH — OUT OF HP' : 'ROUND COMPLETE';
-  panel.innerHTML = `
-    <div class="results-screen">
-      <div class="results-title">${reasonMsg}</div>
-      <div class="rank-badge" style="color:${rankColor}; border-color:${rankColor}; box-shadow: 0 0 30px ${rankColor};">RANK ${rank}</div>
-      <div class="results-stats">
-        <div class="stat-block"><span class="stat-num">${correct}</span><span class="stat-label">CORRECT</span></div>
-        <div class="stat-block"><span class="stat-num">${livePct}%</span><span class="stat-label">ACCURACY</span></div>
-        <div class="stat-block"><span class="stat-num">${STATE.bestStreak}</span><span class="stat-label">BEST STREAK</span></div>
-      </div>
-      <div class="controls" style="justify-content:center;">
-        <button class="btn btn-secondary" onclick="renderMenu()">◄ MENU</button>
-        <button class="btn" onclick="startMode('${STATE.mode}')">↻ RETRY</button>
-      </div>
-    </div>
-  `;
-  STATE.streak = 0;
-  renderHUD();
-  save();
-}
-
-
-// ============================================================================
-// SYNC — Export / Import save codes across devices
-// ============================================================================
-function showSyncModal() {
-  const data = {
-    hp: STATE.hp, maxHp: STATE.maxHp, xp: STATE.xp, level: STATE.level,
-    bestStreak: STATE.bestStreak, systemMastery: STATE.systemMastery,
-    achievements: STATE.achievements, totalAnswered: STATE.totalAnswered,
-    totalCorrect: STATE.totalCorrect
-  };
-  const code = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-
-  const html = `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <h2>🔄 SYNC SAVE</h2>
-        <p style="font-size:14px; opacity:0.75; margin-bottom:18px;">Transfer your progress between devices. Copy code from one, paste on the other.</p>
-
-        <div style="margin-bottom:20px; padding:14px; background:rgba(0,0,0,0.25); border-radius:4px; border:1px solid rgba(128,128,128,0.25);">
-          <h3 style="font-size:15px; margin-bottom:8px; opacity:0.9;">📤 EXPORT &mdash; from this device</h3>
-          <p style="font-size:13px; opacity:0.65; margin-bottom:8px;">Copy this code, then paste it on your other device:</p>
-          <textarea id="sync-export-code" readonly style="width:100%; height:90px; font-family:monospace; font-size:11px; padding:8px; background:rgba(0,0,0,0.45); color:inherit; border:1px solid rgba(128,128,128,0.4); border-radius:3px; resize:none; word-break:break-all;">${code}</textarea>
-          <button class="btn btn-secondary" style="margin-top:10px; width:100%;" onclick="copyExportCode()">📋 Copy to Clipboard</button>
-        </div>
-
-        <div style="margin-bottom:20px; padding:14px; background:rgba(0,0,0,0.25); border-radius:4px; border:1px solid rgba(128,128,128,0.25);">
-          <h3 style="font-size:15px; margin-bottom:8px; opacity:0.9;">📥 IMPORT &mdash; from another device</h3>
-          <p style="font-size:13px; opacity:0.65; margin-bottom:8px;">Paste a save code from your other device:</p>
-          <textarea id="sync-import-code" placeholder="Paste save code here..." style="width:100%; height:90px; font-family:monospace; font-size:11px; padding:8px; background:rgba(0,0,0,0.45); color:inherit; border:1px solid rgba(128,128,128,0.4); border-radius:3px; resize:none;"></textarea>
-          <button class="btn" style="margin-top:10px; width:100%;" onclick="applyImport()">✓ Apply Import</button>
-        </div>
-
-        <div style="text-align:center;">
-          <button class="btn btn-secondary" onclick="closeModal()">CLOSE</button>
-        </div>
-      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
     </div>`;
-  document.body.insertAdjacentHTML('beforeend', html);
 }
-
-function copyExportCode() {
-  const ta = document.getElementById('sync-export-code');
-  if (!ta) return;
-  ta.select();
-  ta.setSelectionRange(0, 99999);
-  let ok = false;
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(ta.value).then(
-      () => toast('COPIED!', 'xp'),
-      () => {
-        try { ok = document.execCommand('copy'); } catch (e) {}
-        if (ok) toast('COPIED!', 'xp');
-        else toast('Select & copy manually', 'error');
-      }
-    );
-  } else {
-    try { ok = document.execCommand('copy'); } catch (e) {}
-    if (ok) toast('COPIED!', 'xp');
-    else toast('Select & copy manually', 'error');
-  }
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:28px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">Micro memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
 }
-
-function applyImport() {
-  const ta = document.getElementById('sync-import-code');
-  if (!ta) return;
-  const code = ta.value.trim();
-  if (!code) { toast('Paste a code first', 'error'); return; }
-  try {
-    let json;
-    try { json = decodeURIComponent(escape(atob(code))); }
-    catch (e) { json = atob(code); }
-    const data = JSON.parse(json);
-    if (typeof data.xp !== 'number' || !data.systemMastery) {
-      throw new Error('Invalid save format');
-    }
-    if (!confirm('This will REPLACE your current progress on this device. Continue?')) return;
-    Object.assign(STATE, data);
-    SYSTEMS.forEach(s => { if (!STATE.systemMastery[s]) STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
-    if (!STATE.achievements) STATE.achievements = {};
-    save();
-    closeModal();
-    toast('SAVE IMPORTED!', 'xp');
-    renderMenu();
-  } catch (e) {
-    toast('Invalid code — try again', 'error');
-  }
-}
-
-function showAchievements() {
-  const html = `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <h2>🏆 ACHIEVEMENTS</h2>
-        <div class="achievement-list">
-          ${ACHIEVEMENTS.map(a => `
-            <div class="achievement ${STATE.achievements[a.id] ? 'unlocked' : 'locked'}">
-              <span class="ach-icon">${STATE.achievements[a.id] ? a.icon : '🔒'}</span>
-              <div>
-                <strong>${a.name}</strong><br>
-                <span style="font-size:13px; color:var(--text-dim);">${a.desc}</span>
-              </div>
-            </div>`).join('')}
-        </div>
-        <button class="btn" onclick="closeModal()">CLOSE</button>
-      </div>
-    </div>`;
-  document.body.insertAdjacentHTML('beforeend', html);
-}
-
-function showStats() {
-  const totalPct = STATE.totalAnswered ? Math.round(STATE.totalCorrect/STATE.totalAnswered*100) : 0;
-  const html = `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <h2>📊 LIFETIME STATS</h2>
-        <p><strong style="color:var(--bio-yellow)">Total Answered:</strong> ${STATE.totalAnswered}</p>
-        <p><strong style="color:var(--plague-green)">Total Correct:</strong> ${STATE.totalCorrect}</p>
-        <p><strong style="color:var(--lab-blue)">Lifetime Accuracy:</strong> ${totalPct}%</p>
-        <p><strong style="color:var(--petri-pink)">Best Streak:</strong> ${STATE.bestStreak}🔥</p>
-        <p><strong style="color:var(--hazard-orange)">Current Level:</strong> ${STATE.level}</p>
-        <p><strong>Achievements:</strong> ${Object.keys(STATE.achievements).length} / ${ACHIEVEMENTS.length}</p>
-        <button class="btn" onclick="closeModal()">CLOSE</button>
-      </div>
-    </div>`;
-  document.body.insertAdjacentHTML('beforeend', html);
-}
-
-function closeModal() { document.querySelector('.modal-overlay')?.remove(); }
-
-function resetSave() {
-  if (!confirm('Reset ALL Microbe Mayhem progress?')) return;
-  try { localStorage.removeItem('microbe_mayhem_save'); } catch (e) {}
-  STATE.hp = 3; STATE.maxHp = 3; STATE.xp = 0; STATE.level = 1;
-  STATE.streak = 0; STATE.bestStreak = 0; STATE.totalAnswered = 0; STATE.totalCorrect = 0;
-  STATE.achievements = {};
-  SYSTEMS.forEach(s => { STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
-  toast('SAVE RESET');
-  renderMenu();
-}
-
-document.addEventListener('keydown', (e) => {
-  if (STATE.mode === 'menu' || !STATE.currentQ) return;
-  const choices = document.querySelectorAll('.choice:not(.disabled)');
-  if (choices.length === 0) {
-    if (e.key === 'Enter') {
-      const nextBtn = document.querySelector('.controls .btn:not(.btn-secondary):not(.btn-danger)');
-      nextBtn?.click();
-    }
-    return;
-  }
-  const keyIdx = ['a','b','c','d','1','2','3','4'].indexOf(e.key.toLowerCase());
-  if (keyIdx >= 0) {
-    const idx = keyIdx >= 4 ? keyIdx - 4 : keyIdx;
-    if (choices[idx]) answer(idx);
-  }
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
 });
-
-loadSave();
-renderMenu();
+menu();
 </script>
 </body>
 </html>

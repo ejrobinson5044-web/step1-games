@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BREATH OF DEATH — Pulmonary</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0c10;
+  --bg2:#11151c;
+  --panel:#161c26;
+  --panel-hi:#1f2935;
+  --cyan:#fb923c;        /* orange primary (airway/alarm) */
+  --cyan-dim:#c2410c;
+  --amber:#38bdf8;       /* sky-blue accent (oxygen) */
+  --amber-hi:#7dd3fc;
+  --red:#f87171;
+  --green:#34d399;
+  --text:#e8eef5;
+  --dim:#7c8aa0;
+  --line:rgba(251,146,60,.15);
+  --glow:rgba(251,146,60,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Figtree',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 18% 0%,rgba(251,146,60,.10),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(56,189,248,.07),transparent 55%),
+    linear-gradient(180deg,#0a0c10,#11151c);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px);
+  background-size:100% 30px;
+  mask-image:radial-gradient(ellipse at center,#000 30%,transparent 90%);opacity:.6;
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;
+  background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#161c26;
+  font-family:'Anton';font-size:26px;margin-bottom:8px;box-shadow:0 0 24px var(--glow);transform:rotate(-2deg)}
+.badge sub{font-size:.55em}
+h1{font-family:'Anton';font-weight:400;font-size:42px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase}
+.sub{font-family:'DM Mono';font-size:11px;color:var(--dim);letter-spacing:3px;margin-top:2px;text-transform:uppercase}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;
+  transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.6}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Anton';font-weight:400;font-size:21px;margin:7px 0 5px;letter-spacing:.8px;text-transform:uppercase}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'DM Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'DM Mono';font-size:10px;letter-spacing:3px;color:var(--dim);
+  text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'DM Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'DM Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);
+  border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;
+  cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'DM Mono';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(52,211,153,.13)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(248,113,113,.13)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'DM Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(56,189,248,.10);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Anton';font-weight:400;font-size:15px;letter-spacing:.6px}
+
+.btn{font-family:'Anton';font-weight:400;letter-spacing:1.5px;border:none;border-radius:10px;padding:14px 22px;cursor:pointer;font-size:18px;transition:.15s;text-transform:uppercase}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#161c26;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Anton';font-weight:400;font-size:78px;color:var(--cyan);line-height:1}
+.rank{font-family:'DM Mono';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:8px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'DM Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:28px;color:var(--text);font-family:'Anton';font-weight:400}
+
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Anton';font-weight:400;color:var(--amber-hi);font-size:20px;margin-bottom:7px;letter-spacing:.6px;text-transform:uppercase}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'DM Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'DM Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'DM Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== PULMONARY ANATOMY ===== */
+{m:"anat",q:"The inferior vena cava passes through the diaphragm at which vertebral level?",c:["T8","T10","T12","T6"],a:0,why:"IVC (with the right phrenic nerve) pierces the central tendon at T8.",p:"<b>I 8 (T8)</b> ten (T10) <b>EGGs at twelve</b> (T12). IVC = 8."},
+{m:"anat",q:"The esophagus and the vagus nerve trunks pierce the diaphragm at which vertebral level?",c:["T10","T8","T12","T6"],a:0,why:"The esophageal hiatus is at T10, carrying the esophagus + anterior/posterior vagal trunks.",p:"T10 = <b>esophagus + vagus</b>. (10 letters in 'esophagus'? close enough — vagus rides with it.)"},
+{m:"anat",q:"The aorta, thoracic duct, and azygos vein pass behind the diaphragm at which vertebral level?",c:["T12","T10","T8","L1"],a:0,why:"The aortic hiatus (T12) transmits the aorta, thoracic duct, and azygos vein — all structures that pass BEHIND, not through, the diaphragm.",p:"T12 = <b>Aorta, thoracic Duct, Azygos</b> (the 'ATory' structures, behind the diaphragm)."},
+{m:"anat",q:"The diaphragm receives its motor innervation from which spinal nerve roots?",c:["C3, C4, C5","T1–T6","C6, C7, C8","L1, L2"],a:0,why:"The phrenic nerve (C3–C5) drives the diaphragm; high cervical cord injury can stop breathing.",p:"<b>C3,4,5 keeps the diaphragm alive.</b>"},
+{m:"anat",q:"An intoxicated patient aspirates while lying flat on their back. Aspirated material most likely lodges in which lung region?",c:["Superior segment of the right lower lobe","Lingula","Apex of the left upper lobe","Right middle lobe"],a:0,why:"Supine aspiration → superior segment of the RLL (most dependent when lying down). Upright → posterobasal RLL.",p:"Supine = <b>superior segment RLL</b>. Always the RIGHT (bronchus is wider/more vertical)."},
+{m:"anat",q:"An inhaled peanut most commonly enters which main bronchus because that bronchus is wider and more vertical?",c:["Right main bronchus","Left main bronchus","Either equally","The trachea itself"],a:0,why:"The right main bronchus is wider, shorter, and more vertical → foreign bodies and aspiration favor the right.",p:"Foreign body → <b>RIGHT</b> bronchus (wider, more vertical)."},
+{m:"anat",q:"Which vessels deliver OXYGENATED blood to nourish the lung tissue itself (as opposed to participating in gas exchange)?",c:["Bronchial arteries","Pulmonary arteries","Pulmonary veins","Azygos vein"],a:0,why:"Bronchial arteries (from the aorta) feed the lung parenchyma; pulmonary arteries carry deoxygenated blood for gas exchange.",p:"<b>Bronchial arteries nourish; pulmonary arteries oxygenate.</b>"},
+{m:"anat",q:"The pulmonary arteries are physiologically unusual because they carry blood that is what?",c:["Deoxygenated","Oxygenated","Mixed venous and lymph","Filtered plasma only"],a:0,why:"Pulmonary arteries carry deoxygenated blood from the RV to the lungs — the reverse of systemic arteries.",p:"Pulmonary artery = <b>deoxygenated</b> (RV → lungs). Pulmonary vein = oxygenated."},
+{m:"anat",q:"The trachea bifurcates at the carina at approximately which level (the sternal angle of Louis)?",c:["T4–T5","T2","T8","T10"],a:0,why:"The carina sits at the sternal angle ≈ T4/T5; it's also where the aortic arch ends and the pulmonary trunk bifurcates.",p:"Carina = <b>sternal angle = T4/T5</b>."},
+{m:"anat",q:"Which alveolar cell produces surfactant and acts as the precursor that regenerates the alveolar lining after injury?",c:["Type II pneumocyte","Type I pneumocyte","Club (Clara) cell","Alveolar macrophage"],a:0,why:"Type II pneumocytes make surfactant and are the stem-cell precursors that repair the epithelium.",p:"Type <b>II = surfactant + repair</b>. (Type I = gas exchange.)"},
+{m:"anat",q:"Which thin, flat alveolar cell forms ~97% of the surface area and is where gas exchange actually occurs?",c:["Type I pneumocyte","Type II pneumocyte","Goblet cell","Dust cell"],a:0,why:"Type I pneumocytes are squamous and make up most of the alveolar surface — the diffusion barrier.",p:"Type <b>I = gas exchange</b> (thin, 97% of surface)."},
+
+/* ===== PFTs / VOLUMES ===== */
+{m:"pft",q:"In obstructive lung disease, the FEV1/FVC ratio characteristically does what?",c:["Decreases (<0.7)","Increases above 1","Stays exactly normal","Becomes undefined"],a:0,why:"Obstruction limits airflow OUT (FEV1 drops more than FVC) → reduced ratio.",p:"Obstructive = can't get air <b>OUT</b> → FEV1/FVC <b>down</b>."},
+{m:"pft",q:"In restrictive lung disease, the FEV1/FVC ratio is typically what?",c:["Normal or increased","Markedly decreased","Always zero","Undefined"],a:0,why:"Both FEV1 and FVC fall proportionally (or FVC falls more) → ratio normal or even high.",p:"Restrictive = small lungs, <b>ratio preserved</b> (often ↑)."},
+{m:"pft",q:"In emphysema, what happens to residual volume and total lung capacity?",c:["Both increase (air trapping)","Both decrease","Only RV decreases","Both stay normal"],a:0,why:"Loss of elastic recoil → air trapping → hyperinflation → ↑RV and ↑TLC.",p:"Emphysema = <b>hyperinflated</b>: ↑RV, ↑TLC (barrel chest)."},
+{m:"pft",q:"In restrictive lung disease such as pulmonary fibrosis, the total lung capacity is what?",c:["Decreased","Increased","Unchanged","Infinite"],a:0,why:"Stiff, non-compliant lungs hold less air → ↓TLC, ↓all volumes.",p:"Restrictive = <b>everything shrinks</b> (↓TLC)."},
+{m:"pft",q:"The volume of air remaining in the lungs after a normal (tidal) expiration is called what?",c:["Functional residual capacity","Total lung capacity","Tidal volume","Inspiratory reserve"],a:0,why:"FRC = ERV + RV; the resting end-expiratory lung volume where inward and outward recoil balance.",p:"FRC = <b>ERV + RV</b> = what's left after a normal breath out."},
+{m:"pft",q:"Which lung volume CANNOT be measured by spirometry alone?",c:["Residual volume","Tidal volume","Vital capacity","Expiratory reserve volume"],a:0,why:"RV (and anything containing it: FRC, TLC) needs body plethysmography or helium dilution — you can't exhale it.",p:"Can't exhale it → can't spirometer it. <b>RV needs plethysmography</b>."},
+{m:"pft",q:"A reduced diffusing capacity (DLCO) from alveolar destruction is characteristic of which obstructive disease?",c:["Emphysema","Asthma","Chronic bronchitis","Bronchiectasis"],a:0,why:"Emphysema destroys alveolar-capillary surface → low DLCO. Asthma's DLCO is normal/high.",p:"<b>Emphysema = low DLCO</b> (lost surface). Asthma = normal DLCO."},
+{m:"pft",q:"A flow-volume loop with a scooped-out (concave) expiratory limb indicates which pattern?",c:["Obstructive","Restrictive","Normal","Neuromuscular weakness"],a:0,why:"Obstruction collapses small airways during expiration → concave 'scooped' expiratory limb, shifted toward high volumes.",p:"<b>Scooped expiratory limb = obstructive.</b> Restrictive = tall/narrow, shifted right."},
+
+/* ===== GAS EXCHANGE / V-Q ===== */
+{m:"gas",q:"At the apex of an upright lung, the ventilation/perfusion (V/Q) ratio is relatively what?",c:["High (>1)","Low (<1)","Exactly 1","Zero"],a:0,why:"Gravity gives the apex less blood flow than ventilation → high V/Q (wasted ventilation, zone 1).",p:"<b>Apex = high V/Q</b> (also why TB and apical disease love it — high O2)."},
+{m:"gas",q:"At the base of an upright lung, the V/Q ratio is relatively what?",c:["Low (<1)","High (>1)","Exactly 1","Infinite"],a:0,why:"The base gets the most blood flow (gravity) relative to ventilation → low V/Q.",p:"<b>Base = low V/Q</b> (perfusion wins at the bottom)."},
+{m:"gas",q:"Hypoxemia caused by a right-to-left shunt responds in what way to 100% supplemental oxygen?",c:["Does not correct","Fully corrects","Worsens then resolves","Is unaffected by altitude only"],a:0,why:"Blood bypasses ventilated alveoli, so added O2 can't reach it → shunt hypoxemia is refractory to O2.",p:"<b>Shunt = O2 doesn't fix it.</b> (V/Q mismatch DOES improve with O2.)"},
+{m:"gas",q:"A pulmonary embolus creates lung that is ventilated but not perfused. What is this physiologic state called?",c:["Dead space (high V/Q)","Shunt (low V/Q)","Diffusion limitation","Hypoventilation"],a:0,why:"Ventilation without perfusion = dead space; with a complete block V/Q → infinity.",p:"<b>PE = dead space</b> (V/Q → ∞). Shunt is the opposite (perfusion, no ventilation)."},
+{m:"gas",q:"Hypoxemia with a NORMAL A-a gradient points to which mechanism?",c:["Hypoventilation","Right-to-left shunt","V/Q mismatch","Diffusion limitation"],a:0,why:"Hypoventilation (and high altitude) lower PaO2 without widening the A-a gradient; the other causes widen it.",p:"<b>Normal A-a gradient = hypoventilation</b> (or altitude). Widened = shunt/VQ/diffusion."},
+{m:"gas",q:"Increased CO2, acidosis, 2,3-BPG, and temperature shift the oxygen-hemoglobin dissociation curve in which direction?",c:["Right (unloads O2 to tissues)","Left (holds O2 tighter)","No shift","Inverts the curve"],a:0,why:"These 'tissues working hard' signals lower Hb affinity → right shift → O2 released where needed.",p:"<b>CADET, face Right!</b> CO2, Acid, 2,3-DPG, Exercise, Temp → right shift."},
+{m:"gas",q:"Carbon monoxide and fetal hemoglobin shift the oxygen-hemoglobin curve in which direction?",c:["Left (increased affinity)","Right (decreased affinity)","No shift","Flattens it"],a:0,why:"Left shift = higher affinity, O2 held tighter and released poorly (dangerous in CO poisoning; adaptive for fetal Hb pulling O2 from mom).",p:"<b>Left = Lower delivery, Loves O2.</b> CO, HbF, methemoglobin, low temp."},
+
+/* ===== VASCULAR / ARDS / EFFUSION ===== */
+{m:"vasc",q:"A pulmonary embolism most commonly originates as a thrombus from where?",c:["Deep veins of the lower extremities","Pulmonary capillaries","Left atrium","Hepatic veins"],a:0,why:"Most PEs arise from proximal lower-extremity DVTs (femoral/popliteal) that embolize to the lungs.",p:"PE source = <b>DVT, lower extremity</b> (proximal). Virchow's triad."},
+{m:"vasc",q:"The classic but uncommon ECG finding in acute pulmonary embolism is what?",c:["S1Q3T3","Peaked T waves","Delta wave","Prominent U waves"],a:0,why:"S1Q3T3 reflects acute right heart strain; sinus tachycardia is actually the most common finding.",p:"PE ECG buzzword = <b>S1Q3T3</b> (right heart strain). Most common in real life = sinus tach."},
+{m:"vasc",q:"Bilateral pulmonary infiltrates with refractory hypoxemia and a NORMAL pulmonary capillary wedge pressure (noncardiogenic edema) define which condition?",c:["Acute respiratory distress syndrome","Cardiogenic pulmonary edema","Pulmonary embolism","Pneumothorax"],a:0,why:"ARDS = diffuse alveolar damage → leaky capillaries, hyaline membranes, stiff lungs, normal wedge (not heart failure).",p:"ARDS = <b>noncardiogenic</b> edema, hyaline membranes, low compliance, normal wedge."},
+{m:"vasc",q:"Idiopathic pulmonary arterial hypertension is associated with an inactivating mutation in which gene?",c:["BMPR2","CFTR","SOD1","JAK2"],a:0,why:"Loss of BMPR2 → unchecked vascular smooth muscle proliferation → plexiform lesions in idiopathic PAH.",p:"Idiopathic PAH = <b>BMPR2</b> loss → plexiform lesions."},
+{m:"vasc",q:"Respiratory distress in a premature newborn with diffuse 'ground-glass' lungs is caused by deficiency of what?",c:["Surfactant","Hemoglobin","Bronchial cartilage","Alpha-1 antitrypsin"],a:0,why:"Neonatal RDS = surfactant deficiency (immature type II cells) → atelectasis; lecithin:sphingomyelin <2 predicts it.",p:"Neonatal RDS = <b>surfactant</b> deficiency. L:S ratio <2 = immature lungs."},
+{m:"vasc",q:"A pleural effusion with high protein and high LDH meeting Light's criteria is classified as what?",c:["Exudate","Transudate","Chylothorax","Hydrothorax"],a:0,why:"Light's criteria flag exudates (infection, malignancy, inflammation); transudates are low-protein (CHF, cirrhosis).",p:"<b>Exudate = high protein/LDH</b> (infection, cancer). Transudate = CHF/cirrhosis."},
+
+/* ===== OBSTRUCTIVE / RESTRICTIVE DISEASE ===== */
+{m:"dz",q:"Panacinar emphysema affecting the LOWER lobes in a young nonsmoker suggests which deficiency?",c:["Alpha-1 antitrypsin deficiency","Surfactant deficiency","Vitamin C deficiency","IgA deficiency"],a:0,why:"α1-antitrypsin deficiency → unopposed elastase → panacinar emphysema (lower lobes) + liver disease.",p:"Young nonsmoker + <b>lower-lobe panacinar</b> + liver dz = <b>α1-antitrypsin</b>. (Smoking = centriacinar, upper lobes.)"},
+{m:"dz",q:"A productive cough present for at least 3 months in 2 consecutive years defines which disease?",c:["Chronic bronchitis","Emphysema","Asthma","Bronchiectasis"],a:0,why:"Chronic bronchitis = clinical diagnosis by that timeframe; ↑Reid index, 'blue bloater.'",p:"Chronic bronchitis = <b>3 months × 2 years</b>, ↑Reid index, blue bloater."},
+{m:"dz",q:"Reversible airway obstruction with Curschmann spirals and Charcot-Leyden crystals in the sputum is characteristic of which disease?",c:["Asthma","COPD","Sarcoidosis","Tuberculosis"],a:0,why:"Asthma = reversible bronchoconstriction; Curschmann spirals (mucus casts) and Charcot-Leyden crystals (eosinophil-derived) are classic.",p:"Asthma sputum = <b>Curschmann spirals + Charcot-Leyden crystals</b> (eosinophilic)."},
+{m:"dz",q:"Progressive dyspnea with 'honeycombing' on CT and a restrictive PFT pattern, with no identifiable cause, describes which disease?",c:["Idiopathic pulmonary fibrosis","Asthma","Chronic bronchitis","Pulmonary embolism"],a:0,why:"IPF = fibrosing interstitial pneumonia → honeycombing, traction bronchiectasis, ↓DLCO, restrictive.",p:"IPF = <b>honeycomb lung</b>, restrictive, ↓DLCO. Antifibrotics (pirfenidone)."},
+{m:"dz",q:"Bilateral hilar lymphadenopathy with noncaseating granulomas and elevated ACE, often in a young Black woman, indicates which disease?",c:["Sarcoidosis","Tuberculosis","Silicosis","Asbestosis"],a:0,why:"Sarcoid = noncaseating granulomas, ↑ACE, hilar adenopathy, hypercalcemia (granuloma 1α-hydroxylase).",p:"Sarcoid = <b>noncaseating granulomas</b>, ↑ACE, hilar nodes, ↑Ca. Black women."},
+{m:"dz",q:"LOWER-lobe fibrosis with ferruginous bodies and calcified pleural plaques points to exposure to which agent?",c:["Asbestos","Silica","Coal dust","Beryllium"],a:0,why:"Asbestos → lower-lobe disease, ferruginous bodies, pleural plaques, and ↑mesothelioma + bronchogenic carcinoma risk.",p:"Asbestos = <b>bottom of the lungs</b>, ferruginous bodies, plaques, mesothelioma."},
+{m:"dz",q:"UPPER-lobe nodules with 'eggshell' calcification of hilar nodes and increased tuberculosis susceptibility indicate exposure to what?",c:["Silica","Asbestos","Cotton dust","Iron oxide"],a:0,why:"Silicosis → upper-lobe nodules, eggshell-calcified hilar nodes, impaired macrophages → ↑TB risk.",p:"Silica = <b>top of the lungs</b>, eggshell calcification, ↑TB (disrupts macrophages)."}
+];
+
+const VAULT=[
+{t:"Diaphragm Hiatus Levels",b:"<b>T8</b> = IVC (+ right phrenic). <b>T10</b> = esophagus + vagus. <b>T12</b> = aorta, thoracic duct, azygos. Mnemonic: \"I 8 ten EGGs at twelve.\"",g:"Anatomy"},
+{t:"C3,4,5 Keeps the Diaphragm Alive",b:"Phrenic nerve = C3–C5. High cervical cord injury can stop spontaneous breathing.",g:"Anatomy"},
+{t:"Aspiration Geography",b:"Always favors the <b>RIGHT</b> (wider, more vertical bronchus). Supine → <b>superior segment RLL</b>. Upright → posterobasal RLL.",g:"Anatomy"},
+{t:"Obstructive vs Restrictive",b:"<b>Obstructive</b> = can't get air OUT → FEV1/FVC ↓, RV/TLC ↑. <b>Restrictive</b> = small stiff lungs → FEV1/FVC normal/↑, all volumes ↓.",g:"PFTs"},
+{t:"CADET, Face Right!",b:"Right shift (unloads O2): <b>C</b>O2, <b>A</b>cid, 2,3-<b>D</b>PG, <b>E</b>xercise, <b>T</b>emperature. Left shift: CO, fetal Hb, methemoglobin, cold.",g:"O2 curve"},
+{t:"Shunt vs Dead Space",b:"<b>Shunt</b> (V/Q=0) = perfusion, no ventilation → O2 does NOT fix it. <b>Dead space</b> (V/Q=∞) = ventilation, no perfusion → think PE.",g:"Gas exchange"},
+{t:"A-a Gradient Logic",b:"<b>Normal A-a</b> + hypoxemia = hypoventilation or altitude. <b>Widened A-a</b> = shunt, V/Q mismatch, or diffusion limitation.",g:"Gas exchange"},
+{t:"Emphysema: Top vs Bottom",b:"<b>Centriacinar</b> = smoking, UPPER lobes. <b>Panacinar</b> = α1-antitrypsin, LOWER lobes (+ liver disease).",g:"COPD"},
+{t:"Pneumoconiosis Geography",b:"<b>Silica & coal = upper lobes</b> (silica: eggshell calcification, ↑TB). <b>Asbestos = lower lobes</b> (ferruginous bodies, plaques, mesothelioma).",g:"Restrictive"},
+{t:"Asthma Sputum Buzzwords",b:"<b>Curschmann spirals</b> (mucus casts) + <b>Charcot-Leyden crystals</b> (eosinophil breakdown). Reversible obstruction, normal DLCO.",g:"Asthma"},
+{t:"Sarcoid Tetrad",b:"<b>Noncaseating granulomas</b>, ↑ACE, bilateral hilar adenopathy, hypercalcemia (granuloma 1α-hydroxylase). Young Black women.",g:"Restrictive"},
+{t:"Type I vs Type II Pneumocyte",b:"<b>Type I</b> = gas exchange (97% surface, thin). <b>Type II</b> = surfactant + stem cell that repairs the alveolus.",g:"Anatomy"}
+];
+
+const MODES={
+  daily:{name:"Daily Spirometry",ic:"🫁",desc:"15 random questions across all pulmonary topics. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Ventilation",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  anat:{name:"Pulmonary Anatomy",ic:"🦴",desc:"Diaphragm hiatuses, aspiration, circulation, pneumocytes, carina.",pick:()=>shuffle(QBANK.filter(q=>q.m==="anat"))},
+  pft:{name:"PFT Lab",ic:"📈",desc:"Obstructive vs restrictive, lung volumes, DLCO, flow-volume loops.",pick:()=>shuffle(QBANK.filter(q=>q.m==="pft"))},
+  gas:{name:"Gas Exchange Bay",ic:"🔄",desc:"V/Q, shunt vs dead space, A-a gradient, O2 curve shifts.",pick:()=>shuffle(QBANK.filter(q=>q.m==="gas"))},
+  vasc:{name:"Vascular & ARDS",ic:"🩸",desc:"PE, ARDS, pulmonary HTN, neonatal RDS, effusions.",pick:()=>shuffle(QBANK.filter(q=>q.m==="vasc"))},
+  dz:{name:"Obstructive & Restrictive",ic:"🌫️",desc:"COPD, asthma, IPF, sarcoid, the pneumoconioses.",pick:()=>shuffle(QBANK.filter(q=>q.m==="dz"))}
+};
+const MODE_TAGS={anat:"Pulmonary Anatomy",pft:"PFTs / Volumes",gas:"Gas Exchange / V-Q",vasc:"Vascular / ARDS",dz:"Lung Disease"};
+
+const SAVE_KEY="breath_of_death_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">O<sub>2</sub></div>
+    <h1>Breath of Death</h1>
+    <div class="sub">Pulmonary · Gas Exchange · PFTs — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("anat",m.anat,"special")}${tile("pft",m.pft,"")}${tile("gas",m.gas,"")}${tile("vasc",m.vasc,"")}${tile("dz",m.dz,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy lung tools — hiatus levels, CADET-face-right, obstructive vs restrictive, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
+}
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:34px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">Pulmonary memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
+});
+menu();
+</script>
+</body>
+</html>

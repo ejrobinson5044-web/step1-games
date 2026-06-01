@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>INHERITANCE ISLAND — Genetics</title>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=Lexend:wght@400;500;600;700&family=Red+Hat+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06101a;
+  --bg2:#0a1826;
+  --panel:#0f2233;
+  --panel-hi:#163245;
+  --cyan:#22d3ee;        /* aqua primary (DNA strand) */
+  --cyan-dim:#0e7490;
+  --amber:#ec4899;       /* hot-pink accent (complementary strand) */
+  --amber-hi:#f9a8d4;
+  --red:#f87171;
+  --green:#34d399;
+  --text:#e3f4f8;
+  --dim:#6f93a3;
+  --line:rgba(34,211,238,.15);
+  --glow:rgba(34,211,238,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Lexend',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 17% 0%,rgba(34,211,238,.12),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(236,72,153,.08),transparent 55%),
+    linear-gradient(180deg,#06101a,#0a1826);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--line) 1px,transparent 1px);
+  background-size:27px 27px;
+  mask-image:radial-gradient(ellipse at center,#000 32%,transparent 88%);
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;
+  background:linear-gradient(150deg,var(--cyan),var(--cyan-dim));color:#06101a;
+  font-family:'Michroma';font-size:22px;margin-bottom:8px;box-shadow:0 0 24px var(--glow)}
+h1{font-family:'Michroma';font-weight:400;font-size:28px;letter-spacing:1px;color:var(--cyan)}
+.sub{font-family:'Red Hat Mono';font-size:11px;color:var(--dim);letter-spacing:2px;margin-top:5px;text-transform:uppercase}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.6}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Michroma';font-weight:400;font-size:13px;margin:9px 0 6px;letter-spacing:.3px;line-height:1.3}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'Red Hat Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'Red Hat Mono';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'Red Hat Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'Red Hat Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'Red Hat Mono';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(52,211,153,.13)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(248,113,113,.13)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'Red Hat Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(236,72,153,.10);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Michroma';font-size:11px;letter-spacing:.3px}
+
+.btn{font-family:'Michroma';font-weight:400;letter-spacing:.5px;border:none;border-radius:10px;padding:14px 22px;cursor:pointer;font-size:13px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#06101a;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Michroma';font-weight:400;font-size:56px;color:var(--cyan);line-height:1.1}
+.rank{font-family:'Red Hat Mono';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:10px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'Red Hat Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:22px;color:var(--text);font-family:'Michroma';font-weight:400}
+
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Michroma';font-weight:400;color:var(--amber-hi);font-size:13px;margin-bottom:9px;letter-spacing:.3px;line-height:1.3}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'Red Hat Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'Red Hat Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'Red Hat Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== INHERITANCE PATTERNS & VOCAB ===== */
+{m:"pat",q:"A condition appearing in every generation, passed from an affected parent to about half of offspring of either sex, follows which inheritance pattern?",c:["Autosomal dominant","Autosomal recessive","X-linked recessive","Mitochondrial"],a:0,why:"Autosomal dominant = vertical transmission (every generation), ~50% of offspring affected, both sexes; often defects of structural proteins or receptors.",p:"AD = <b>vertical, every generation, 50%</b>, both sexes. Often structural/receptor defects."},
+{m:"pat",q:"A condition appearing in siblings but not the parents, more common with consanguinity and carrying a 25% recurrence risk when both parents are carriers, is which pattern?",c:["Autosomal recessive","Autosomal dominant","X-linked dominant","Mitochondrial"],a:0,why:"Autosomal recessive = horizontal (affected siblings, unaffected parents), consanguinity raises risk, 25% recurrence; often enzyme deficiencies.",p:"AR = <b>horizontal, skips generations, consanguinity, 25%</b>. Often enzyme deficiencies."},
+{m:"pat",q:"A disorder affecting mainly males, transmitted through unaffected carrier mothers, with NO father-to-son transmission, is which pattern?",c:["X-linked recessive","X-linked dominant","Autosomal recessive","Mitochondrial"],a:0,why:"X-linked recessive = mostly males affected, carrier mothers transmit, fathers can't pass it to sons (they give sons a Y).",p:"XLR = <b>mostly males, carrier moms, NO male-to-male</b> transmission."},
+{m:"pat",q:"An affected father transmits the condition to ALL of his daughters and NONE of his sons. Which inheritance pattern is this?",c:["X-linked dominant","X-linked recessive","Autosomal dominant","Mitochondrial"],a:0,why:"X-linked dominant: an affected father gives his X (with the mutation) to every daughter and his Y to every son → all daughters affected, no sons.",p:"XLD = affected dad → <b>ALL daughters, NO sons</b>. (e.g., hypophosphatemic rickets, Alport.)"},
+{m:"pat",q:"A disorder transmitted ONLY through the mother to all of her children (both sexes), with variable severity, follows which inheritance?",c:["Mitochondrial inheritance","X-linked recessive","Autosomal dominant","Y-linked"],a:0,why:"Mitochondrial DNA is maternally inherited → an affected mother passes it to all children; heteroplasmy explains variable severity (MELAS, Leber, mitochondrial myopathy).",p:"Mitochondrial = <b>maternal → all kids</b>, variable severity (heteroplasmy). Fathers never transmit."},
+{m:"pat",q:"The proportion of individuals carrying a disease genotype who actually show ANY phenotype is called what?",c:["Penetrance","Expressivity","Anticipation","Pleiotropy"],a:0,why:"Penetrance = the % of genotype-carriers who express the phenotype at all (incomplete penetrance = not everyone shows it).",p:"<b>Penetrance</b> = % who show the disease at all. (Expressivity = HOW MUCH they show it.)"},
+{m:"pat",q:"When patients with the SAME genotype show the disease to differing DEGREES of severity, this is called what?",c:["Variable expressivity","Incomplete penetrance","Anticipation","Locus heterogeneity"],a:0,why:"Variable expressivity = same genotype, different phenotypic severity (e.g., NF1 ranging from a few café-au-lait spots to severe disease).",p:"<b>Variable expressivity</b> = same gene, different severity. Penetrance = whether it shows at all."},
+{m:"pat",q:"When a disease shows EARLIER onset and increasing severity in successive generations, this phenomenon is called what?",c:["Anticipation","Imprinting","Mosaicism","Pleiotropy"],a:0,why:"Anticipation = worsening/earlier onset across generations — classically from trinucleotide repeat expansion (Huntington, fragile X, myotonic dystrophy).",p:"<b>Anticipation</b> = earlier + worse each generation. Hallmark of trinucleotide-repeat diseases."},
+
+/* ===== TRINUCLEOTIDE REPEATS ===== */
+{m:"trin",q:"An autosomal dominant CAG trinucleotide repeat expansion on chromosome 4 causing chorea and progressive dementia is which disease?",c:["Huntington disease","Friedreich ataxia","Myotonic dystrophy","Fragile X syndrome"],a:0,why:"Huntington = CAG repeat (chromosome 4) → caudate atrophy, chorea, dementia; shows anticipation; ↓GABA and ACh.",p:"Huntington = <b>CAG, chromosome 4</b>, chorea + dementia, caudate atrophy, anticipation."},
+{m:"trin",q:"A CGG repeat expansion in the FMR1 gene — the most common INHERITED cause of intellectual disability — produces which syndrome?",c:["Fragile X syndrome","Down syndrome","Myotonic dystrophy","Prader-Willi syndrome"],a:0,why:"Fragile X = CGG repeat silencing FMR1; most common inherited cause of intellectual disability (Down is most common overall but usually not inherited).",p:"Fragile X = <b>CGG, FMR1</b>, most common INHERITED intellectual disability. (Down = most common overall.)"},
+{m:"trin",q:"A CTG repeat in the DMPK gene causing sustained, difficult-to-release muscle contractions, cataracts, and frontal balding is which disorder?",c:["Myotonic dystrophy","Duchenne muscular dystrophy","Friedreich ataxia","Becker muscular dystrophy"],a:0,why:"Myotonic dystrophy = CTG repeat (DMPK) → myotonia (can't relax muscle), cataracts, frontal balding, arrhythmias, testicular atrophy.",p:"Myotonic dystrophy = <b>CTG, DMPK</b>: can't relax grip + cataracts + frontal balding + arrhythmia."},
+{m:"trin",q:"A GAA repeat in the frataxin gene (autosomal recessive) causing progressive gait/limb incoordination, hypertrophic cardiomyopathy, and diabetes is which disease?",c:["Friedreich ataxia","Huntington disease","Myotonic dystrophy","Tay-Sachs disease"],a:0,why:"Friedreich ataxia = GAA repeat (frataxin) → mitochondrial dysfunction → ataxia, HCM (usual cause of death), diabetes, kyphoscoliosis. The only AR trinucleotide disease here.",p:"Friedreich = <b>GAA, frataxin</b>, autosomal recessive, ataxia + HCM + diabetes. 'Friedreich is Fratastic ataxic.'"},
+{m:"trin",q:"Trinucleotide-repeat diseases worsen in successive generations because the repeat does what during transmission?",c:["Expands (lengthens)","Contracts (shortens)","Disappears entirely","Stays exactly the same"],a:0,why:"Repeat expansion (more copies) with each generation → earlier onset and greater severity = anticipation.",p:"Repeats <b>expand</b> across generations → anticipation. (Longer repeat = earlier/worse disease.)"},
+{m:"trin",q:"Which trinucleotide repeat SEQUENCE is associated with Huntington disease?",c:["CAG","CGG","CTG","GAA"],a:0,why:"Huntington = CAG. Fragile X = CGG. Myotonic dystrophy = CTG. Friedreich ataxia = GAA.",p:"'Try hunting for my fried eggs': fragile <b>X</b>=CGG, <b>H</b>untington=CAG, <b>M</b>yotonic=CTG, <b>F</b>riedreich=GAA."},
+{m:"trin",q:"Fragile X syndrome is associated with a long narrow face, large ears, and which genital finding?",c:["Macroorchidism (enlarged testes)","Cryptorchidism","Hypospadias","Micropenis"],a:0,why:"Fragile X classic triad: long face, large everted ears, and macroorchidism (large testes), plus intellectual disability and autism features.",p:"Fragile X = long face + large ears + <b>macroorchidism</b> (big testes)."},
+{m:"trin",q:"Patients with Friedreich ataxia most often die from which associated condition?",c:["Hypertrophic cardiomyopathy","Renal failure","Leukemia","Respiratory infection"],a:0,why:"Hypertrophic cardiomyopathy is the usual cause of death in Friedreich ataxia (along with the neurologic decline and diabetes).",p:"Friedreich ataxia → die from <b>hypertrophic cardiomyopathy</b>."},
+
+/* ===== IMPRINTING & CHROMOSOMAL ===== */
+{m:"chrom",q:"Hyperphagia leading to obesity, hypotonia, hypogonadism, and intellectual disability from loss of the PATERNAL chromosome 15 region is which syndrome?",c:["Prader-Willi syndrome","Angelman syndrome","Williams syndrome","Down syndrome"],a:0,why:"Prader-Willi = loss of paternally-expressed genes at 15q (paternal deletion or maternal uniparental disomy) → hyperphagia/obesity, hypotonia, hypogonadism.",p:"Prader-Willi = <b>Paternal</b> deletion (15q) → hyperPhagia, obesity. 'PP' = Prader = Paternal."},
+{m:"chrom",q:"Severe intellectual disability, ataxia, seizures, and inappropriate laughter ('happy puppet') from loss of the MATERNAL chromosome 15 region is which syndrome?",c:["Angelman syndrome","Prader-Willi syndrome","Rett syndrome","Patau syndrome"],a:0,why:"Angelman = loss of the maternally-expressed UBE3A at 15q (maternal deletion or paternal uniparental disomy) → ataxia, seizures, inappropriate laughter.",p:"Angelman = <b>mAternal</b> deletion (15q) → happy puppet, ataxia, seizures. 'Angel from mom.'"},
+{m:"chrom",q:"Trisomy of which chromosome causes the most common viable autosomal trisomy, with intellectual disability and endocardial cushion (AV septal) defects?",c:["Chromosome 21","Chromosome 18","Chromosome 13","Chromosome 15"],a:0,why:"Trisomy 21 (Down syndrome) = most common viable trisomy; intellectual disability, AV septal defect, duodenal atresia, ↑ risk of ALL and early Alzheimer's.",p:"Down = trisomy <b>21</b> (most common). AV septal defect, duodenal atresia, ↑ALL + early Alzheimer."},
+{m:"chrom",q:"Clenched fists with overlapping fingers, rocker-bottom feet, and micrognathia, usually fatal within the first year, indicate trisomy of which chromosome?",c:["18","21","13","X"],a:0,why:"Trisomy 18 (Edwards) = clenched fists/overlapping fingers, rocker-bottom feet, micrognathia, prominent occiput; death usually by age 1.",p:"Edwards = trisomy <b>18</b>: clenched fists, rocker-bottom feet, micrognathia. (18 = 'Election' age, survives longer than 13.)"},
+{m:"chrom",q:"Cleft lip/palate, holoprosencephaly, and polydactyly, usually fatal in infancy, indicate trisomy of which chromosome?",c:["13","18","21","Y"],a:0,why:"Trisomy 13 (Patau) = cleft lip/palate, holoprosencephaly, polydactyly, microphthalmia, cutis aplasia; very poor survival.",p:"Patau = trisomy <b>13</b>: cleft lip/palate, holoprosencephaly, Polydactyly (P=13). Worst survival."},
+{m:"chrom",q:"Short stature, a webbed neck, primary amenorrhea with streak ovaries, and coarctation of the aorta in a female indicate which chromosomal abnormality?",c:["Turner syndrome (45,X)","Klinefelter syndrome (47,XXY)","Trisomy 21","Fragile X syndrome"],a:0,why:"Turner (45,X) = short stature, webbed neck (cystic hygroma), streak ovaries/primary amenorrhea, coarctation/bicuspid aortic valve, no Barr body.",p:"Turner = <b>45,X</b>: short, webbed neck, streak ovaries, coarctation. NO Barr body."},
+{m:"chrom",q:"A tall male with small firm testes, gynecomastia, and infertility, who has an extra X chromosome, has which condition?",c:["Klinefelter syndrome (47,XXY)","Turner syndrome (45,X)","Trisomy 18","XYY syndrome"],a:0,why:"Klinefelter (47,XXY) = tall, testicular atrophy, gynecomastia, infertility, ↓testosterone with ↑LH/FSH; a Barr body is present.",p:"Klinefelter = <b>47,XXY</b>: tall, small testes, gynecomastia, infertile. Barr body PRESENT."},
+{m:"chrom",q:"Elfin facies, an extremely friendly/social personality, supravalvular aortic stenosis, and hypercalcemia, from a chromosome 7 microdeletion (elastin gene), indicate which syndrome?",c:["Williams syndrome","DiGeorge syndrome","Prader-Willi syndrome","Cri-du-chat syndrome"],a:0,why:"Williams = 7q11.23 microdeletion (includes elastin) → elfin facies, hypersocial personality, supravalvular aortic stenosis, hypercalcemia.",p:"Williams = <b>chromosome 7 deletion</b>: elfin face, super-friendly, supravalvular AS, hypercalcemia."},
+
+/* ===== AUTOSOMAL DOMINANT ===== */
+{m:"ad",q:"Tall stature, arachnodactyly, UPWARD lens dislocation, and aortic root dilation from a fibrillin-1 (FBN1) mutation describe which autosomal dominant disorder?",c:["Marfan syndrome","Homocystinuria","Ehlers-Danlos syndrome","Klinefelter syndrome"],a:0,why:"Marfan = FBN1 (fibrillin-1) defect → tall, arachnodactyly, lens dislocates UP, aortic root dilation/dissection (the lethal feature).",p:"Marfan = <b>FBN1</b>, lens UP, aortic root dilation. (Homocystinuria = lens DOWN.)"},
+{m:"ad",q:"Café-au-lait spots, multiple benign nerve-sheath skin tumors, Lisch nodules (iris hamartomas), and a chromosome 17 mutation indicate which disorder?",c:["Neurofibromatosis type 1","Neurofibromatosis type 2","Tuberous sclerosis","Von Hippel-Lindau disease"],a:0,why:"NF1 (chromosome 17, neurofibromin) = café-au-lait macules, cutaneous neurofibromas, Lisch nodules, optic gliomas.",p:"NF1 = <b>chromosome 17</b>: café-au-lait, neurofibromas, Lisch nodules, optic glioma."},
+{m:"ad",q:"Bilateral vestibular schwannomas (acoustic neuromas), often with meningiomas, and a chromosome 22 mutation indicate which disorder?",c:["Neurofibromatosis type 2","Neurofibromatosis type 1","Tuberous sclerosis","Marfan syndrome"],a:0,why:"NF2 (chromosome 22, merlin) = bilateral vestibular schwannomas, meningiomas, ependymomas.",p:"NF2 = <b>chromosome 22</b>: bilateral acoustic neuromas (vestibular schwannomas). 'NF2 = 2 ears.'"},
+{m:"ad",q:"Ash-leaf hypopigmented macules, facial angiofibromas, cardiac rhabdomyomas, and seizures with intellectual disability indicate which autosomal dominant disorder?",c:["Tuberous sclerosis","Neurofibromatosis type 1","Sturge-Weber syndrome","Von Hippel-Lindau disease"],a:0,why:"Tuberous sclerosis = hamartomas everywhere: ash-leaf spots, angiofibromas (adenoma sebaceum), cardiac rhabdomyomas, CNS tubers → seizures, shagreen patches.",p:"Tuberous sclerosis = <b>ash-leaf spots + angiofibromas + cardiac rhabdomyoma + seizures</b>."},
+{m:"ad",q:"Cerebellar and retinal hemangioblastomas, pheochromocytoma, and bilateral clear-cell renal cell carcinoma, from a chromosome 3 mutation, indicate which disorder?",c:["Von Hippel-Lindau disease","Tuberous sclerosis","Neurofibromatosis type 2","Familial adenomatous polyposis"],a:0,why:"VHL (chromosome 3p, VHL tumor suppressor) = hemangioblastomas (cerebellum/retina), pheochromocytoma, bilateral clear-cell RCC.",p:"VHL = <b>chromosome 3</b>: hemangioblastomas + pheochromocytoma + clear-cell RCC."},
+{m:"ad",q:"Short-limbed dwarfism with a normal-sized head and trunk, from an activating FGFR3 mutation associated with advanced paternal age, is which disorder?",c:["Achondroplasia","Marfan syndrome","Osteogenesis imperfecta","Williams syndrome"],a:0,why:"Achondroplasia = activating FGFR3 mutation → impaired endochondral ossification → short limbs, normal trunk/head; most cases sporadic (advanced paternal age). AD.",p:"Achondroplasia = <b>FGFR3</b> (overactive → inhibits growth), short limbs, advanced paternal age."},
+{m:"ad",q:"Bilateral renal cysts presenting in ADULTHOOD with hypertension, hepatic cysts, and berry aneurysms, from a PKD1 mutation, describe which disorder?",c:["Autosomal dominant polycystic kidney disease","Autosomal recessive polycystic kidney disease","Von Hippel-Lindau disease","Tuberous sclerosis"],a:0,why:"ADPKD = PKD1 (chromosome 16) or PKD2 → bilateral renal cysts, hypertension, hepatic cysts, berry aneurysms, mitral valve prolapse; presents in adulthood.",p:"ADPKD = <b>PKD1 (chr 16)</b>, adult onset, berry aneurysms + hepatic cysts. (ARPKD = infantile.)"},
+{m:"ad",q:"Thousands of colonic polyps appearing in adolescence with near-certain progression to colon cancer, from an APC mutation, is which syndrome?",c:["Familial adenomatous polyposis","Lynch syndrome","Peutz-Jeghers syndrome","Juvenile polyposis"],a:0,why:"FAP = APC mutation (chromosome 5q) → thousands of adenomatous polyps; 100% progress to colorectal cancer without colectomy.",p:"FAP = <b>APC (chr 5)</b>, thousands of polyps, 100% → colon cancer. Prophylactic colectomy."},
+
+/* ===== RECESSIVE & X-LINKED ===== */
+{m:"arx",q:"Recurrent pulmonary infections, pancreatic insufficiency, and elevated sweat chloride from a CFTR mutation (ΔF508) describe which autosomal recessive disease?",c:["Cystic fibrosis","Alpha-1 antitrypsin deficiency","Primary ciliary dyskinesia","Kartagener syndrome"],a:0,why:"Cystic fibrosis = CFTR mutation (ΔF508 most common, chromosome 7) → thick secretions, recurrent infections, pancreatic insufficiency, infertility; ↑sweat chloride.",p:"CF = <b>CFTR (ΔF508, chr 7)</b>, ↑sweat chloride, recurrent lung infections, pancreatic insufficiency."},
+{m:"arx",q:"Sickle cell disease and the beta-thalassemias follow which inheritance pattern?",c:["Autosomal recessive","Autosomal dominant","X-linked recessive","Mitochondrial"],a:0,why:"The hemoglobinopathies (sickle cell, thalassemias) are autosomal recessive.",p:"Sickle cell + thalassemias = <b>autosomal recessive</b>. (Most enzyme/blood disorders are AR.)"},
+{m:"arx",q:"Two unaffected parents who are BOTH carriers of cystic fibrosis have what chance of an affected child with each pregnancy?",c:["25%","50%","75%","100%"],a:0,why:"Two carriers (Aa × Aa) of an autosomal recessive disease → 25% affected, 50% carriers, 25% unaffected non-carriers, each pregnancy.",p:"Carrier × carrier (AR) = <b>25%</b> affected, 50% carriers, each pregnancy (independent)."},
+{m:"arx",q:"A young boy with proximal muscle weakness, a positive Gowers sign, and calf pseudohypertrophy, from a FRAMESHIFT deletion in the dystrophin gene, has which disorder?",c:["Duchenne muscular dystrophy","Becker muscular dystrophy","Myotonic dystrophy","Spinal muscular atrophy"],a:0,why:"Duchenne = X-linked recessive frameshift in dystrophin → no functional dystrophin → onset <5 yr, Gowers sign, calf pseudohypertrophy, markedly ↑CK.",p:"DMD = <b>frameshift</b> dystrophin (none made), X-linked, Gowers sign, calf pseudohypertrophy, <5 yr, ↑CK."},
+{m:"arx",q:"A milder, later-onset dystrophinopathy caused by an IN-FRAME mutation that preserves some functional dystrophin is which disorder?",c:["Becker muscular dystrophy","Duchenne muscular dystrophy","Myotonic dystrophy","Limb-girdle dystrophy"],a:0,why:"Becker = in-frame dystrophin mutation → partially functional protein → milder, later onset than Duchenne.",p:"Becker = <b>in-frame</b> mutation (some dystrophin), milder + later than Duchenne. 'Becker = Better.'"},
+{m:"arx",q:"An X-linked deficiency of HGPRT causing hyperuricemia, intellectual disability, and self-mutilating behavior is which syndrome?",c:["Lesch-Nyhan syndrome","Tay-Sachs disease","Fabry disease","Hunter syndrome"],a:0,why:"Lesch-Nyhan = HGPRT deficiency (purine salvage defect) → hyperuricemia/gout, intellectual disability, choreoathetosis, self-mutilation. X-linked recessive.",p:"Lesch-Nyhan = <b>HGPRT</b> deficiency, X-linked: hyperuricemia + self-mutilation. 'He's Got Purine Recovery Trouble.'"},
+{m:"arx",q:"Which of the following conditions is inherited in an X-linked recessive manner?",c:["Hemophilia A","Marfan syndrome","Cystic fibrosis","Huntington disease"],a:0,why:"Hemophilia A (factor VIII) is X-linked recessive. Marfan/Huntington are AD; cystic fibrosis is AR.",p:"X-linked recessive ('Be Wise, Fool's GOLD'): Bruton, Wiskott, Fabry, G6PD, OTC, Lesch-nyhan, Duchenne, Hunter, Hemophilia."},
+{m:"arx",q:"ABO blood groups and the alpha-1 antitrypsin alleles, where BOTH alleles are fully and separately expressed, demonstrate which genetic concept?",c:["Codominance","Incomplete dominance","Anticipation","Imprinting"],a:0,why:"Codominance = both alleles are simultaneously and fully expressed (AB blood type, α1-antitrypsin). Incomplete dominance = a blended intermediate phenotype.",p:"<b>Codominance</b> = both alleles fully expressed (ABO, α1-antitrypsin). Incomplete dominance = blended."}
+];
+
+const VAULT=[
+{t:"Inheritance Patterns",b:"<b>AD</b> = vertical, every generation, 50%, structural/receptor defects. <b>AR</b> = horizontal, skips, consanguinity, 25%, enzymes. <b>XLR</b> = males, carrier moms, no male-to-male. <b>XLD</b> = dad → all daughters, no sons. <b>Mito</b> = maternal → all kids.",g:"Patterns"},
+{t:"Try Hunting For My Fried Eggs",b:"Trinucleotide repeats: fragile <b>X</b> = CGG (FMR1) · <b>H</b>untington = CAG (chr 4) · <b>M</b>yotonic dystrophy = CTG (DMPK) · <b>F</b>riedreich ataxia = GAA (frataxin). Repeats EXPAND → anticipation.",g:"Repeats"},
+{t:"Imprinting (Chromosome 15)",b:"<b>Prader-Willi</b> = Paternal deletion → hyperPhagia, obesity, hypotonia ('PP'). <b>Angelman</b> = mAternal deletion → happy puppet, ataxia, seizures ('Angel from mom').",g:"Imprinting"},
+{t:"Autosomal Trisomies",b:"<b>21 Down</b> (most common; AV septal, duodenal atresia, ↑ALL/Alzheimer). <b>18 Edwards</b> (clenched fists, rocker-bottom feet, micrognathia). <b>13 Patau</b> (cleft, holoprosencephaly, Polydactyly). Survival 21>18>13.",g:"Chromosomal"},
+{t:"Sex Chromosome Disorders",b:"<b>Turner 45,X</b> = short, webbed neck, streak ovaries, coarctation, NO Barr body. <b>Klinefelter 47,XXY</b> = tall, small testes, gynecomastia, infertile, Barr body PRESENT.",g:"Chromosomal"},
+{t:"Microdeletions",b:"<b>22q11 DiGeorge</b> (no thymus/parathyroids, cardiac — CATCH-22). <b>Chr 7 Williams</b> (elfin, hypersocial, supravalvular AS, hypercalcemia). <b>5p Cri-du-chat</b> (cat-like cry).",g:"Chromosomal"},
+{t:"Marfan vs Homocystinuria",b:"Both marfanoid. <b>Marfan</b> = FBN1 (fibrillin), lens UP, aortic root dilation. <b>Homocystinuria</b> = lens DOWN + thrombosis. Lens direction is the trap.",g:"AD"},
+{t:"AD Conditions",b:"Marfan, NF1 (chr17)/NF2 (chr22), tuberous sclerosis, VHL (chr3), achondroplasia (FGFR3), Huntington, FAP (APC), ADPKD (PKD1/16), familial hypercholesterolemia, MEN, hereditary spherocytosis.",g:"AD"},
+{t:"AR Conditions",b:"CF (CFTR), sickle cell + thalassemias, Tay-Sachs + storage diseases, PKU, albinism, ARPKD, Wilson, hemochromatosis, Friedreich ataxia, glycogen storage diseases.",g:"AR"},
+{t:"X-Linked Recessive (Be Wise, Fool's GOLD)",b:"<b>B</b>ruton, <b>W</b>iskott-Aldrich, <b>F</b>abry, <b>G</b>6PD, <b>O</b>TC deficiency, <b>L</b>esch-Nyhan, <b>D</b>uchenne/Becker, <b>H</b>unter, <b>H</b>emophilia A/B, ocular albinism, color blindness.",g:"X-linked"},
+{t:"Duchenne vs Becker",b:"<b>Duchenne</b> = frameshift (NO dystrophin), severe, onset <5, Gowers sign, calf pseudohypertrophy, ↑CK. <b>Becker</b> = in-frame (some dystrophin), milder, later ('Becker = Better').",g:"X-linked"},
+{t:"VHL / NF / TS Tumors",b:"<b>VHL</b> = hemangioblastoma + pheochromocytoma + clear-cell RCC. <b>NF2</b> = bilateral acoustic neuromas. <b>Tuberous sclerosis</b> = cardiac rhabdomyoma + ash-leaf spots + angiofibromas.",g:"AD tumors"},
+{t:"Penetrance vs Expressivity",b:"<b>Penetrance</b> = % of carriers who show ANY phenotype. <b>Expressivity</b> = HOW SEVERELY it shows. <b>Anticipation</b> = earlier/worse each generation. <b>Pleiotropy</b> = one gene, many effects.",g:"Vocab"}
+];
+
+const MODES={
+  daily:{name:"Daily Allele",ic:"🧬",desc:"15 random questions across all genetics topics. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Helix",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  pat:{name:"Inheritance Patterns & Vocab",ic:"🦴",desc:"Genetics has no anatomy — THIS is the foundation: AD/AR/X-linked/mito + penetrance, expressivity, anticipation.",pick:()=>shuffle(QBANK.filter(q=>q.m==="pat"))},
+  trin:{name:"Trinucleotide Repeats",ic:"🔁",desc:"Huntington, fragile X, myotonic dystrophy, Friedreich — the 'try hunting' diseases.",pick:()=>shuffle(QBANK.filter(q=>q.m==="trin"))},
+  chrom:{name:"Imprinting & Chromosomal",ic:"🧩",desc:"Prader-Willi/Angelman, the trisomies, Turner/Klinefelter, microdeletions.",pick:()=>shuffle(QBANK.filter(q=>q.m==="chrom"))},
+  ad:{name:"Autosomal Dominant",ic:"🔺",desc:"Marfan, NF1/NF2, tuberous sclerosis, VHL, achondroplasia, ADPKD, FAP.",pick:()=>shuffle(QBANK.filter(q=>q.m==="ad"))},
+  arx:{name:"Recessive & X-Linked",ic:"⨯",desc:"CF, sickle cell, Duchenne vs Becker, Lesch-Nyhan, and the inheritance math.",pick:()=>shuffle(QBANK.filter(q=>q.m==="arx"))}
+};
+const MODE_TAGS={pat:"Inheritance Patterns / Vocab",trin:"Trinucleotide Repeats",chrom:"Imprinting / Chromosomal",ad:"Autosomal Dominant",arx:"Recessive / X-Linked"};
+
+const SAVE_KEY="inheritance_island_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">Aa</div>
+    <h1>INHERITANCE ISLAND</h1>
+    <div class="sub">Genetics · Inheritance · Chromosomes — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("pat",m.pat,"special")}${tile("trin",m.trin,"")}${tile("chrom",m.chrom,"")}${tile("ad",m.ad,"")}${tile("arx",m.arx,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy genetics tools — inheritance patterns, 'try hunting' repeats, imprinting, the X-linked list, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
+}
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:24px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">Genetics memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
+});
+menu();
+</script>
+</body>
+</html>

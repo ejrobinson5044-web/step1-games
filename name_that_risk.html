@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NAME THAT RISK — HY Risk Factors & Associations</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=Cousine:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090c;
+  --bg2:#0e1014;
+  --panel:#16181f;
+  --panel-hi:#1f222b;
+  --cyan:#e2e6ef;        /* platinum/silver primary (championship) */
+  --cyan-dim:#8b95a6;
+  --amber:#f5b301;       /* gold accent */
+  --amber-hi:#fcd34d;
+  --red:#f87171;
+  --green:#34d399;
+  --text:#eef1f6;
+  --dim:#8890a0;
+  --line:rgba(226,230,239,.14);
+  --glow:rgba(226,230,239,.32);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Archivo',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 17% 0%,rgba(226,230,239,.08),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(245,179,1,.07),transparent 55%),
+    linear-gradient(180deg,#08090c,#0e1014);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--line) 1px,transparent 1px);
+  background-size:30px 30px;
+  mask-image:radial-gradient(ellipse at center,#000 30%,transparent 88%);opacity:.6;
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;
+  background:linear-gradient(150deg,var(--cyan),var(--cyan-dim));color:#0e1014;
+  font-family:'Archivo Black';font-size:28px;margin-bottom:8px;box-shadow:0 0 24px var(--glow)}
+h1{font-family:'Archivo Black';font-weight:400;font-size:32px;letter-spacing:.5px;color:var(--cyan)}
+.sub{font-family:'Cousine';font-weight:700;font-size:11px;color:var(--amber);letter-spacing:2px;margin-top:6px;text-transform:uppercase}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.6}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.6)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Archivo Black';font-weight:400;font-size:15px;margin:9px 0 6px;letter-spacing:.2px;line-height:1.25}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'Cousine';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'Cousine';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'Cousine';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'Cousine';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'Cousine';font-size:13px;color:var(--cyan);font-weight:700;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(52,211,153,.13)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(248,113,113,.13)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'Cousine';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(245,179,1,.10);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Archivo Black';font-weight:400;font-size:12px}
+
+.btn{font-family:'Archivo Black';font-weight:400;letter-spacing:.4px;border:none;border-radius:10px;padding:14px 22px;cursor:pointer;font-size:14px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#0e1014;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Archivo Black';font-weight:400;font-size:62px;color:var(--cyan);line-height:1}
+.rank{font-family:'Cousine';font-weight:700;font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:10px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'Cousine';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:24px;color:var(--text);font-family:'Archivo Black';font-weight:400}
+
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Archivo Black';font-weight:400;color:var(--amber-hi);font-size:14px;margin-bottom:8px;letter-spacing:.2px;line-height:1.25}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'Cousine';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'Cousine';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'Cousine';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== CLASSIC BUZZWORDS ===== */
+{m:"buzz",q:"A cherry-red spot on the macula in an infant with neurodegeneration and NO hepatosplenomegaly classically suggests which disease?",c:["Tay-Sachs disease","Niemann-Pick disease","Gaucher disease","Krabbe disease"],a:0,why:"Tay-Sachs (hexosaminidase A deficiency) = cherry-red macula, neurodegeneration, and — unlike Niemann-Pick — NO hepatosplenomegaly.",p:"Cherry-red macula + NO hepatosplenomegaly = <b>Tay-Sachs</b>. (Niemann-Pick = cherry-red WITH hepatosplenomegaly.)"},
+{m:"buzz",q:"A 'bamboo spine' on X-ray in a young man who is HLA-B27 positive suggests which condition?",c:["Ankylosing spondylitis","Rheumatoid arthritis","Osteoarthritis","Gout"],a:0,why:"Ankylosing spondylitis = HLA-B27, fused vertebrae ('bamboo spine'), sacroiliitis, and risk of uveitis/aortitis in young men.",p:"Bamboo spine + HLA-B27 = <b>ankylosing spondylitis</b>. Watch for uveitis + aortic regurgitation."},
+{m:"buzz",q:"Birbeck ('tennis racket') granules on electron microscopy indicate which disease?",c:["Langerhans cell histiocytosis","Multiple myeloma","Mastocytosis","Sarcoidosis"],a:0,why:"Langerhans cell histiocytosis = proliferation of Langerhans cells containing Birbeck granules; CD1a and S-100 positive.",p:"Birbeck 'tennis racket' granules = <b>Langerhans cell histiocytosis</b> (CD1a+, S-100+)."},
+{m:"buzz",q:"Auer rods (pink, needle-like cytoplasmic inclusions) in leukemic blasts indicate which leukemia?",c:["Acute myeloid leukemia","Acute lymphoblastic leukemia","Chronic lymphocytic leukemia","Hairy cell leukemia"],a:0,why:"Auer rods are crystallized granules seen in AML, especially acute promyelocytic leukemia (APL, t(15;17)), where they can trigger DIC.",p:"Auer rods = <b>AML</b> (esp. APL, t(15;17) — treat with ATRA, watch for DIC)."},
+{m:"buzz",q:"Binucleate 'owl-eye' Reed-Sternberg cells are diagnostic of which lymphoma?",c:["Hodgkin lymphoma","Burkitt lymphoma","Follicular lymphoma","Mantle cell lymphoma"],a:0,why:"Reed-Sternberg cells (CD15+, CD30+) define Hodgkin lymphoma, which spreads contiguously and has a bimodal age distribution.",p:"Reed-Sternberg 'owl eyes' (CD15+/CD30+) = <b>Hodgkin lymphoma</b>. Contiguous spread, bimodal age."},
+{m:"buzz",q:"Eosinophilic cytoplasmic inclusions (Negri bodies) found in neurons indicate which infection?",c:["Rabies","Herpes encephalitis","Measles","Polio"],a:0,why:"Negri bodies in hippocampal/Purkinje neurons are pathognomonic for rabies, which travels retrograde up axons to the CNS.",p:"Negri bodies = <b>rabies</b>. Retrograde axonal transport; hydrophobia, then fatal encephalitis."},
+{m:"buzz",q:"Thick, blood-tinged 'currant-jelly' sputum in an alcoholic with pneumonia suggests which organism?",c:["Klebsiella pneumoniae","Streptococcus pneumoniae","Mycoplasma pneumoniae","Legionella"],a:0,why:"Klebsiella = currant-jelly sputum, cavitary upper-lobe pneumonia in alcoholics, diabetics, and aspirators; a gram-negative encapsulated rod.",p:"Currant-jelly sputum + alcoholic = <b>Klebsiella</b>. Also aspiration + diabetics; cavitary."},
+{m:"buzz",q:"Rib notching seen on a chest X-ray classically suggests which cardiovascular condition?",c:["Coarctation of the aorta","Atrial septal defect","Mitral stenosis","Patent ductus arteriosus"],a:0,why:"Coarctation → collateral flow through intercostal arteries erodes the ribs (notching); presents with upper-extremity hypertension and weak femoral pulses.",p:"Rib notching = <b>coarctation of the aorta</b>. Upper-limb HTN, weak femoral pulses; assoc. Turner + bicuspid valve."},
+
+/* ===== RISK FACTORS -> DISEASE ===== */
+{m:"risk",q:"The single strongest risk factor for endometrial carcinoma is prolonged exposure to what?",c:["Unopposed estrogen","Progesterone","Testosterone","Cortisol"],a:0,why:"Unopposed estrogen drives endometrial hyperplasia → carcinoma; risk factors (obesity, nulliparity, late menopause, PCOS, tamoxifen) all increase estrogen exposure.",p:"Endometrial cancer = <b>unopposed estrogen</b> (obesity, nulliparity, PCOS, late menopause, tamoxifen)."},
+{m:"risk",q:"Besides lung cancer, cigarette smoking is the single most important risk factor for which of these cancers?",c:["Bladder cancer","Prostate cancer","Testicular cancer","Thyroid cancer"],a:0,why:"Smoking is the leading risk factor for transitional cell (urothelial) carcinoma of the bladder, classically presenting with painless hematuria.",p:"Smoking → <b>bladder (urothelial) cancer</b>. Painless hematuria. (Also a top RF for pancreatic + renal.)"},
+{m:"risk",q:"The most important risk factor for hepatocellular carcinoma worldwide is chronic infection with what?",c:["Hepatitis B (and C) virus","HIV","Epstein-Barr virus","Herpes simplex virus"],a:0,why:"Chronic HBV/HCV (and the resulting cirrhosis), along with aflatoxin and alcohol, are the major drivers of hepatocellular carcinoma.",p:"HCC = <b>HBV/HCV + cirrhosis</b> (also aflatoxin, alcohol, NASH). AFP is the marker."},
+{m:"risk",q:"Barrett esophagus arising from chronic GERD is the main risk factor for which type of esophageal cancer?",c:["Adenocarcinoma","Squamous cell carcinoma","Small cell carcinoma","Leiomyosarcoma"],a:0,why:"GERD → Barrett metaplasia (lower third) → adenocarcinoma. Squamous cell carcinoma (upper two-thirds) is linked to smoking and alcohol.",p:"Barrett/GERD → esophageal <b>adenocarcinoma</b> (lower 1/3). Squamous = smoking + alcohol (upper 2/3)."},
+{m:"risk",q:"Persistent infection with high-risk human papillomavirus (types 16 and 18) is the primary cause of which cancer?",c:["Cervical cancer","Endometrial cancer","Ovarian cancer","Vaginal candidiasis"],a:0,why:"HPV 16/18 produce E6 (inactivates p53) and E7 (inactivates RB) → cervical (and anal/oropharyngeal) cancer.",p:"HPV 16/18 → <b>cervical cancer</b>. E6 blocks p53, E7 blocks RB."},
+{m:"risk",q:"Immobilization, hypercoagulable states, and endothelial damage (Virchow's triad) predispose to what?",c:["Deep vein thrombosis","Arterial dissection","Lymphedema","Varicose veins"],a:0,why:"Virchow's triad (stasis, hypercoagulability, endothelial injury) → venous thromboembolism (DVT/PE).",p:"Virchow's triad (Stasis, Hypercoagulability, Endothelial injury) → <b>DVT/PE</b>."},
+{m:"risk",q:"The strongest MODIFIABLE risk factor for an abdominal aortic aneurysm is what?",c:["Smoking","Asthma","Vegetarian diet","Hypothyroidism"],a:0,why:"Smoking is the strongest modifiable risk factor for AAA (along with age, male sex, hypertension, and atherosclerosis).",p:"AAA = <b>smoking</b> (+ older male, HTN, atherosclerosis). Screen male smokers 65–75 with ultrasound."},
+{m:"risk",q:"Beer, red meat and seafood, and thiazide diuretics raise the risk of which arthritis by increasing uric acid?",c:["Gout","Rheumatoid arthritis","Septic arthritis","Lyme arthritis"],a:0,why:"Hyperuricemia → monosodium urate crystals (needle-shaped, negatively birefringent) → gout, classically the first MTP joint.",p:"Gout = <b>hyperuricemia</b> (alcohol, meat/seafood, thiazides, obesity). Needle-shaped, negatively birefringent crystals."},
+
+/* ===== DRUGS / TOXINS -> EFFECT ===== */
+{m:"drug",q:"A dry cough and the risk of angioedema, both due to bradykinin accumulation, are side effects of which drug class?",c:["ACE inhibitors","Beta blockers","Calcium channel blockers","Thiazide diuretics"],a:0,why:"ACE inhibitors block breakdown of bradykinin → cough and angioedema; also cause hyperkalemia and are teratogenic. ARBs avoid the cough.",p:"Cough + angioedema = <b>ACE inhibitors</b> (bradykinin). Also hyperkalemia, teratogenic. Switch to an ARB."},
+{m:"drug",q:"Nephrotoxicity and ototoxicity are the classic dose-limiting toxicities of which antibiotic class?",c:["Aminoglycosides","Macrolides","Penicillins","Tetracyclines"],a:0,why:"Aminoglycosides (gentamicin, tobramycin) cause nephrotoxicity (ATN) and ototoxicity, worsened with loop diuretics.",p:"Nephro- + ototoxicity = <b>aminoglycosides</b> (gentamicin). Worse with loop diuretics."},
+{m:"drug",q:"Pulmonary fibrosis, thyroid dysfunction, and corneal microdeposits are toxicities of which antiarrhythmic?",c:["Amiodarone","Lidocaine","Adenosine","Digoxin"],a:0,why:"Amiodarone (class III) is iodine-rich → thyroid dysfunction, pulmonary fibrosis, corneal deposits, blue-gray skin, hepatotoxicity; needs PFT/TFT/LFT monitoring.",p:"Amiodarone = <b>pulmonary fibrosis + thyroid + corneal deposits + blue skin</b>. Check PFTs/TFTs/LFTs."},
+{m:"drug",q:"Dilated cardiomyopathy (dose-dependent and free-radical mediated) is the classic toxicity of which chemotherapy agent?",c:["Doxorubicin","Vincristine","Bleomycin","Cisplatin"],a:0,why:"Doxorubicin (anthracycline) causes dose-dependent dilated cardiomyopathy via free radicals; dexrazoxane is cardioprotective.",p:"Doxorubicin → <b>dilated cardiomyopathy</b> (free radicals). Dexrazoxane protects. (Bleomycin/busulfan → lung fibrosis.)"},
+{m:"drug",q:"Nephrotoxicity and ototoxicity, prevented by amifostine and aggressive hydration, are toxicities of which chemotherapy drug?",c:["Cisplatin","Methotrexate","5-fluorouracil","Cyclophosphamide"],a:0,why:"Cisplatin/carboplatin cause nephrotoxicity and ototoxicity; amifostine (a free-radical scavenger) and saline hydration reduce renal injury.",p:"Cisplatin → <b>nephro- + ototoxicity</b>. Protect with amifostine + hydration."},
+{m:"drug",q:"The bone marrow suppression of methotrexate is reversed by administering which rescue agent?",c:["Leucovorin (folinic acid)","Folic acid","Vitamin B12","Mesna"],a:0,why:"Leucovorin (folinic acid) bypasses the dihydrofolate reductase block of methotrexate, rescuing normal cells from myelosuppression.",p:"Methotrexate rescue = <b>leucovorin (folinic acid)</b> — bypasses the DHFR block."},
+{m:"drug",q:"Hemorrhagic cystitis caused by the metabolite acrolein, a toxicity of cyclophosphamide and ifosfamide, is prevented by which agent?",c:["Mesna","Leucovorin","Amifostine","N-acetylcysteine"],a:0,why:"Mesna binds acrolein in the bladder, preventing the hemorrhagic cystitis caused by cyclophosphamide/ifosfamide.",p:"Cyclophosphamide → hemorrhagic cystitis (acrolein). Prevent with <b>mesna</b>."},
+{m:"drug",q:"The antidote for acetaminophen overdose, which replenishes glutathione stores, is what?",c:["N-acetylcysteine","Naloxone","Flumazenil","Deferoxamine"],a:0,why:"Acetaminophen overdose depletes glutathione → toxic NAPQI accumulates → hepatic necrosis; N-acetylcysteine regenerates glutathione.",p:"Acetaminophen (hepatic necrosis, NAPQI) → antidote <b>N-acetylcysteine</b> (restores glutathione)."},
+
+/* ===== BUGS / EXPOSURES ===== */
+{m:"bug",q:"A child with sickle cell disease develops osteomyelitis. The most likely causative organism is what?",c:["Salmonella","Staphylococcus aureus","Pseudomonas","Streptococcus pyogenes"],a:0,why:"In sickle cell disease, Salmonella is the classic cause of osteomyelitis (Staph aureus remains most common overall in the general population).",p:"Sickle cell + osteomyelitis = <b>Salmonella</b>. (Staph aureus = most common osteomyelitis overall.)"},
+{m:"bug",q:"Patients without a functioning spleen (asplenia, sickle cell) are especially vulnerable to which category of organisms?",c:["Encapsulated organisms","Anaerobes","Spirochetes","Dermatophytes"],a:0,why:"The spleen clears encapsulated bacteria; asplenia → risk from S. pneumoniae, H. influenzae, N. meningitidis. Vaccinate against these.",p:"Asplenia → <b>encapsulated organisms</b> (S. pneumoniae, H. influenzae, N. meningitidis). Vaccinate."},
+{m:"bug",q:"A green, sweet-smelling burn-wound infection — and 'hot tub' folliculitis — is most likely caused by which organism?",c:["Pseudomonas aeruginosa","Staphylococcus epidermidis","Candida albicans","Clostridium perfringens"],a:0,why:"Pseudomonas (pyocyanin = blue-green pigment, grape-like odor) causes burn-wound infections, hot-tub folliculitis, and infections in cystic fibrosis and neutropenia.",p:"Burn wounds + hot tub + CF = <b>Pseudomonas</b> (blue-green pyocyanin, fruity odor)."},
+{m:"bug",q:"Listeria infection, which is dangerous in pregnancy and neonates, is classically acquired from what?",c:["Unpasteurized dairy and deli meats","Fresh shellfish","Fresh water lakes","House dust"],a:0,why:"Listeria monocytogenes (from unpasteurized dairy, soft cheeses, deli meats) crosses the placenta and causes neonatal meningitis; it grows at refrigerator temperatures.",p:"Listeria = <b>unpasteurized dairy / deli meats</b>. Dangerous in pregnancy/neonates; grows when cold."},
+{m:"bug",q:"A pregnant woman is advised to avoid changing cat litter to prevent which infection (which can cause fetal intracranial calcifications)?",c:["Toxoplasmosis","Cytomegalovirus","Rubella","Listeriosis"],a:0,why:"Toxoplasma gondii (cat feces, undercooked meat) is a TORCH infection causing fetal intracranial calcifications, chorioretinitis, and hydrocephalus.",p:"Cat litter in pregnancy = <b>toxoplasmosis</b>. Intracranial calcifications + chorioretinitis + hydrocephalus."},
+{m:"bug",q:"A rapidly developing cellulitis within hours of a cat or dog bite is most likely caused by which organism?",c:["Pasteurella multocida","Staphylococcus aureus","Bartonella henselae","Clostridium tetani"],a:0,why:"Pasteurella multocida causes rapid cellulitis after cat/dog bites. (Bartonella → cat-scratch disease, a more indolent lymphadenopathy.)",p:"Cat/dog BITE + rapid cellulitis = <b>Pasteurella multocida</b>. (Cat SCRATCH lymphadenopathy = Bartonella.)"},
+{m:"bug",q:"Reheated fried rice causing acute vomiting a few hours after eating points to which organism?",c:["Bacillus cereus","Salmonella","Campylobacter","Vibrio cholerae"],a:0,why:"Bacillus cereus produces a preformed heat-stable toxin in reheated rice → rapid-onset emetic illness (the diarrheal form has a longer incubation).",p:"Reheated rice + fast vomiting = <b>Bacillus cereus</b> (preformed toxin)."},
+{m:"bug",q:"Fever, pharyngitis, posterior cervical lymphadenopathy, and atypical lymphocytes in a teenager indicate infection with which virus?",c:["Epstein-Barr virus","Cytomegalovirus","HIV","Hepatitis A virus"],a:0,why:"EBV infectious mononucleosis = fatigue, pharyngitis, posterior cervical (or generalized) lymphadenopathy, splenomegaly, and atypical (reactive) lymphocytes; monospot positive. Avoid contact sports.",p:"Mono in a teen = <b>EBV</b>. Atypical lymphocytes, splenomegaly, +monospot. No contact sports; avoid ampicillin (rash)."},
+
+/* ===== VITAMINS / DEFICIENCIES ===== */
+{m:"nutr",q:"Night blindness and dry eyes (xerophthalmia) result from deficiency of which vitamin?",c:["Vitamin A","Vitamin D","Vitamin K","Vitamin C"],a:0,why:"Vitamin A (retinol) deficiency → night blindness, xerophthalmia, Bitot spots, and immune impairment. (Excess A is teratogenic.)",p:"Night blindness + dry eyes = <b>vitamin A</b> deficiency. (Excess A = teratogen, pseudotumor cerebri.)"},
+{m:"nutr",q:"Wernicke-Korsakoff syndrome and wet/dry beriberi result from deficiency of which vitamin?",c:["Thiamine (B1)","Riboflavin (B2)","Niacin (B3)","Cobalamin (B12)"],a:0,why:"Thiamine (B1) deficiency (alcoholics) → Wernicke-Korsakoff (confusion, ataxia, ophthalmoplegia, amnesia) and beriberi. Give thiamine before glucose.",p:"Wernicke-Korsakoff + beriberi = <b>thiamine (B1)</b>. Give B1 BEFORE glucose in alcoholics."},
+{m:"nutr",q:"The 'three Ds' — dermatitis, diarrhea, and dementia (pellagra) — result from deficiency of which vitamin?",c:["Niacin (B3)","Folate (B9)","Vitamin C","Vitamin E"],a:0,why:"Niacin (B3) deficiency → pellagra (the 3 Ds); seen in corn-based diets, Hartnup disease, and carcinoid syndrome (tryptophan diversion).",p:"Pellagra (dermatitis, diarrhea, dementia) = <b>niacin (B3)</b>. Think corn diet, Hartnup, carcinoid."},
+{m:"nutr",q:"Bleeding gums, poor wound healing, and perifollicular hemorrhages (scurvy) result from deficiency of which vitamin?",c:["Vitamin C","Vitamin K","Vitamin B12","Vitamin D"],a:0,why:"Vitamin C is needed for collagen hydroxylation; deficiency → scurvy (bleeding gums, poor healing, corkscrew hairs, perifollicular hemorrhage).",p:"Scurvy (bleeding gums, bad healing, corkscrew hairs) = <b>vitamin C</b> (collagen hydroxylation)."},
+{m:"nutr",q:"Rickets in children and osteomalacia in adults result from deficiency of which vitamin?",c:["Vitamin D","Vitamin A","Vitamin K","Vitamin B6"],a:0,why:"Vitamin D deficiency → impaired calcium/phosphate absorption → defective bone mineralization (rickets in kids, osteomalacia in adults).",p:"Rickets/osteomalacia = <b>vitamin D</b> (low Ca/phosphate → soft bones)."},
+{m:"nutr",q:"Megaloblastic anemia with hypersegmented neutrophils AND neurologic symptoms (subacute combined degeneration) points to deficiency of what?",c:["Vitamin B12 (cobalamin)","Folate (B9)","Iron","Vitamin B6"],a:0,why:"B12 deficiency → megaloblastic anemia PLUS neurologic deficits (dorsal columns/corticospinal). Folate deficiency causes the same anemia WITHOUT neuro signs.",p:"Megaloblastic + NEURO signs = <b>B12</b>. Megaloblastic, no neuro = folate. (Methylmalonic acid ↑ in B12 only.)"},
+{m:"nutr",q:"Impaired wound healing, loss of taste, and a perioral/acral rash (acrodermatitis enteropathica) suggest deficiency of which mineral?",c:["Zinc","Copper","Selenium","Magnesium"],a:0,why:"Zinc deficiency → poor wound healing, dysgeusia/anosmia, alopecia, and the perioral/acral dermatitis of acrodermatitis enteropathica.",p:"Poor healing + loss of taste + perioral rash = <b>zinc</b> deficiency."},
+{m:"nutr",q:"A child with microcytic anemia, basophilic stippling, abdominal pain, and a bluish line on the gums has chronic exposure to which heavy metal?",c:["Lead","Mercury","Arsenic","Cadmium"],a:0,why:"Lead poisoning → microcytic anemia with basophilic stippling, abdominal pain, a gingival lead line, and neurodevelopmental effects in children; treat with chelation (succimer, EDTA).",p:"Microcytic + basophilic stippling + gum line + belly pain = <b>lead</b>. Chelate (succimer/EDTA/dimercaprol)."}
+];
+
+const VAULT=[
+{t:"Heme/Onc Buzzwords",b:"<b>Auer rods</b> = AML. <b>Reed-Sternberg</b> = Hodgkin. <b>Smudge cells</b> = CLL. <b>Tear-drop cells</b> = myelofibrosis. <b>Heinz bodies / bite cells</b> = G6PD. <b>Howell-Jolly bodies</b> = asplenia. <b>Philadelphia t(9;22)</b> = CML. <b>t(8;14)</b> = Burkitt.",g:"Buzzwords"},
+{t:"Histo / EM Bodies",b:"<b>Negri</b> = rabies. <b>Birbeck (tennis racket)</b> = Langerhans histiocytosis. <b>Councilman</b> = viral hepatitis. <b>Mallory</b> = alcoholic hepatitis. <b>Lewy</b> = Parkinson/LBD. <b>Psammoma bodies</b> = papillary thyroid, meningioma, serous ovarian, mesothelioma.",g:"Buzzwords"},
+{t:"X-ray / Imaging Buzzwords",b:"<b>Bamboo spine</b> = ankylosing spondylitis. <b>Rib notching</b> = coarctation. <b>Boot-shaped heart</b> = Tetralogy of Fallot. <b>Water-bottle heart</b> = pericardial effusion. <b>Codman triangle / sunburst</b> = osteosarcoma. <b>Onion-skin</b> = Ewing sarcoma.",g:"Buzzwords"},
+{t:"Cancer Risk Factors",b:"<b>Endometrial</b> = unopposed estrogen. <b>Cervical/anal</b> = HPV 16/18. <b>HCC</b> = HBV/HCV + cirrhosis + aflatoxin. <b>Bladder + lung + pancreas</b> = smoking. <b>Esophageal adeno</b> = Barrett/GERD; <b>squamous</b> = smoking+alcohol. <b>Mesothelioma</b> = asbestos.",g:"Risk factors"},
+{t:"Virchow's Triad (DVT)",b:"<b>S</b>tasis (immobility, surgery) + <b>H</b>ypercoagulability (Factor V Leiden, OCPs, malignancy) + <b>E</b>ndothelial injury → deep vein thrombosis / pulmonary embolism.",g:"Risk factors"},
+{t:"HLA Associations",b:"<b>B27</b> = ankylosing spondylitis, reactive, psoriatic, IBD arthritis ('PAIR'). <b>DQ2/DQ8</b> = celiac. <b>DR3/DR4</b> = type 1 diabetes. <b>DR2</b> = MS, SLE, Goodpasture. <b>B8</b> = Graves.",g:"Risk factors"},
+{t:"Cardiotoxic & Lung-toxic Drugs",b:"<b>Heart:</b> doxorubicin (dilated cardiomyopathy — dexrazoxane protects), trastuzumab (reversible). <b>Lung (fibrosis):</b> bleomycin, busulfan, amiodarone, methotrexate.",g:"Drugs"},
+{t:"Antidotes & Rescues",b:"Acetaminophen → N-acetylcysteine. Methotrexate → leucovorin. Cyclophosphamide → mesna. Cisplatin → amifostine. Opioids → naloxone. Benzos → flumazenil. Warfarin → vitamin K/FFP. Heparin → protamine. Iron → deferoxamine. Lead → EDTA/succimer.",g:"Drugs"},
+{t:"Asplenia / Sickle Cell",b:"Vulnerable to <b>encapsulated organisms</b> (S. pneumoniae, H. influenzae, N. meningitidis) — vaccinate. <b>Osteomyelitis = Salmonella</b> in sickle cell (Staph aureus overall). Howell-Jolly bodies on smear.",g:"Bugs"},
+{t:"Food & Exposure Bugs",b:"<b>Reheated rice</b> = Bacillus cereus. <b>Unpasteurized dairy</b> = Listeria/Brucella. <b>Undercooked pork</b> = Trichinella/Taenia. <b>Cat feces</b> = Toxoplasma. <b>Cat scratch</b> = Bartonella. <b>Cat/dog bite</b> = Pasteurella. <b>Raw seafood</b> = Vibrio.",g:"Bugs"},
+{t:"Fat-Soluble Vitamins (A,D,E,K)",b:"<b>A</b> = night blindness (excess = teratogen). <b>D</b> = rickets/osteomalacia. <b>E</b> = hemolysis + neuro (mimics B12 without anemia). <b>K</b> = bleeding (↑PT/INR). Malabsorption hits all four.",g:"Vitamins"},
+{t:"B Vitamins",b:"<b>B1</b> = Wernicke-Korsakoff/beriberi (give before glucose). <b>B3</b> = pellagra (3 Ds). <b>B6</b> = sideroblastic anemia, neuropathy (isoniazid). <b>B9 folate</b> = megaloblastic (no neuro). <b>B12</b> = megaloblastic + neuro (subacute combined degeneration).",g:"Vitamins"},
+{t:"Heavy Metals & Minerals",b:"<b>Lead</b> = microcytic + basophilic stippling + gum line + belly pain + neuro (chelate). <b>Zinc</b> = poor healing, dysgeusia, acrodermatitis. <b>Iron overload</b> = hemochromatosis (bronze diabetes). <b>Mercury</b> = neuro + renal.",g:"Minerals"}
+];
+
+const MODES={
+  daily:{name:"Daily Lightning",ic:"⚡",desc:"15 random rapid-fire questions across every system. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Buzzer",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  buzz:{name:"Classic Buzzwords",ic:"🦴",desc:"The capstone: the iconic cross-system 'if you see X, think Y' associations.",pick:()=>shuffle(QBANK.filter(q=>q.m==="buzz"))},
+  risk:{name:"Risk Factors",ic:"🎯",desc:"The strongest risk factor for each condition — the highest-yield links.",pick:()=>shuffle(QBANK.filter(q=>q.m==="risk"))},
+  drug:{name:"Drugs & Toxins",ic:"💊",desc:"Classic drug toxicities and their antidotes/rescues.",pick:()=>shuffle(QBANK.filter(q=>q.m==="drug"))},
+  bug:{name:"Bugs & Exposures",ic:"🦠",desc:"Who gets what bug — the classic organism-and-setting associations.",pick:()=>shuffle(QBANK.filter(q=>q.m==="bug"))},
+  nutr:{name:"Vitamins & Deficiencies",ic:"🍊",desc:"Deficiency findings, heavy metals, and nutritional buzzwords.",pick:()=>shuffle(QBANK.filter(q=>q.m==="nutr"))}
+};
+const MODE_TAGS={buzz:"Classic Buzzwords",risk:"Risk Factors",drug:"Drugs / Toxins",bug:"Bugs / Exposures",nutr:"Vitamins / Deficiencies"};
+
+const SAVE_KEY="name_that_risk_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">★</div>
+    <h1>NAME THAT RISK</h1>
+    <div class="sub">High-Yield Risk Factors & Associations — ${QBANK.length} questions · the finale</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("buzz",m.buzz,"special")}${tile("risk",m.risk,"")}${tile("drug",m.drug,"")}${tile("bug",m.bug,"")}${tile("nutr",m.nutr,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy association tools — buzzwords, cancer risk factors, HLA links, antidotes, exposure bugs, and vitamins.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
+}
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:24px">💎 Dirty Medicine Vault</h1>
+      <div class="sub" style="color:var(--dim)">Association memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
+});
+menu();
+</script>
+</body>
+</html>

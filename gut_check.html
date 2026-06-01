@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GUT CHECK — GI / Hepatobiliary</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0810;
+  --bg2:#150b18;
+  --panel:#1c1022;
+  --panel-hi:#271630;
+  --cyan:#d946ef;        /* magenta primary (mucosa) */
+  --cyan-dim:#a21caf;
+  --amber:#fbbf24;       /* amber-gold accent (bile) */
+  --amber-hi:#fde047;
+  --red:#f87171;
+  --green:#34d399;
+  --text:#f3e8f7;
+  --dim:#9a83a5;
+  --line:rgba(217,70,239,.15);
+  --glow:rgba(217,70,239,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Hanken Grotesk',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 16% 0%,rgba(217,70,239,.11),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(251,191,36,.07),transparent 55%),
+    linear-gradient(180deg,#0d0810,#150b18);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--line) 1px,transparent 1px);
+  background-size:30px 30px;
+  mask-image:radial-gradient(ellipse at center,#000 32%,transparent 88%);
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50% 50% 48% 52%/52% 48% 52% 48%;
+  background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#1c1022;
+  font-family:'Fraunces';font-style:italic;font-weight:600;font-size:28px;margin-bottom:8px;box-shadow:0 0 24px var(--glow)}
+h1{font-family:'Fraunces';font-weight:700;font-size:42px;letter-spacing:.5px;color:var(--cyan)}
+.sub{font-family:'IBM Plex Mono';font-size:11px;color:var(--dim);letter-spacing:3px;margin-top:3px;text-transform:uppercase}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.6}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Fraunces';font-weight:600;font-size:21px;margin:6px 0 5px;letter-spacing:.3px}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'IBM Plex Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'IBM Plex Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'IBM Plex Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'IBM Plex Mono';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(52,211,153,.13)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(248,113,113,.13)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(251,191,36,.10);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Fraunces';font-weight:600}
+
+.btn{font-family:'Fraunces';font-weight:600;letter-spacing:.5px;border:none;border-radius:10px;padding:13px 22px;cursor:pointer;font-size:18px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#1c1022;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Fraunces';font-weight:700;font-size:78px;color:var(--cyan);line-height:1}
+.rank{font-family:'IBM Plex Mono';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:8px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'IBM Plex Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:28px;color:var(--text);font-family:'Fraunces';font-weight:700}
+
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Fraunces';font-weight:600;color:var(--amber-hi);font-size:20px;margin-bottom:7px;letter-spacing:.3px}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'IBM Plex Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'IBM Plex Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'IBM Plex Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== GI ANATOMY & HERNIAS ===== */
+{m:"anat",q:"The foregut — stomach to the proximal duodenum, plus liver, gallbladder, and pancreas — is supplied by which artery?",c:["Celiac trunk","Superior mesenteric artery","Inferior mesenteric artery","Internal iliac artery"],a:0,why:"Foregut = celiac trunk (T12 level). Referred pain to the epigastrium.",p:"<b>Foregut = Celiac.</b> Midgut = SMA, Hindgut = IMA."},
+{m:"anat",q:"The midgut — distal duodenum through the proximal two-thirds of the transverse colon — is supplied by which artery?",c:["Superior mesenteric artery","Celiac trunk","Inferior mesenteric artery","Splenic artery"],a:0,why:"Midgut = SMA (L1). Periumbilical referred pain (e.g., early appendicitis).",p:"Midgut = <b>SMA</b>. Periumbilical pain."},
+{m:"anat",q:"The hindgut — distal third of the transverse colon to the upper rectum — is supplied by which artery?",c:["Inferior mesenteric artery","Superior mesenteric artery","Celiac trunk","External iliac artery"],a:0,why:"Hindgut = IMA (L3). Suprapubic/lower-abdominal referred pain.",p:"Hindgut = <b>IMA</b>. Suprapubic pain."},
+{m:"anat",q:"Ischemic colitis from low flow classically strikes which 'watershed' region of the colon first?",c:["Splenic flexure","Cecum","Hepatic flexure","Mid-rectum"],a:0,why:"Splenic flexure (SMA/IMA border) and rectosigmoid junction are the poorly-collateralized watershed zones.",p:"Colonic watershed = <b>splenic flexure</b> + rectosigmoid junction."},
+{m:"anat",q:"A direct inguinal hernia bulges MEDIAL to the inferior epigastric vessels, pushing through the weak floor of the canal. Through which region does it protrude?",c:["Hesselbach's triangle","Deep (internal) inguinal ring","Femoral canal","Umbilical ring"],a:0,why:"Direct hernias push through Hesselbach's triangle (the floor), medial to the inferior epigastric vessels — acquired, from wall weakness.",p:"<b>Direct = through Hesselbach's, medial to inferior epigastric.</b> Older men, wall weakness."},
+{m:"anat",q:"An indirect inguinal hernia runs LATERAL to the inferior epigastric vessels and can descend into the scrotum because it travels through which structure?",c:["Deep (internal) inguinal ring","Hesselbach's triangle","Femoral canal","Obturator foramen"],a:0,why:"Indirect hernias enter the deep ring (lateral to inferior epigastric), follow the cord, and can reach the scrotum — from a patent processus vaginalis.",p:"<b>Indirect = through the deep ring, into the scrotum.</b> Patent processus vaginalis; infants/young men."},
+{m:"anat",q:"Which inguinal hernia lies MEDIAL to the inferior epigastric artery?",c:["Direct","Indirect","Femoral","Spigelian"],a:0,why:"Direct = medial; indirect = lateral, relative to the inferior epigastric vessels.",p:"<b>MDs don't LIe:</b> Medial = Direct, Lateral = Indirect."},
+{m:"anat",q:"A hernia that protrudes BELOW the inguinal ligament and medial to the femoral vein, more common in women and prone to incarceration, is which type?",c:["Femoral hernia","Direct inguinal hernia","Indirect inguinal hernia","Umbilical hernia"],a:0,why:"Femoral hernias go through the femoral canal below the inguinal ligament; narrow neck → high incarceration/strangulation risk.",p:"<b>Femoral = Females, below the ligament, incarcerates.</b> Medial to the femoral vein."},
+{m:"anat",q:"The LATERAL border of Hesselbach's triangle is formed by which structure?",c:["Inferior epigastric vessels","Rectus abdominis","Inguinal ligament","Sartorius muscle"],a:0,why:"Hesselbach's triangle: lateral = inferior epigastric vessels, medial = rectus abdominis, inferior = inguinal ligament.",p:"Hesselbach borders: <b>inferior epigastric (lateral), rectus (medial), inguinal ligament (floor).</b>"},
+{m:"anat",q:"In portal hypertension, esophageal varices form where the left gastric (coronary) vein anastomoses with which systemic tributary?",c:["Esophageal veins draining to the azygos","Inferior rectal veins","Paraumbilical veins","Splenic vein"],a:0,why:"Esophageal varices = left gastric ↔ esophageal (azygos) veins — a portosystemic shunt that bleeds.",p:"Esophageal varices = <b>left gastric ↔ azygos</b>. Caput = paraumbilical; hemorrhoids = rectal."},
+{m:"anat",q:"Caput medusae (dilated periumbilical veins) results from a portosystemic shunt through which veins?",c:["Paraumbilical veins","Inferior rectal veins","Left gastric veins","Hepatic veins"],a:0,why:"Recanalized paraumbilical veins (in the falciform ligament) shunt portal blood to the abdominal wall → caput medusae.",p:"Caput medusae = <b>paraumbilical</b> veins (falciform ligament)."},
+{m:"anat",q:"The Pringle maneuver clamps the hepatoduodenal ligament to control bleeding from which three structures running within it?",c:["Portal vein, hepatic artery, common bile duct","Aorta, IVC, thoracic duct","Splenic artery, vein, and tail of pancreas","Renal artery, vein, and ureter"],a:0,why:"The hepatoduodenal ligament carries the portal triad: portal vein, proper hepatic artery, common bile duct.",p:"Pringle = clamp the <b>portal triad</b> (portal vein + hepatic artery + common bile duct)."},
+{m:"anat",q:"Which of the following structures is retroperitoneal?",c:["Ascending colon","Transverse colon","Stomach","Jejunum"],a:0,why:"Ascending and descending colon are retroperitoneal (SAD PUCKER); transverse/sigmoid colon and most small bowel are intraperitoneal.",p:"Retroperitoneal = <b>SAD PUCKER</b> (Suprarenals, Aorta/IVC, Duodenum 2-4, Pancreas, Ureters, Colon asc/desc, Kidneys, Esophagus, Rectum)."},
+
+/* ===== UPPER GI ===== */
+{m:"upper",q:"Chronic acid reflux drives the lower esophageal epithelium to undergo metaplasia from squamous to which type?",c:["Nonciliated columnar with goblet cells","Stratified keratinized squamous","Pseudostratified ciliated columnar","Transitional epithelium"],a:0,why:"Barrett esophagus = intestinal metaplasia (columnar + goblet cells); risk of esophageal ADENOcarcinoma.",p:"Barrett = squamous → <b>columnar + goblet cells</b> → adenocarcinoma (distal esophagus)."},
+{m:"upper",q:"Dysphagia to BOTH solids and liquids with a 'bird's beak' barium swallow and loss of the myenteric plexus indicates what?",c:["Achalasia","GERD","Esophageal web","Diffuse esophageal spasm"],a:0,why:"Achalasia = failed LES relaxation + loss of Auerbach (myenteric) plexus → bird's beak, dilated proximal esophagus.",p:"Achalasia = <b>can't relax the LES</b> (lost myenteric plexus), bird's beak. Secondary cause: Chagas."},
+{m:"upper",q:"Most duodenal ulcers and gastric MALT lymphomas are caused by which organism?",c:["Helicobacter pylori","Escherichia coli","Candida albicans","Clostridioides difficile"],a:0,why:"H. pylori (urease-positive) causes most duodenal ulcers, gastric MALT lymphoma, and gastric adenocarcinoma.",p:"H. pylori = duodenal ulcers + <b>MALT lymphoma</b> + gastric adenocarcinoma. Urease positive."},
+{m:"upper",q:"Peptic ulcer pain that IMPROVES with eating (and worsens 2–3 hours later) is characteristic of which ulcer?",c:["Duodenal ulcer","Gastric ulcer","Esophageal ulcer","Stress ulcer"],a:0,why:"Duodenal ulcer pain decreases with food; gastric ulcer pain increases with food (→ weight loss, fear of eating).",p:"<b>Duodenal = better with food. Gastric = greater (worse) with food.</b>"},
+{m:"upper",q:"Multiple refractory peptic ulcers with a very high fasting gastrin level from a gastrin-secreting tumor describe which syndrome?",c:["Zollinger-Ellison syndrome","Ménétrier disease","Carcinoid syndrome","Plummer-Vinson syndrome"],a:0,why:"Zollinger-Ellison = gastrinoma (often duodenum/pancreas), associated with MEN1; refractory ulcers + diarrhea.",p:"ZE = <b>gastrinoma</b>, high gastrin, refractory ulcers. Think <b>MEN1</b>."},
+{m:"upper",q:"Diffuse gastric adenocarcinoma with signet-ring cells producing a rigid, thickened 'leather bottle' stomach is called what?",c:["Linitis plastica","Ménétrier disease","Krukenberg tumor","Barrett metaplasia"],a:0,why:"Diffuse-type gastric cancer (signet-ring cells) infiltrates the wall → linitis plastica. Spread → Virchow node, Krukenberg (ovary).",p:"Signet-ring diffuse gastric cancer = <b>linitis plastica</b> ('leather bottle')."},
+{m:"upper",q:"Acute gastric ulcers occurring after severe BURNS are given which eponym?",c:["Curling ulcers","Cushing ulcers","Dieulafoy lesion","Cameron ulcer"],a:0,why:"Curling ulcers = burns (hypovolemia → mucosal ischemia). Cushing ulcers = brain injury/↑ICP (vagal → acid).",p:"<b>Curling = burns</b> (you get burned and Curl up). <b>Cushing = CNS</b> (↑ICP)."},
+{m:"upper",q:"Severe vomiting followed by chest pain and subcutaneous emphysema from a FULL-THICKNESS esophageal rupture is called what?",c:["Boerhaave syndrome","Mallory-Weiss syndrome","Plummer-Vinson syndrome","Zenker diverticulum"],a:0,why:"Boerhaave = transmural esophageal rupture → mediastinitis, pneumomediastinum (Hamman crunch). Surgical emergency.",p:"Boerhaave = <b>full-thickness rupture</b> ('Boerhaave = Break, all the way through')."},
+{m:"upper",q:"Hematemesis after repeated retching from a MUCOSAL tear at the gastroesophageal junction (often in alcoholics) is which condition?",c:["Mallory-Weiss syndrome","Boerhaave syndrome","Esophageal varices","Peptic ulcer disease"],a:0,why:"Mallory-Weiss = partial-thickness mucosal tear at the GE junction → hematemesis; usually self-limited.",p:"Mallory-Weiss = <b>Mucosal tear</b> (partial). Boerhaave = full-thickness. Both from retching."},
+
+/* ===== LOWER GI / PEDS ===== */
+{m:"lower",q:"Transmural inflammation with skip lesions, noncaseating granulomas, and a 'cobblestone' mucosa anywhere from mouth to anus describes which inflammatory bowel disease?",c:["Crohn disease","Ulcerative colitis","Celiac disease","Ischemic colitis"],a:0,why:"Crohn = transmural, skip lesions, granulomas, fistulae, terminal ileum; 'creeping fat.'",p:"Crohn = <b>transmural, skip lesions, granulomas, fistulas</b>, mouth-to-anus. (UC = mucosa only.)"},
+{m:"lower",q:"Continuous mucosal inflammation beginning at the rectum with crypt abscesses and a risk of toxic megacolon describes which inflammatory bowel disease?",c:["Ulcerative colitis","Crohn disease","Celiac disease","Diverticulitis"],a:0,why:"UC = continuous mucosal/submucosal inflammation from the rectum proximally; crypt abscesses, lead-pipe colon, ↑colorectal cancer, PSC association.",p:"UC = <b>continuous, rectum up, mucosa only</b>, crypt abscesses, lead-pipe colon. Associated with PSC."},
+{m:"lower",q:"Duodenal villous atrophy with anti-tissue-transglutaminase antibodies and an itchy vesicular rash (dermatitis herpetiformis) indicates what?",c:["Celiac disease","Crohn disease","Whipple disease","Tropical sprue"],a:0,why:"Celiac = gluten-driven; anti-tTG/anti-endomysial antibodies, villous atrophy of the duodenum, HLA-DQ2/DQ8.",p:"Celiac = <b>anti-tTG</b>, villous atrophy (duodenum), dermatitis herpetiformis, HLA-DQ2/DQ8."},
+{m:"lower",q:"Periumbilical pain that migrates to the right lower quadrant (McBurney point) with anorexia and low-grade fever suggests what?",c:["Appendicitis","Cholecystitis","Diverticulitis","Pyelonephritis"],a:0,why:"Appendicitis: visceral periumbilical pain (midgut) → somatic RLQ pain as the peritoneum is involved.",p:"Appendicitis = <b>periumbilical → RLQ (McBurney)</b>. Psoas/obturator signs."},
+{m:"lower",q:"A 4-week-old has nonbilious PROJECTILE vomiting and a palpable 'olive' epigastric mass. What is the diagnosis?",c:["Pyloric stenosis","Duodenal atresia","Intussusception","Hirschsprung disease"],a:0,why:"Hypertrophic pyloric stenosis (3–6 wk): nonbilious projectile vomiting, olive mass, hypochloremic hypokalemic metabolic alkalosis.",p:"Pyloric stenosis = <b>nonbilious projectile vomiting + olive</b>, ~3–6 wk, metabolic alkalosis."},
+{m:"lower",q:"A toddler has intermittent colicky pain, 'currant jelly' stools, and a 'target sign' on ultrasound. What is the diagnosis?",c:["Intussusception","Pyloric stenosis","Volvulus","Necrotizing enterocolitis"],a:0,why:"Intussusception = telescoping bowel (often ileocolic); currant-jelly stool, target/bullseye sign; lead point may be Meckel or rotavirus-related lymphoid hyperplasia.",p:"Intussusception = <b>currant jelly stool + target sign</b>. Lead point: Meckel."},
+{m:"lower",q:"A newborn with Down syndrome fails to pass meconium, and rectal biopsy shows ABSENT ganglion cells. What is the diagnosis?",c:["Hirschsprung disease","Pyloric stenosis","Meconium ileus","Imperforate anus"],a:0,why:"Hirschsprung = failed neural crest migration → no ganglion cells (Auerbach + Meissner) in distal colon → functional obstruction.",p:"Hirschsprung = <b>no ganglion cells</b>, failure to pass meconium, RET mutation, Down syndrome."},
+{m:"lower",q:"A painless lower-GI bleed in a child from ectopic gastric mucosa within a true diverticulum (a remnant of the vitelline duct) is which condition?",c:["Meckel diverticulum","Appendicitis","Intussusception","Crohn disease"],a:0,why:"Meckel = persistent vitelline duct; ectopic gastric/pancreatic tissue → painless bleeding. Rule of 2s.",p:"Meckel = <b>Rule of 2s</b> (2% pop, 2 ft from ileocecal valve, 2 in long, 2 yr, 2 tissues). Painless bleed."},
+
+/* ===== HEPATOBILIARY / PANCREAS ===== */
+{m:"hepato",q:"Mild intermittent UNCONJUGATED hyperbilirubinemia worsened by fasting/stress, from reduced UDP-glucuronosyltransferase activity, is which benign condition?",c:["Gilbert syndrome","Dubin-Johnson syndrome","Crigler-Najjar type I","Rotor syndrome"],a:0,why:"Gilbert = mildly low UGT activity → benign unconjugated hyperbilirubinemia with stress/fasting/illness.",p:"Gilbert = <b>mild ↓UGT</b>, benign, unconjugated, stress-triggered. (Crigler-Najjar I = no UGT, fatal.)"},
+{m:"hepato",q:"CONJUGATED hyperbilirubinemia with a grossly BLACK liver due to defective canalicular bilirubin excretion (MRP2) is which syndrome?",c:["Dubin-Johnson syndrome","Gilbert syndrome","Crigler-Najjar syndrome","Wilson disease"],a:0,why:"Dubin-Johnson = defective MRP2 transporter → conjugated hyperbilirubinemia, black liver (benign). Rotor is similar but no black liver.",p:"Dubin-Johnson = <b>conjugated, black liver</b> (MRP2). Rotor = same but not black."},
+{m:"hepato",q:"A middle-aged man has skin bronzing, new diabetes, and arthropathy with a very high transferrin saturation. Which iron-overload disorder is this?",c:["Hereditary hemochromatosis","Wilson disease","Alpha-1 antitrypsin deficiency","Porphyria cutanea tarda"],a:0,why:"Hemochromatosis (HFE/C282Y) → iron deposition in liver, pancreas ('bronze diabetes'), heart, joints, pituitary.",p:"Hemochromatosis = <b>iron</b>, bronze diabetes, HFE/C282Y, ↑ferritin + transferrin sat."},
+{m:"hepato",q:"A young adult has liver disease, neuropsychiatric symptoms, and Kayser-Fleischer rings, with a LOW ceruloplasmin. What is the diagnosis?",c:["Wilson disease","Hereditary hemochromatosis","Primary biliary cholangitis","Hepatitis C"],a:0,why:"Wilson = ATP7B defect → copper accumulation in liver, basal ganglia, cornea (KF rings); low ceruloplasmin.",p:"Wilson = <b>copper</b>, KF rings, ↓ceruloplasmin, ATP7B, basal ganglia (parkinsonism). Tx: chelation."},
+{m:"hepato",q:"Right upper quadrant pain, fever, and jaundice (Charcot's triad) in a patient with a stone obstructing the common bile duct indicate what?",c:["Ascending cholangitis","Acute cholecystitis","Biliary colic","Hepatitis A"],a:0,why:"Charcot's triad = ascending cholangitis (infected obstructed biliary tree); Reynolds pentad adds hypotension + altered mental status.",p:"Charcot triad (RUQ pain, fever, jaundice) = <b>cholangitis</b>. + shock + confusion = Reynolds pentad."},
+{m:"hepato",q:"Severe epigastric pain radiating to the back with markedly elevated lipase is most often caused by gallstones or which other leading cause?",c:["Alcohol","Hypothyroidism","Iron deficiency","Aspirin use"],a:0,why:"Gallstones and alcohol cause ~80% of acute pancreatitis (mnemonic GET SMASHED). Lipase is the most specific enzyme.",p:"Acute pancreatitis = <b>Gallstones + alcohol</b> (GET SMASHED). ↑Lipase most specific."},
+{m:"hepato",q:"Pruritus and fatigue in a middle-aged woman with ANTI-MITOCHONDRIAL antibodies and destruction of small intrahepatic bile ducts indicate what?",c:["Primary biliary cholangitis","Primary sclerosing cholangitis","Autoimmune hepatitis","Hepatitis B"],a:0,why:"PBC = autoimmune destruction of intrahepatic bile ducts; anti-mitochondrial antibody positive; middle-aged women.",p:"PBC = <b>anti-Mitochondrial antibody</b>, Middle-aged woMen (women), intrahepatic ducts."},
+{m:"hepato",q:"'Beading' (alternating strictures and dilations) of intra- and extrahepatic bile ducts in a patient with ulcerative colitis indicates what?",c:["Primary sclerosing cholangitis","Primary biliary cholangitis","Cholangiocarcinoma","Choledocholithiasis"],a:0,why:"PSC = onion-skin fibrosis of intra/extrahepatic ducts → 'beads on a string'; associated with UC, p-ANCA; ↑cholangiocarcinoma.",p:"PSC = <b>beads on a string</b>, UC, p-ANCA, men. ↑Cholangiocarcinoma risk."},
+{m:"hepato",q:"A rising alpha-fetoprotein in a cirrhotic patient with a new solitary liver mass most suggests what?",c:["Hepatocellular carcinoma","Hepatic hemangioma","Focal nodular hyperplasia","Liver abscess"],a:0,why:"HCC arises in cirrhosis (HBV/HCV, alcohol, NASH, aflatoxin); AFP is the classic tumor marker.",p:"HCC = cirrhosis + rising <b>AFP</b>. Risks: HBV/HCV, alcohol, aflatoxin (Aspergillus)."},
+{m:"hepato",q:"Episodic flushing, diarrhea, and right-sided heart valve lesions with elevated urinary 5-HIAA indicate what?",c:["Carcinoid syndrome","Pheochromocytoma","VIPoma","Zollinger-Ellison syndrome"],a:0,why:"Carcinoid (serotonin) becomes systemic once it metastasizes to the liver (bypasses first-pass); right-heart fibrosis, niacin deficiency.",p:"Carcinoid = <b>serotonin</b>, flushing/diarrhea, right-heart lesions, ↑5-HIAA. Needs liver mets to be systemic."}
+];
+
+const VAULT=[
+{t:"MDs Don't LIe",b:"Inguinal hernias relative to the inferior epigastric vessels: <b>M</b>edial = <b>D</b>irect (through Hesselbach's), <b>L</b>ateral = <b>I</b>ndirect (through the deep ring, into scrotum).",g:"Hernias"},
+{t:"Hesselbach's Triangle",b:"Borders: <b>inferior epigastric vessels</b> (lateral), <b>rectus abdominis</b> (medial), <b>inguinal ligament</b> (inferior). Direct hernias punch through the floor here.",g:"Hernias"},
+{t:"Femoral = Females, Lower",b:"Femoral hernia = below the inguinal ligament, medial to the femoral vein, more common in women, narrow neck → <b>highest incarceration risk</b>.",g:"Hernias"},
+{t:"Gut Blood Supply",b:"<b>Foregut = Celiac</b> (epigastric pain). <b>Midgut = SMA</b> (periumbilical). <b>Hindgut = IMA</b> (suprapubic). Watershed: splenic flexure + rectosigmoid.",g:"Anatomy"},
+{t:"SAD PUCKER (retroperitoneal)",b:"Suprarenals, Aorta/IVC, Duodenum (2–4), Pancreas, Ureters, Colon (asc/desc), Kidneys, Esophagus, Rectum.",g:"Anatomy"},
+{t:"Crohn vs UC",b:"<b>Crohn</b> = transmural, skip lesions, granulomas, fistulas, mouth-to-anus, terminal ileum. <b>UC</b> = mucosa only, continuous from rectum, crypt abscesses, lead-pipe, toxic megacolon, PSC.",g:"IBD"},
+{t:"Curling vs Cushing",b:"<b>Curling</b> ulcer = burns (you get burned and Curl up). <b>Cushing</b> ulcer = CNS injury / ↑ICP (vagal stimulation → acid).",g:"Ulcers"},
+{t:"Duodenal vs Gastric Ulcer",b:"<b>Duodenal</b> = pain better with food, H. pylori ~90%. <b>Gastric</b> = pain worse with food (weight loss), NSAIDs/H. pylori, biopsy to rule out cancer.",g:"PUD"},
+{t:"Charcot Triad → Reynolds Pentad",b:"<b>Charcot</b> (cholangitis): RUQ pain + fever + jaundice. <b>Reynolds pentad</b> adds hypotension + altered mental status (suppurative cholangitis).",g:"Biliary"},
+{t:"Bilirubin Disorders",b:"<b>Gilbert</b> = mild ↓UGT, benign unconjugated. <b>Crigler-Najjar I</b> = no UGT, fatal. <b>Dubin-Johnson</b> = conjugated, black liver (MRP2). Rotor = like DJ, not black.",g:"Jaundice"},
+{t:"Wilson vs Hemochromatosis",b:"<b>Wilson</b> = copper, KF rings, ↓ceruloplasmin, ATP7B, young + neuropsychiatric. <b>Hemochromatosis</b> = iron, bronze diabetes, HFE/C282Y, ↑transferrin sat.",g:"Metabolic liver"},
+{t:"Pediatric Vomiting",b:"<b>Nonbilious projectile + olive</b> = pyloric stenosis. <b>Currant jelly + target sign</b> = intussusception. <b>Bilious</b> vomiting = malrotation/volvulus or atresia (surgical).",g:"Peds GI"},
+{t:"PBC vs PSC",b:"<b>PBC</b> = anti-Mitochondrial antibody, Middle-aged women, intrahepatic ducts. <b>PSC</b> = p-ANCA, men, UC, 'beads on a string,' ↑cholangiocarcinoma.",g:"Cholestasis"}
+];
+
+const MODES={
+  daily:{name:"Daily Rounds",ic:"🍽️",desc:"15 random questions across all GI topics. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Endoscopy",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  anat:{name:"GI Anatomy & Hernias",ic:"🦴",desc:"Direct vs indirect, Hesselbach, femoral, gut blood supply, portosystemic shunts.",pick:()=>shuffle(QBANK.filter(q=>q.m==="anat"))},
+  upper:{name:"Upper GI",ic:"🔺",desc:"Barrett, achalasia, H. pylori, ulcers, gastric cancer, Boerhaave vs Mallory-Weiss.",pick:()=>shuffle(QBANK.filter(q=>q.m==="upper"))},
+  lower:{name:"Lower GI & Peds",ic:"🔻",desc:"Crohn vs UC, celiac, appendicitis, pyloric stenosis, intussusception, Hirschsprung.",pick:()=>shuffle(QBANK.filter(q=>q.m==="lower"))},
+  hepato:{name:"Hepatobiliary",ic:"🫧",desc:"Bilirubin disorders, Wilson, hemochromatosis, cholangitis, pancreatitis, PBC vs PSC.",pick:()=>shuffle(QBANK.filter(q=>q.m==="hepato"))}
+};
+const MODE_TAGS={anat:"GI Anatomy / Hernias",upper:"Upper GI",lower:"Lower GI / Peds",hepato:"Hepatobiliary"};
+
+const SAVE_KEY="gut_check_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">GI</div>
+    <h1>Gut Check</h1>
+    <div class="sub">GI · Hepatobiliary · Hernias — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("anat",m.anat,"special")}${tile("upper",m.upper,"")}${tile("lower",m.lower,"")}${tile("hepato",m.hepato,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy GI tools — MDs don't LIe, SAD PUCKER, Crohn vs UC, bilirubin disorders, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
+}
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:34px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">GI memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
+});
+menu();
+</script>
+</body>
+</html>

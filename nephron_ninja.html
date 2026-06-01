@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEPHRON NINJA — Renal / Acid-Base</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Sora:wght@400;500;600&family=Martian+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070d12;
+  --bg2:#0c1620;
+  --panel:#10202c;
+  --panel-hi:#16303f;
+  --cyan:#2fe0c4;
+  --cyan-dim:#1c8f80;
+  --amber:#f6a821;
+  --amber-hi:#ffc457;
+  --red:#ff5d6c;
+  --green:#3ddc84;
+  --text:#dff1f0;
+  --dim:#6f8b93;
+  --line:rgba(47,224,196,.14);
+  --glow:rgba(47,224,196,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse at 20% 0%,rgba(47,224,196,.10),transparent 55%),
+    radial-gradient(ellipse at 85% 100%,rgba(246,168,33,.08),transparent 55%),
+    linear-gradient(180deg,#070d12,#0c1620);
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--line) 1px,transparent 1px);
+  background-size:26px 26px;
+  mask-image:radial-gradient(ellipse at center,#000 35%,transparent 88%);
+}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
+
+/* HEADER */
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px;position:relative}
+.badge{display:inline-block;width:54px;height:54px;line-height:54px;border-radius:14px;
+  background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#04211d;
+  font-family:'Chakra Petch';font-weight:700;font-size:30px;margin-bottom:8px;
+  box-shadow:0 0 22px var(--glow);transform:rotate(-3deg)}
+h1{font-family:'Chakra Petch';font-weight:700;font-size:30px;letter-spacing:2px;color:var(--cyan)}
+.sub{font-family:'Martian Mono';font-size:11px;color:var(--dim);letter-spacing:3px;margin-top:4px;text-transform:uppercase}
+
+/* MENU GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;
+  transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.55}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.45)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Chakra Petch';font-weight:600;font-size:16px;margin:8px 0 5px;letter-spacing:.5px}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'Martian Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
+
+.section-label{font-family:'Martian Mono';font-size:10px;letter-spacing:3px;color:var(--dim);
+  text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* QUIZ */
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;
+  font-family:'Martian Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'Martian Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);
+  border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;
+  cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'Martian Mono';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(61,220,132,.12)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(255,93,108,.12)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
+
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);
+  border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'Martian Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(246,168,33,.10);border:1px dashed var(--amber);border-radius:10px;
+  padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Chakra Petch';letter-spacing:.5px}
+
+.btn{font-family:'Chakra Petch';font-weight:600;letter-spacing:1px;border:none;border-radius:10px;
+  padding:13px 22px;cursor:pointer;font-size:14px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#04211d;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* RESULTS */
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Chakra Petch';font-size:64px;font-weight:700;color:var(--cyan);line-height:1}
+.rank{font-family:'Martian Mono';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:8px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'Martian Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:24px;color:var(--text);font-family:'Chakra Petch'}
+
+/* VAULT */
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Chakra Petch';color:var(--amber-hi);font-size:15px;margin-bottom:7px;letter-spacing:.5px}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'Martian Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
+
+.back{font-family:'Martian Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;
+  display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'Martian Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ---------------- QUESTION BANK ---------------- */
+/* correct = index into choices[]; choices are shuffled at render so position is never a tell.
+   Stems are written so the answer is NOT contained in the stem. */
+const QBANK = [
+/* ===== ANATOMY ===== */
+{m:"anatomy",q:"A surgeon notes an organ lies behind the parietal peritoneum against the posterior abdominal wall. Which organ fits this location?",c:["Kidney","Spleen","Sigmoid colon","Stomach"],a:0,why:"Kidneys, ureters, and adrenals are retroperitoneal — they sit behind the peritoneum.",p:"Retroperitoneal = <b>SAD PUCKER</b>. The kidneys live in the back."},
+{m:"anatomy",q:"Which nephron segment reabsorbs roughly two-thirds of filtered sodium plus all of the filtered glucose and amino acids?",c:["Proximal convoluted tubule","Thick ascending limb","Distal convoluted tubule","Collecting duct"],a:0,why:"The PCT is the bulk reabsorber: ~65% of Na+, and 100% of glucose/amino acids/bicarb start here.",p:"PCT = the <b>workhorse</b>. Glucose, amino acids, HCO3 — all reclaimed up front."},
+{m:"anatomy",q:"A diuretic blocks a cotransporter in the water-impermeable segment that drives the medullary concentration gradient. Which segment is targeted?",c:["Thick ascending limb","Proximal tubule","Collecting duct","Glomerulus"],a:0,why:"The TAL is impermeable to water and uses NKCC2 — the target of loop diuretics — to build the medullary gradient.",p:"<b>Loops hit the loop.</b> Block NKCC2 → wipe out the gradient → big diuresis."},
+{m:"anatomy",q:"Cells in the wall of the afferent arteriole release renin when renal perfusion pressure drops. What are these cells called?",c:["Juxtaglomerular (JG) cells","Macula densa cells","Mesangial cells","Podocytes"],a:0,why:"JG cells are modified smooth muscle in the afferent arteriole; they sense pressure and secrete renin.",p:"JG cells = the <b>pressure sensor</b>. Macula densa = the <b>salt sensor</b>."},
+{m:"anatomy",q:"During a hysterectomy the ureter is at high risk for injury because it passes directly beneath which structure?",c:["Uterine artery","Ovarian vein","Internal iliac vein","Inferior epigastric artery"],a:0,why:"The ureter runs under the uterine artery — clamp the artery, you can clip the ureter.",p:"<b>Water under the bridge</b> — ureter (water) runs under the uterine artery (bridge)."},
+{m:"anatomy",q:"A horseshoe kidney sits abnormally low in the pelvis because its fused lower poles get trapped during ascent by which structure?",c:["Inferior mesenteric artery","Superior mesenteric artery","Celiac trunk","Renal vein"],a:0,why:"The fused isthmus catches on the IMA root, halting normal ascent.",p:"Horseshoe kidney = <b>hooked on the IMA</b>."},
+{m:"anatomy",q:"In minimal change disease, loss of the negatively charged barrier on which cell allows albumin to slip into the urine?",c:["Podocyte foot processes","Mesangial cells","Glomerular endothelium","JG cells"],a:0,why:"Podocyte foot-process effacement and loss of the negative charge barrier → selective albuminuria.",p:"<b>Charge barrier = podocytes.</b> Lose the charge, lose the albumin."},
+{m:"anatomy",q:"Blood is filtered as it passes from which vessel directly into the glomerular capillaries?",c:["Afferent arteriole","Efferent arteriole","Arcuate artery","Interlobular vein"],a:0,why:"Afferent arteriole → glomerulus → efferent arteriole. Afferent is the inflow.",p:"<b>A before E:</b> Afferent in, Efferent out."},
+
+/* ===== ACID-BASE ===== */
+{m:"acidbase",q:"An ABG shows low pH, low bicarbonate, and low PaCO2. Which single classification best fits?",c:["Metabolic acidosis with respiratory compensation","Primary respiratory acidosis","Metabolic alkalosis","Primary respiratory alkalosis"],a:0,why:"Low HCO3 = primary metabolic acidosis; the low CO2 is the lungs blowing off acid to compensate.",p:"Low pH + low HCO3 + low CO2 = <b>metabolic acidosis, compensated</b>."},
+{m:"acidbase",q:"Which condition produces a HIGH anion gap metabolic acidosis?",c:["Diabetic ketoacidosis","Chronic diarrhea","Type 2 RTA","Persistent vomiting"],a:0,why:"DKA adds ketoacids → unmeasured anions → raised gap. Diarrhea/RTA are normal-gap.",p:"High-gap = <b>MUDPILES</b> (Methanol, Uremia, DKA, Propylene glycol, Iron/INH, Lactate, Ethylene glycol, Salicylates)."},
+{m:"acidbase",q:"Which condition produces a NORMAL anion gap (hyperchloremic) metabolic acidosis?",c:["Severe diarrhea","Diabetic ketoacidosis","Methanol ingestion","Lactic acidosis"],a:0,why:"Diarrhea loses bicarb directly → Cl rises to fill the gap → normal anion gap.",p:"Non-gap = <b>HARDASS</b> / think diarrhea + RTA. Lose HCO3, keep Cl."},
+{m:"acidbase",q:"Days of persistent vomiting most likely produce which primary acid-base disturbance?",c:["Metabolic alkalosis","Metabolic acidosis","Respiratory acidosis","Respiratory alkalosis"],a:0,why:"Vomiting loses H+ and Cl- (gastric acid) → metabolic alkalosis (contraction alkalosis).",p:"<b>Vomit = alkalosis.</b> You're literally throwing up acid."},
+{m:"acidbase",q:"An adult aspirin overdose classically produces which mixed acid-base picture?",c:["Respiratory alkalosis + anion-gap metabolic acidosis","Pure respiratory acidosis","Pure metabolic alkalosis","Respiratory acidosis + metabolic alkalosis"],a:0,why:"Salicylates stimulate the respiratory center (early resp alkalosis) AND generate organic acids (gap acidosis).",p:"Aspirin OD = <b>two hits</b>: early hyperventilation, then the acid."},
+{m:"acidbase",q:"In a primary respiratory disorder, the pH change moves in which direction relative to the PaCO2 change?",c:["Opposite direction","Same direction","No predictable relationship","Always toward 7.40"],a:0,why:"ROME — Respiratory = Opposite. Rising CO2 drops pH; falling CO2 raises pH.",p:"<b>ROME:</b> Respiratory Opposite, Metabolic Equal."},
+{m:"acidbase",q:"A patient cannot acidify the urine (urine pH stays >5.5) because the collecting duct fails to secrete H+. Which disorder is this?",c:["Type 1 (distal) RTA","Type 2 (proximal) RTA","Type 4 RTA","Respiratory acidosis"],a:0,why:"Distal RTA = failed H+ secretion in the collecting duct → high urine pH, risk of calcium stones.",p:"Type <b>1 = distal</b>, can't pump out H+, urine stays alkaline, makes stones."},
+{m:"acidbase",q:"A defect in bicarbonate reabsorption by the proximal tubule (often with glycosuria and phosphaturia) defines which disorder?",c:["Type 2 (proximal) RTA","Type 1 (distal) RTA","Type 4 RTA","SIADH"],a:0,why:"Proximal RTA wastes HCO3; when generalized (Fanconi) it also wastes glucose, phosphate, amino acids.",p:"Type <b>2 = proximal</b>, leaks bicarb. Think <b>Fanconi</b>."},
+{m:"acidbase",q:"A diabetic with hyperkalemia and a mild non-gap acidosis from low aldosterone activity has which disorder?",c:["Type 4 RTA","Type 1 (distal) RTA","Type 2 (proximal) RTA","Metabolic alkalosis"],a:0,why:"Type 4 RTA = hypoaldosteronism → reduced K+ and H+ excretion → hyperkalemic, non-gap acidosis.",p:"Type <b>4 = hyperkalemic</b> (the only RTA with HIGH K+). Low aldo."},
+
+/* ===== ELECTROLYTES ===== */
+{m:"electro",q:"A patient with renal failure develops a dangerous potassium level. What is the earliest classic ECG change?",c:["Peaked T waves","U waves","Delta wave","Prolonged QT"],a:0,why:"Hyperkalemia → peaked T waves first, then widened QRS, then sine wave.",p:"Hyper-K = <b>peaked T's</b>. (Hypo-K = U waves.)"},
+{m:"electro",q:"Which ECG finding most suggests a LOW potassium level?",c:["U waves","Peaked T waves","Shortened QT","Tall R waves"],a:0,why:"Hypokalemia → flattened T waves and prominent U waves; risk of arrhythmia.",p:"<b>No Pot, no T — but U get a U wave.</b>"},
+{m:"electro",q:"Correcting a chronically low sodium level too rapidly puts the patient at risk for which complication?",c:["Osmotic demyelination (central pontine myelinolysis)","Cerebral edema","Tetany","Rhabdomyolysis"],a:0,why:"Rapid correction of chronic hyponatremia shrinks neurons → demyelination of the pons.",p:"<b>From low to high, your pons will die.</b> Correct Na+ slowly."},
+{m:"electro",q:"Correcting a high sodium level too quickly causes which complication?",c:["Cerebral edema","Central pontine myelinolysis","Hypocalcemic tetany","Peaked T waves"],a:0,why:"Rapid correction of hypernatremia pulls water into brain cells → cerebral edema.",p:"<b>From high to low, your brain will blow.</b>"},
+{m:"electro",q:"Perioral tingling, carpopedal spasm, and a positive Trousseau sign point to a deficiency of which ion?",c:["Calcium","Potassium","Magnesium","Sodium"],a:0,why:"Hypocalcemia increases neuromuscular excitability → tetany, Chvostek/Trousseau signs.",p:"<b>Low Ca = twitchy.</b> Chvostek (cheek) + Trousseau (cuff)."},
+{m:"electro",q:"'Stones, bones, abdominal groans, and psychiatric overtones' is the classic description of an excess of which ion?",c:["Calcium","Potassium","Phosphate","Chloride"],a:0,why:"Hypercalcemia (often primary hyperparathyroidism or malignancy) → that full tetrad.",p:"Hyper-Ca = <b>stones, bones, groans, psychiatric overtones</b>."},
+{m:"electro",q:"Euvolemic hyponatremia with inappropriately concentrated urine and low serum osmolality is the hallmark of what?",c:["SIADH","Diabetes insipidus","Addison disease","Conn syndrome"],a:0,why:"SIADH = too much ADH → water retention → dilutional hyponatremia with concentrated urine.",p:"SIADH = <b>too much ADH</b> → soaked patient, salty urine, dilute blood."},
+{m:"electro",q:"Which diuretic class INCREASES urinary calcium loss and is therefore used to treat hypercalcemia?",c:["Loop diuretics","Thiazides","Potassium-sparing diuretics","Carbonic anhydrase inhibitors"],a:0,why:"Loops block NKCC2, abolishing the gradient that drives Ca reabsorption in the TAL → calciuresis.",p:"<b>Loops Lose calcium; thiazides reTain it.</b>"},
+
+/* ===== DIURETICS ===== */
+{m:"diuretic",q:"A drug used for altitude sickness and glaucoma works by inhibiting carbonic anhydrase. Where in the nephron does it act?",c:["Proximal convoluted tubule","Thick ascending limb","Distal convoluted tubule","Collecting duct"],a:0,why:"Acetazolamide blocks carbonic anhydrase in the PCT → bicarb diuresis (and a normal-gap acidosis).",p:"Acetazolamide = <b>PCT</b>. Side effect: it CAUSES the acidosis it's named after."},
+{m:"diuretic",q:"Furosemide produces its diuretic effect by blocking which transporter?",c:["Na-K-2Cl cotransporter (NKCC2)","Na-Cl cotransporter (NCC)","Epithelial Na channel (ENaC)","Na-glucose cotransporter"],a:0,why:"Loop diuretics block NKCC2 in the thick ascending limb.",p:"Furosemide = <b>NKCC2</b>. Also ototoxic at high doses."},
+{m:"diuretic",q:"Which diuretic acts on the Na-Cl cotransporter in the early distal convoluted tubule?",c:["Hydrochlorothiazide","Furosemide","Acetazolamide","Mannitol"],a:0,why:"Thiazides block NCC in the DCT; they retain calcium and can cause hyponatremia/hyperglycemia.",p:"Thiazide = <b>DCT / NCC</b>. The 'hyperGLUC' side effects."},
+{m:"diuretic",q:"A potassium-sparing diuretic blocks the aldosterone receptor and commonly causes gynecomastia. Which drug is it?",c:["Spironolactone","Amiloride","Acetazolamide","Furosemide"],a:0,why:"Spironolactone antagonizes the mineralocorticoid receptor; its anti-androgen effect → gynecomastia.",p:"Spironolactone = <b>aldosterone blocker</b> → keeps K+, causes gynecomastia."},
+{m:"diuretic",q:"An osmotic agent given to reduce intracranial and intraocular pressure works as which type of diuretic?",c:["Osmotic diuretic","Loop diuretic","Thiazide","Aldosterone antagonist"],a:0,why:"Mannitol is an osmotic diuretic — it's filtered but not reabsorbed, pulling water out.",p:"Mannitol = <b>osmotic</b>. Pulls water; avoid in CHF/pulmonary edema."},
+
+/* ===== GLOMERULAR ===== */
+{m:"glom",q:"Hematuria with RBC casts, hypertension, and only mild proteinuria describes which syndrome?",c:["Nephritic syndrome","Nephrotic syndrome","Acute tubular necrosis","Prerenal azotemia"],a:0,why:"Nephritic = inflammatory glomerular injury → blood in urine, RBC casts, HTN.",p:"<b>Nephr-IT-ic = Inflammation</b> → hematuria + casts."},
+{m:"glom",q:"Proteinuria over 3.5 g/day with edema, hypoalbuminemia, and hyperlipidemia describes which syndrome?",c:["Nephrotic syndrome","Nephritic syndrome","Interstitial nephritis","Renal tubular acidosis"],a:0,why:"Nephrotic = heavy protein loss → low albumin, edema, compensatory hyperlipidemia, frothy urine.",p:"<b>Nephr-O-tic = prOtein</b> pouring out (>3.5 g)."},
+{m:"glom",q:"A child develops cola-colored urine and periorbital edema about two weeks after strep throat. The most likely diagnosis is what?",c:["Poststreptococcal glomerulonephritis","IgA nephropathy","Minimal change disease","Goodpasture syndrome"],a:0,why:"PSGN follows strep by ~1–2 weeks; subepithelial 'humps' on EM, low C3.",p:"PSGN = <b>2 weeks after</b> strep, dark urine, low C3, 'lumpy-bumpy' IF."},
+{m:"glom",q:"The most common nephrotic syndrome in young children — normal light microscopy, foot-process effacement on EM, steroid-responsive — is what?",c:["Minimal change disease","Focal segmental glomerulosclerosis","Membranous nephropathy","Diabetic nephropathy"],a:0,why:"Minimal change disease: normal on LM, effaced foot processes on EM, responds to steroids.",p:"MCD = <b>kids + steroids work</b>. Light microscopy looks normal."},
+{m:"glom",q:"Gross hematuria appearing DURING or within days of an upper respiratory infection (not weeks later) suggests which diagnosis?",c:["IgA nephropathy (Berger disease)","Poststreptococcal GN","Alport syndrome","Membranous nephropathy"],a:0,why:"IgA nephropathy flares synchronously with mucosal infections — the key timing contrast vs PSGN.",p:"IgA = hematuria <b>WITH</b> the infection. PSGN = <b>weeks AFTER</b>. Timing is the trap."},
+{m:"glom",q:"Hemoptysis combined with rapidly progressive glomerulonephritis and LINEAR immunofluorescence staining indicates which disease?",c:["Goodpasture syndrome (anti-GBM)","Granulomatosis with polyangiitis","IgA nephropathy","Lupus nephritis"],a:0,why:"Anti-GBM antibodies attack lung and kidney basement membranes → linear IF, lung + kidney.",p:"Goodpasture = <b>linear IF</b>, lungs + kidneys, anti-GBM."},
+{m:"glom",q:"Nodular glomerulosclerosis with Kimmelstiel-Wilson nodules is the hallmark renal lesion of which disease?",c:["Diabetes mellitus","Systemic lupus erythematosus","Amyloidosis","Hypertension"],a:0,why:"Chronic hyperglycemia → mesangial expansion → Kimmelstiel-Wilson nodules; leading cause of ESRD.",p:"Kimmelstiel-Wilson = <b>diabetes</b>. #1 cause of ESRD in the US."},
+{m:"glom",q:"ACE inhibitors preferentially dilate the efferent arteriole. This produces which effect that protects the diabetic kidney?",c:["Decreased intraglomerular pressure","Increased intraglomerular pressure","Increased proteinuria","Complete loss of renal blood flow"],a:0,why:"Dilating the efferent arteriole drops glomerular capillary pressure → less hyperfiltration injury.",p:"ACE-i open the <b>efferent</b> exit → pressure falls → kidney protected (but watch Cr/K+)."}
+];
+
+/* ---------------- DM MNEMONIC VAULT ---------------- */
+const VAULT=[
+{t:"MUDPILES — high anion gap",b:"<b>M</b>ethanol, <b>U</b>remia, <b>D</b>KA, <b>P</b>ropylene glycol, <b>I</b>ron/INH, <b>L</b>actate, <b>E</b>thylene glycol, <b>S</b>alicylates.",g:"High-gap metabolic acidosis"},
+{t:"ROME — compensation direction",b:"<b>R</b>espiratory <b>O</b>pposite (CO2 up → pH down), <b>M</b>etabolic <b>E</b>qual (HCO3 up → pH up).",g:"Acid-base interpretation"},
+{t:"The Sodium Rule",b:"Correct slowly. <b>Low to high, the pons will die</b> (osmotic demyelination). <b>High to low, the brain will blow</b> (cerebral edema).",g:"Na+ correction"},
+{t:"Loops vs Thiazides + Calcium",b:"<b>Loops Lose</b> calcium (used in hypercalcemia). <b>Thiazides reTain</b> calcium (used to prevent Ca stones).",g:"Diuretics"},
+{t:"RTA Types",b:"<b>1 = distal</b> (can't secrete H+, alkaline urine, stones). <b>2 = proximal</b> (HCO3 wasting, Fanconi). <b>4 = hyperkalemic</b> (low aldosterone).",g:"Renal tubular acidosis"},
+{t:"Hypercalcemia tetrad",b:"<b>Stones</b> (kidney), <b>Bones</b> (pain), <b>Groans</b> (abdominal/constipation), <b>Psychiatric overtones</b>.",g:"Electrolytes"},
+{t:"Water Under the Bridge",b:"The <b>ureter</b> (water) runs under the <b>uterine artery</b> (bridge) — why it's clipped in hysterectomy.",g:"Anatomy"},
+{t:"Nephritic vs Nephrotic",b:"Nephr-<b>IT</b>-ic = <b>I</b>nflammation → hematuria, RBC casts, HTN. Nephr-<b>O</b>tic = pr<b>O</b>tein → &gt;3.5 g, edema, hyperlipidemia.",g:"Glomerular disease"},
+{t:"PSGN vs IgA timing",b:"<b>IgA</b> = hematuria <b>WITH</b> the infection (days). <b>PSGN</b> = <b>2 weeks AFTER</b> strep, low C3.",g:"Glomerular disease"},
+{t:"Diuretic Sites (top→bottom)",b:"Acetazolamide → <b>PCT</b>. Mannitol → <b>PT/loop</b>. Furosemide → <b>TAL (NKCC2)</b>. Thiazide → <b>DCT (NCC)</b>. Spironolactone/amiloride → <b>collecting duct</b>.",g:"Diuretics"}
+];
+
+/* ---------------- MODES ---------------- */
+const MODES={
+  daily:{name:"Daily Filter",ic:"💧",desc:"15 random questions across all renal topics. Your 2-minute warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Clearance",ic:"♾️",desc:"Survival mode — keep answering until you miss one. Beat your streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  anatomy:{name:"Nephron Anatomy",ic:"🦴",desc:"Segments, blood supply, JG apparatus, retroperitoneal must-knows.",pick:()=>shuffle(QBANK.filter(q=>q.m==="anatomy"))},
+  acidbase:{name:"Acid–Base Lab",ic:"🧪",desc:"Gap vs non-gap, compensation, mixed disorders, RTAs.",pick:()=>shuffle(QBANK.filter(q=>q.m==="acidbase"))},
+  electro:{name:"Electrolyte Bay",ic:"⚡",desc:"Na, K, Ca — ECG changes, correction rules, SIADH.",pick:()=>shuffle(QBANK.filter(q=>q.m==="electro"))},
+  diuretic:{name:"Diuretic Dispensary",ic:"💊",desc:"Sites of action and signature side effects.",pick:()=>shuffle(QBANK.filter(q=>q.m==="diuretic"))},
+  glom:{name:"Glomerulus Grid",ic:"🔬",desc:"Nephritic vs nephrotic, the classic GN patterns.",pick:()=>shuffle(QBANK.filter(q=>q.m==="glom"))}
+};
+const MODE_TAGS={anatomy:"Anatomy",acidbase:"Acid-Base",electro:"Electrolytes",diuretic:"Diuretics",glom:"Glomerular"};
+
+/* ---------------- STATE / SAVE ---------------- */
+const SAVE_KEY="nephron_ninja_v1";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+let session=null;
+const app=document.getElementById("app");
+
+/* ---------------- RENDER: MENU ---------------- */
+function menu(){
+  session=null;
+  const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">℞</div>
+    <h1>NEPHRON NINJA</h1>
+    <div class="sub">Renal · Acid-Base · Electrolytes — ${QBANK.length} questions</div>
+  </div>
+
+  <div class="section-label">Quick Play</div>
+  <div class="grid">
+    ${tile("daily",m.daily,"")}
+    ${tile("endless",m.endless,"amber")}
+  </div>
+
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("anatomy",m.anatomy,"special")}
+    ${tile("acidbase",m.acidbase,"")}
+    ${tile("electro",m.electro,"")}
+    ${tile("diuretic",m.diuretic,"")}
+    ${tile("glom",m.glom,"")}
+  </div>
+
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div>
+      <h3>Dirty Medicine Vault</h3>
+      <p>The catchy mnemonics — MUDPILES, ROME, the sodium rule, diuretic sites, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
+    </div>
+  </div>
+
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds played · Endless best: ${save.endlessBest||0}</footer>`;
+}
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')">
+    <div class="ic">${mode.ic}</div>
+    <h3>${mode.name}</h3>
+    <p>${mode.desc}</p>
+    <div class="meta">${bestLbl}</div>
+  </div>`;
+}
+
+/* ---------------- QUIZ ---------------- */
+function start(key){
+  const mode=MODES[key];
+  const qs=mode.pick();
+  session={key,mode,qs,i:0,correct:0,streak:0,answered:false};
+  renderQ();
+}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless && s.i>=s.qs.length) return results();
+  if(s.mode.endless && s.i>=s.qs.length){ s.qs=shuffle([...QBANK]); s.i=0; } // recycle for endless
+  const q=s.qs[s.i];
+  // shuffle choices, remember correct identity
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;
+  s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;
+  const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top">
+      <span class="qcount">Q ${num} / ${total}</span>
+      <span class="streak">🔥 Streak ${s.streak}</span>
+    </div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">
+      ${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})">
+        <span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}
+    </div>
+    <div id="post"></div>`;
+}
+function answer(pos){
+  const s=session;
+  if(s.answered) return;
+  s.answered=true;
+  const q=s.qs[s.i];
+  const correct=pos===s.correctPos;
+  const nodes=document.querySelectorAll(".choice");
+  nodes.forEach((n,i)=>{
+    n.classList.add("disabled");
+    if(i===s.correctPos)n.classList.add("correct");
+    if(i===pos&&!correct)n.classList.add("wrong");
+  });
+  if(correct){s.correct++;s.streak++;}
+  else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`
+    <div class="explain ${correct?"":"miss"}">
+      <div class="lab">${correct?"✔ Correct":"✕ Review"}</div>
+      <div class="why">${q.why}</div>
+      ${pearl}
+    </div>`;
+  if(s.mode.endless && !correct){
+    if(s.streak===0 && (s.bestThis||0) < (s._peak||0)){}
+    s._peak=Math.max(s._peak||0,s.correct);
+    if((s.correct)>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}
+    post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;
+    return;
+  }
+  if(s.mode.endless && correct){
+    if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}
+  }
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless && s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+
+function results(){
+  const s=session;
+  const total=s.mode.endless?s.correct:s.qs.length;
+  const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){
+    save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);
+  }
+  save.played=(save.played||0)+1;persist();
+  let rank,col;
+  const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
+    </div>`;
+}
+
+/* ---------------- VAULT ---------------- */
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:24px">💎 DIRTY MEDICINE VAULT</h1>
+      <div class="sub">Renal memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card">
+      <h4>${v.t}</h4>
+      <p>${v.b}</p>
+      <span class="tag">▸ ${v.g}</span>
+    </div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
+}
+
+/* keyboard 1-4 / A-D */
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null && session.order && map[k]<session.order.length) answer(map[k]);
+});
+
+menu();
+</script>
+</body>
+</html>

@@ -3,1278 +3,305 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>PHARM ARSENAL — Step 1 Pharmacology</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>PHARM ARSENAL — Pharmacology</title>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg-deep: #050810;
-  --bg-mid: #0d1525;
-  --bg-card: #16203a;
-  --acid-green: #c6ff00;
-  --lime: #50fa7b;
-  --plasma: #ff79c6;
-  --cyber-yellow: #f1fa8c;
-  --lab-purple: #bd93f9;
-  --warning-red: #ff5555;
-  --text: #f8f8f2;
-  --text-dim: #6272a4;
-  --grid: rgba(80, 250, 123, 0.06);
+:root{
+  --bg:#f4f1f8;
+  --bg2:#e9e3f0;
+  --panel:#fffdff;
+  --panel-hi:#f1ecf6;
+  --cyan:#7c3aed;        /* violet primary (pharmacy) */
+  --cyan-dim:#5b21b6;
+  --amber:#b45309;       /* amber accent */
+  --amber-hi:#92400e;
+  --red:#b91c1c;
+  --green:#15803d;
+  --text:#221d2b;
+  --dim:#6e6580;
+  --line:rgba(124,58,237,.16);
+  --glow:rgba(124,58,237,.2);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  background: var(--bg-deep);
-  color: var(--text);
-  font-family: 'VT323', monospace;
-  font-size: 18px;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-body {
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Public Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
   background:
-    radial-gradient(ellipse at 25% 15%, rgba(198, 255, 0, 0.10), transparent 50%),
-    radial-gradient(ellipse at 75% 85%, rgba(189, 147, 249, 0.12), transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(255, 121, 198, 0.05), transparent 60%),
-    linear-gradient(180deg, #050810 0%, #0d1525 100%);
-  position: relative;
+    radial-gradient(ellipse at 18% 0%,rgba(124,58,237,.07),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(180,83,9,.05),transparent 55%),
+    linear-gradient(180deg,#f4f1f8,#e9e3f0);
 }
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 50px 50px;
-  pointer-events: none;
-  z-index: 0;
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(var(--line) 1px,transparent 1px);
+  background-size:27px 27px;
+  mask-image:radial-gradient(ellipse at center,#000 33%,transparent 88%);opacity:.7;
 }
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background: repeating-linear-gradient(0deg,
-    rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px,
-    transparent 1px, transparent 3px);
-  pointer-events: none;
-  z-index: 1000;
-  mix-blend-mode: multiply;
-}
-#app {
-  position: relative;
-  z-index: 1;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px;
-}
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
 
-/* HEADER */
-.title-bar {
-  text-align: center;
-  margin-bottom: 24px;
-  padding: 16px 0 24px;
-  border-bottom: 2px solid var(--acid-green);
-  box-shadow: 0 4px 20px rgba(198, 255, 0, 0.15);
-}
-h1.game-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 36px;
-  background: linear-gradient(90deg, var(--acid-green), var(--lab-purple), var(--plasma));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  letter-spacing: 4px;
-  text-shadow: 0 0 20px rgba(198, 255, 0, 0.4);
-  animation: titleGlow 3s ease-in-out infinite alternate;
-}
-@keyframes titleGlow {
-  from { filter: drop-shadow(0 0 8px rgba(198, 255, 0, 0.4)); }
-  to { filter: drop-shadow(0 0 20px rgba(255, 121, 198, 0.6)); }
-}
-.subtitle {
-  color: var(--cyber-yellow);
-  font-size: 22px;
-  margin-top: 8px;
-  letter-spacing: 2px;
-}
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;
+  background:linear-gradient(150deg,var(--cyan),var(--cyan-dim));color:#fffdff;
+  font-family:'Schibsted Grotesk';font-weight:800;font-size:30px;margin-bottom:8px;box-shadow:0 4px 18px var(--glow)}
+h1{font-family:'Schibsted Grotesk';font-weight:800;font-size:34px;letter-spacing:.2px;color:var(--cyan)}
+.sub{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:2px;margin-top:4px;text-transform:uppercase}
 
-/* HUD */
-.hud { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-.hud-cell {
-  background: rgba(22, 32, 58, 0.7);
-  border: 1px solid var(--lab-purple);
-  border-radius: 4px;
-  padding: 10px 14px;
-  position: relative;
-  box-shadow: inset 0 0 12px rgba(189, 147, 249, 0.15);
-}
-.hud-label {
-  font-size: 13px;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-family: 'Press Start 2P', monospace;
-}
-.hud-value { font-size: 28px; margin-top: 4px; font-weight: bold; font-family: 'JetBrains Mono', monospace; }
-.hud-value.hp { color: var(--warning-red); }
-.hud-value.xp { color: var(--acid-green); }
-.hud-value.streak { color: var(--plasma); }
-.hud-value.lvl { color: var(--lime); }
-.hearts { display: inline-flex; gap: 4px; }
-.heart { font-size: 24px; filter: drop-shadow(0 0 4px var(--warning-red)); }
-.heart.lost { filter: grayscale(1) brightness(0.3); }
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(34,29,43,.05)}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.7}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 22px rgba(34,29,43,.12)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Schibsted Grotesk';font-weight:700;font-size:17px;margin:7px 0 5px;letter-spacing:.1px;line-height:1.25}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'JetBrains Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
 
-/* PANEL */
-.panel {
-  background: rgba(22, 32, 58, 0.85);
-  border: 2px solid var(--acid-green);
-  border-radius: 6px;
-  padding: 28px;
-  position: relative;
-  box-shadow: 0 0 30px rgba(198, 255, 0, 0.15), inset 0 0 20px rgba(198, 255, 0, 0.04);
-  backdrop-filter: blur(4px);
-  min-height: 400px;
-}
-.panel::before {
-  content: '';
-  position: absolute;
-  top: -2px; left: 12px;
-  width: 14px; height: 6px;
-  background: var(--bg-deep);
-  border-left: 2px solid var(--acid-green);
-  border-right: 2px solid var(--acid-green);
-}
+.section-label{font-family:'JetBrains Mono';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
 
-/* MENU */
-.menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.menu-card {
-  background: linear-gradient(135deg, rgba(198, 255, 0, 0.06), rgba(189, 147, 249, 0.08));
-  border: 2px solid var(--lab-purple);
-  border-radius: 4px;
-  padding: 24px 18px;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-}
-.menu-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(189, 147, 249, 0.4);
-  border-color: var(--acid-green);
-}
-.menu-card:hover::after {
-  content: '';
-  position: absolute;
-  top: -100%; left: -100%;
-  width: 300%; height: 300%;
-  background: linear-gradient(45deg, transparent 30%, rgba(198, 255, 0, 0.15) 50%, transparent 70%);
-  animation: shimmer 1s linear;
-}
-@keyframes shimmer { to { transform: translate(50%, 50%); } }
-.menu-icon { font-size: 40px; margin-bottom: 12px; display: block; }
-.menu-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 13px;
-  color: var(--cyber-yellow);
-  margin-bottom: 8px;
-  letter-spacing: 1px;
-}
-.menu-desc { color: var(--text-dim); font-size: 16px; line-height: 1.4; }
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'JetBrains Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:#ddd4e6;border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'JetBrains Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:500;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 1px 2px rgba(34,29,43,.04)}
+.choice .k{font-family:'JetBrains Mono';font-size:13px;color:var(--cyan);font-weight:600;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(21,128,61,.10)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(185,28,28,.08)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.9}
 
-/* QUESTION */
-.question-area { animation: fadeIn 0.4s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.q-tag {
-  display: inline-block;
-  background: var(--lab-purple);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 3px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
-  margin-bottom: 16px;
-  letter-spacing: 1px;
-}
-.q-text {
-  font-size: 22px;
-  line-height: 1.5;
-  margin-bottom: 24px;
-  color: var(--text);
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.3);
-  border-left: 4px solid var(--acid-green);
-  border-radius: 2px;
-}
-.choices { display: flex; flex-direction: column; gap: 10px; }
-.choice {
-  background: rgba(22, 32, 58, 0.9);
-  border: 2px solid var(--text-dim);
-  color: var(--text);
-  padding: 14px 18px;
-  border-radius: 4px;
-  font-family: 'VT323', monospace;
-  font-size: 19px;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.choice:hover:not(.disabled) {
-  border-color: var(--acid-green);
-  background: rgba(198, 255, 0, 0.06);
-  transform: translateX(4px);
-}
-.choice .key {
-  background: var(--acid-green);
-  color: var(--bg-deep);
-  font-family: 'Press Start 2P', monospace;
-  font-size: 12px;
-  padding: 6px 10px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-.choice.correct {
-  background: rgba(80, 250, 123, 0.15);
-  border-color: var(--lime);
-  animation: pulseGreen 0.5s;
-}
-.choice.correct .key { background: var(--lime); }
-.choice.wrong {
-  background: rgba(255, 85, 85, 0.15);
-  border-color: var(--warning-red);
-  animation: shake 0.4s;
-}
-.choice.wrong .key { background: var(--warning-red); }
-.choice.disabled { cursor: default; opacity: 0.5; }
-@keyframes pulseGreen {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(80, 250, 123, 0); }
-  50% { box-shadow: 0 0 30px 4px rgba(80, 250, 123, 0.4); }
-}
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-6px); }
-  40%, 80% { transform: translateX(6px); }
-}
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease;box-shadow:0 1px 3px rgba(34,29,43,.06)}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'JetBrains Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(180,83,9,.08);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Schibsted Grotesk';font-weight:800;font-size:13px}
 
-/* PEARL */
-.pearl-box {
-  margin-top: 24px;
-  background: linear-gradient(135deg, rgba(198, 255, 0, 0.06), rgba(255, 121, 198, 0.08));
-  border: 2px dashed var(--cyber-yellow);
-  padding: 18px;
-  border-radius: 4px;
-  animation: fadeIn 0.5s 0.2s both;
-}
-.pearl-label {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 11px;
-  color: var(--cyber-yellow);
-  letter-spacing: 2px;
-  margin-bottom: 10px;
-  text-shadow: 0 0 6px rgba(241, 250, 140, 0.5);
-}
-.pearl-text { font-size: 19px; line-height: 1.5; color: #fff; }
-.pearl-text strong { color: var(--plasma); }
-.pearl-text em { color: var(--lime); font-style: normal; }
+.btn{font-family:'Schibsted Grotesk';font-weight:800;letter-spacing:.2px;border:none;border-radius:10px;padding:13px 22px;cursor:pointer;font-size:15px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#fffdff;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 4px 16px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
 
-/* CONTROLS */
-.controls { display: flex; justify-content: space-between; margin-top: 24px; gap: 12px; flex-wrap: wrap; }
-.btn {
-  background: var(--acid-green);
-  color: var(--bg-deep);
-  border: none;
-  padding: 12px 24px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 13px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  border-radius: 3px;
-  transition: all 0.15s;
-  text-transform: uppercase;
-}
-.btn:hover {
-  background: var(--plasma);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 121, 198, 0.4);
-}
-.btn-secondary {
-  background: transparent;
-  color: var(--acid-green);
-  border: 2px solid var(--acid-green);
-}
-.btn-secondary:hover { background: var(--acid-green); color: var(--bg-deep); }
-.btn-danger { background: var(--warning-red); color: white; }
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Schibsted Grotesk';font-weight:800;font-size:64px;color:var(--cyan);line-height:1}
+.rank{font-family:'JetBrains Mono';font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:10px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'JetBrains Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:26px;color:var(--text);font-family:'Schibsted Grotesk';font-weight:800}
 
-/* PROGRESS */
-.system-progress { margin-top: 24px; }
-.system-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-.system-name { width: 200px; font-size: 16px; color: var(--text-dim); }
-.bar-track {
-  flex: 1;
-  background: rgba(255,255,255,0.05);
-  height: 18px;
-  border-radius: 2px;
-  overflow: hidden;
-  border: 1px solid rgba(198, 255, 0, 0.2);
-}
-.bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--acid-green), var(--plasma));
-  transition: width 0.5s ease;
-  position: relative;
-}
-.bar-fill::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  animation: barShine 2s linear infinite;
-}
-@keyframes barShine { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
-.system-pct {
-  width: 80px;
-  text-align: right;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  color: var(--lime);
-}
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber);box-shadow:0 1px 3px rgba(34,29,43,.05)}
+.vault-card h4{font-family:'Schibsted Grotesk';font-weight:800;color:var(--amber-hi);font-size:16px;margin-bottom:7px;letter-spacing:.1px;line-height:1.25}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'JetBrains Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
 
-/* TOAST */
-.toast {
-  position: fixed;
-  top: 30px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-200%);
-  background: var(--lime);
-  color: var(--bg-deep);
-  padding: 12px 30px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 14px;
-  border-radius: 4px;
-  box-shadow: 0 4px 20px rgba(80, 250, 123, 0.5);
-  z-index: 9999;
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-.toast.error { background: var(--warning-red); color: white; }
-.toast.xp { background: var(--cyber-yellow); color: var(--bg-deep); }
-
-/* MOLECULE BAR (decorative) */
-.mol-bar {
-  height: 50px;
-  margin-bottom: 16px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-}
-.molecule {
-  font-size: 28px;
-  color: var(--lab-purple);
-  filter: drop-shadow(0 0 6px var(--lab-purple));
-  animation: molFloat 3s ease-in-out infinite;
-}
-.molecule:nth-child(2n) { color: var(--acid-green); animation-delay: 0.4s; filter: drop-shadow(0 0 6px var(--acid-green)); }
-.molecule:nth-child(3n) { color: var(--plasma); animation-delay: 0.8s; filter: drop-shadow(0 0 6px var(--plasma)); }
-.molecule:nth-child(5n) { color: var(--cyber-yellow); animation-delay: 1.2s; filter: drop-shadow(0 0 6px var(--cyber-yellow)); }
-@keyframes molFloat {
-  0%, 100% { transform: translateY(0); opacity: 0.7; }
-  50% { transform: translateY(-8px); opacity: 1; }
-}
-
-/* MODAL */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(5, 8, 16, 0.85);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1001;
-  backdrop-filter: blur(6px);
-  animation: fadeIn 0.3s;
-}
-.modal {
-  background: var(--bg-mid);
-  border: 2px solid var(--lab-purple);
-  padding: 32px;
-  border-radius: 6px;
-  max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 0 40px rgba(189, 147, 249, 0.3);
-}
-.modal h2 {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 18px;
-  color: var(--cyber-yellow);
-  margin-bottom: 16px;
-}
-.modal p { font-size: 18px; line-height: 1.5; margin-bottom: 12px; }
-.achievement-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 16px 0; }
-.achievement {
-  padding: 10px;
-  border: 1px solid var(--text-dim);
-  border-radius: 3px;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.achievement.unlocked {
-  border-color: var(--cyber-yellow);
-  background: rgba(241, 250, 140, 0.08);
-  color: var(--cyber-yellow);
-}
-.achievement.locked { opacity: 0.4; }
-.ach-icon { font-size: 22px; }
-
-/* RESULTS */
-.results-screen { text-align: center; padding: 20px; }
-.results-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 28px;
-  color: var(--cyber-yellow);
-  margin-bottom: 24px;
-  text-shadow: 0 0 20px var(--cyber-yellow);
-}
-.results-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
-.stat-block {
-  padding: 16px;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--acid-green);
-  border-radius: 4px;
-}
-.stat-num {
-  font-size: 36px;
-  font-family: 'Press Start 2P', monospace;
-  color: var(--acid-green);
-  display: block;
-}
-.stat-label { font-size: 14px; color: var(--text-dim); letter-spacing: 1px; }
-.rank-badge {
-  display: inline-block;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 32px;
-  padding: 16px 32px;
-  margin: 16px 0;
-  border: 3px solid;
-  border-radius: 6px;
-}
-
-@media (max-width: 700px) {
-  h1.game-title { font-size: 22px; letter-spacing: 2px; }
-  .hud { grid-template-columns: repeat(2, 1fr); }
-  .menu-grid { grid-template-columns: 1fr; }
-  .system-name { width: 140px; font-size: 14px; }
-  .results-stats { grid-template-columns: 1fr; }
-  .panel { padding: 18px; }
-  .q-text { font-size: 18px; }
-}
+.back{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'JetBrains Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
 </style>
 </head>
 <body>
-
-<div class="toast" id="toast"></div>
-
-<div id="app">
-  <div class="title-bar">
-    <h1 class="game-title">PHARM ARSENAL</h1>
-    <div class="subtitle">★ STEP 1 PHARMACOLOGY ★</div>
-    <div class="mol-bar">
-      <span class="molecule">⚗︎</span>
-      <span class="molecule">⚛</span>
-      <span class="molecule">⊕</span>
-      <span class="molecule">◯</span>
-      <span class="molecule">⚗︎</span>
-      <span class="molecule">⊕</span>
-      <span class="molecule">⚛</span>
-      <span class="molecule">◯</span>
-      <span class="molecule">⚗︎</span>
-      <span class="molecule">⊕</span>
-      <span class="molecule">⚛</span>
-      <span class="molecule">◯</span>
-    </div>
-  </div>
-
-  <div class="hud">
-    <div class="hud-cell"><div class="hud-label">HP</div><div class="hud-value hp"><span class="hearts" id="hearts"></span></div></div>
-    <div class="hud-cell"><div class="hud-label">XP</div><div class="hud-value xp" id="xp-display">0</div></div>
-    <div class="hud-cell"><div class="hud-label">LEVEL</div><div class="hud-value lvl" id="lvl-display">1</div></div>
-    <div class="hud-cell"><div class="hud-label">STREAK</div><div class="hud-value streak" id="streak-display">0🔥</div></div>
-  </div>
-
-  <div class="panel" id="panel"></div>
-</div>
-
+<div id="app"></div>
 <script>
-// ============================================================================
-// QUESTION BANK — comprehensive HY Pharmacology
-// Categories: Cardio, AntiMicro, CNS, Endo/Repro, Pain/Inflam, Heme/Onc,
-//             Pulm/GI, Antidotes, Mechanisms
-// ============================================================================
-const QBANK = [
-  // ── CARDIOVASCULAR PHARM ────────────────────────────────────────────
-  { topic:"Cardio", tag:"MOA", q:"Furosemide MOA?",
-    c:["Inhibit Na/Cl in DCT","Inhibit Na/K/2Cl in thick ascending limb of LoH","Aldosterone antagonist","Carbonic anhydrase inhibitor"], a:1,
-    p:"<strong>Furosemide = loop diuretic</strong>, blocks Na/K/2Cl symporter in thick ascending limb. Most efficacious diuretic for fluid unloading. <em>Side effects: hypoK, hypoMg, hypoCa, ototoxicity, sulfa allergy</em>. Does NOT decrease mortality in HF. Step-up in HF if persistent overload → spironolactone." },
-  { topic:"Cardio", tag:"SE", q:"Drug causing dry cough + angioedema?",
-    c:["β-blocker","ACE inhibitor","ARB","Hydralazine"], a:1,
-    p:"<strong>ACEi → cough + angioedema</strong> (bradykinin buildup; ACE normally degrades bradykinin). ARBs lack this side effect because they don't affect bradykinin. Both contraindicated in pregnancy + bilateral renal artery stenosis. Both can cause hyperK." },
-  { topic:"Cardio", tag:"MOA", q:"Hydralazine MOA?",
-    c:["β-blocker","Direct arteriolar vasodilator (affects Ca currents)","ACE inhibitor","Aldosterone blocker"], a:1,
-    p:"<strong>Hydralazine = direct arteriolar vasodilator</strong> → ↓BP → reflex tachycardia. <em>Hydralazine + nitrates combo decreases mortality in HF</em> (especially African Americans). Used for HTN emergency in pregnancy. Can cause drug-induced lupus (anti-histone Ab)." },
-  { topic:"Cardio", tag:"DRUG_CHOICE", q:"First-line antiarrhythmic for AF in patient with structurally normal heart?",
-    c:["Amiodarone","Flecainide (Class IC)","Lidocaine","Procainamide"], a:1,
-    p:"<strong>Flecainide</strong> (Class IC Na blocker) = first-line for AF if no structural disease. <em>Don't use post-MI</em>. Class IC drugs don't change AP duration. Class IA mnemonic: <em>'Queen Proclaims Diso'</em> = Quinidine, Procainamide, Disopyramide (↑ TdP risk)." },
-  { topic:"Cardio", tag:"SE", q:"Drug with yellow-tinted vision in overdose?",
-    c:["Amiodarone","Digoxin","Verapamil","Lidocaine"], a:1,
-    p:"<strong>Digoxin tox = yellow/wavy 'Van Gogh' vision</strong> + GI upset + arrhythmias. MOA: inhibits Na/K-ATPase → ↑ intracellular Ca → ↑ contractility. <em>HypoK potentiates toxicity</em> (less K to compete at binding site). Antidote: normalize K, anti-dig Fab fragments, Mg." },
-  { topic:"Cardio", tag:"SE", q:"Side effect profile: pulmonary fibrosis + corneal deposits + thyroid dysfunction + blue-grey skin?",
-    c:["Bleomycin","Amiodarone","Methotrexate","Hydralazine"], a:1,
-    p:"<strong>Amiodarone</strong> = Class III K+ channel blocker. ~40% iodine by weight → thyroid issues. Order PFTs, TFTs, LFTs before starting. Used for stable VT. Can also cause TdP." },
-  { topic:"Cardio", tag:"SE", q:"Constipation + non-DHP CCB used for AF rate control?",
-    c:["Nifedipine","Verapamil","Amlodipine","Hydrochlorothiazide"], a:1,
-    p:"<strong>Verapamil = non-DHP CCB → constipation (HY)</strong>. Acts on cardiac nodal Ca channels. Also can cause hyperprolactinemia. <em>Nifedipine = DHP, acts on arterioles → peripheral edema</em>. Diltiazem = mixed; useful for anal fissure and achalasia." },
-  { topic:"Cardio", tag:"SE", q:"Drug-induced lupus with anti-histone antibodies. Common cause from cardio meds?",
-    c:["Amiodarone","Procainamide or hydralazine","Lidocaine","Flecainide"], a:1,
-    p:"<strong>Drug-induced lupus = anti-histone Ab</strong>. Classic offenders: <em>Procainamide, Hydralazine, Isoniazid, Phenytoin, Sulfa drugs</em>. Mnemonic: <em>SHIPP</em>. Resolves with drug discontinuation." },
-  { topic:"Cardio", tag:"MOA", q:"Statin MOA?",
-    c:["Inhibit HMG-CoA reductase + ↑ hepatic LDL receptors","Bile acid sequestration","Block cholesterol absorption","PCSK9 inhibition"], a:0,
-    p:"<strong>Statins: TWO MOAs</strong> — inhibit HMG-CoA reductase AND upregulate hepatic LDL receptors. <em>SE: myopathy (#1 on NBME) + toxic hepatitis</em>. Concentrate on liver. Indications: LDL>190 (any age), >100 with diabetes/CVD." },
-  { topic:"Cardio", tag:"MOA", q:"Phenoxybenzamine MOA + main use?",
-    c:["β1-selective blocker; HTN","Irreversible α1-blocker; pheochromocytoma","α2 agonist; HTN","Direct vasodilator; angina"], a:1,
-    p:"<strong>Phenoxybenzamine = irreversible α1-blocker for pheo</strong>. <em>Always α-block BEFORE β-block</em> — β-block first → 'unopposed alpha' → BP crisis. Phentolamine is the reversible α-blocker (used acutely)." },
+/* correct = index into c[]; choices shuffle at render. Stems never contain the answer. */
+const QBANK=[
+/* ===== PHARMACOKINETICS & DYNAMICS ===== */
+{m:"pkpd",q:"Bioavailability (F) is the fraction of an administered dose that reaches systemic circulation. For an intravenous drug, what is F?",c:["100% (1.0)","50%","Always less than 50%","0%"],a:0,why:"IV drugs bypass absorption and first-pass metabolism → F = 100%. Oral drugs are lower because of incomplete absorption and first-pass effect.",p:"<b>IV → F = 100%.</b> Oral is lower (incomplete absorption + first-pass)."},
+{m:"pkpd",q:"Why do many oral drugs have LOWER bioavailability than the same drug given intravenously?",c:["First-pass hepatic metabolism","Faster renal clearance","Higher protein binding","Lower potency"],a:0,why:"Orally absorbed drugs pass through the portal vein to the liver, where they can be metabolized before reaching systemic circulation (first-pass effect).",p:"Oral drugs hit the liver first via the portal vein → <b>first-pass metabolism</b> lowers F."},
+{m:"pkpd",q:"A drug with a HIGH volume of distribution is found predominantly where?",c:["In the tissues (little stays in plasma)","Confined to the plasma","In bone only","Nowhere — it is excreted unchanged"],a:0,why:"Vd = amount in body / plasma concentration. A high Vd means the drug leaves plasma for the tissues (lipophilic, tissue-bound drugs).",p:"High Vd = drug hides in <b>tissues</b> (lipophilic). Low Vd = stays in plasma (water-soluble, large/charged)."},
+{m:"pkpd",q:"Approximately how many half-lives are required for a drug to reach steady state (or to be about 94% eliminated)?",c:["4–5","1","10","20"],a:0,why:"It takes ~4–5 half-lives to reach steady state on continuous dosing, and the same number to eliminate ~94–97% of a drug after stopping.",p:"<b>~4–5 half-lives</b> to steady state (and to mostly eliminate)."},
+{m:"pkpd",q:"Which drugs are eliminated at a CONSTANT AMOUNT per unit time, regardless of concentration (zero-order kinetics)?",c:["Ethanol, phenytoin, and high-dose aspirin","Most drugs","Penicillin","No drugs"],a:0,why:"Zero-order kinetics (enzyme saturation): a constant amount is cleared per time → 'PEA' (Phenytoin, Ethanol, Aspirin at high dose). Most drugs are first-order (constant fraction).",p:"Zero-order = constant AMOUNT cleared = <b>'PEA'</b> (Phenytoin, Ethanol, Aspirin). Most drugs = first-order."},
+{m:"pkpd",q:"The loading dose depends mainly on volume of distribution and is generally unchanged in renal failure. Which dose must be REDUCED in renal failure?",c:["The maintenance dose","The loading dose","Both equally","Neither"],a:0,why:"Loading dose depends on Vd (unchanged in organ failure). Maintenance dose depends on clearance, which falls in renal/hepatic failure → reduce it.",p:"Loading dose = Vd-based (unchanged). <b>Maintenance dose = clearance-based → reduce in renal/hepatic failure</b>."},
+{m:"pkpd",q:"Two drugs reach the SAME maximal effect, but drug A requires a lower dose to do so. Drug A has greater what?",c:["Potency","Efficacy","Both","Neither"],a:0,why:"Potency = the dose needed for a given effect (lower dose = more potent). Efficacy = the maximal achievable effect (Emax), which is equal here.",p:"<b>Potency</b> = dose needed (lower = more potent). <b>Efficacy</b> = max effect (Emax)."},
+{m:"pkpd",q:"A COMPETITIVE antagonist shifts the agonist dose-response curve to the right, but the maximal effect is unchanged. This is because the antagonist is what?",c:["Surmountable (overcome by more agonist)","Irreversible","An inverse agonist","Purely allosteric"],a:0,why:"Competitive antagonists bind the same site reversibly → ↓potency (right shift) but the SAME Emax (surmountable). Noncompetitive/irreversible antagonists lower Emax (↓efficacy).",p:"Competitive antagonist = <b>surmountable</b>, ↓potency, same Emax. Noncompetitive = ↓efficacy (↓Emax)."},
 
-  // ── ANTIMICROBIALS ─────────────────────────────────────────────────
-  { topic:"AntiMicro", tag:"MOA", q:"Ciprofloxacin MOA?",
-    c:["Inhibits 30S ribosome","Inhibits prokaryotic topoisomerase II/IV (DNA gyrase)","Inhibits cell wall","Inhibits 50S ribosome"], a:1,
-    p:"<strong>Fluoroquinolones (cipro, levo)</strong> = DNA gyrase (prokaryotic topoisomerase II/IV) inhibitors. <em>SE: tendinitis (Achilles rupture), QT prolongation, cartilage damage in kids/pregnancy</em>. Avoid divalent cations (Ca, Fe, Mg, Al) — chelation ↓ absorption. Used for prostatitis, pyelo, atypical CAP." },
-  { topic:"AntiMicro", tag:"MOA", q:"Vancomycin MOA?",
-    c:["Inhibits 30S ribosome","Binds D-Ala-D-Ala → inhibits peptidoglycan transpeptidation","β-lactam","Inhibits folate synthesis"], a:1,
-    p:"<strong>Vancomycin binds D-Ala-D-Ala</strong> → blocks cell wall transpeptidation. Glycopeptide. Resistance: D-Ala→D-Lac change. <em>SE: 'red man' syndrome (histamine release, rate-related), nephrotox, ototox</em>. Oral vanco for C. diff (poor absorption is feature, not bug)." },
-  { topic:"AntiMicro", tag:"SE", q:"Side effect of aminoglycosides (gentamicin, etc.)?",
-    c:["Tendinitis","Nephrotoxicity + ototoxicity + NMJ blockade","C. diff colitis","Tooth discoloration"], a:1,
-    p:"<strong>Aminoglycosides = nephrotox + ototox + NMJ blockade</strong>. MOA: 30S ribosome (irreversible). Need O2 — useless against anaerobes. Synergize with β-lactams. <em>Congenital hearing loss if used in pregnancy</em>." },
-  { topic:"AntiMicro", tag:"SE", q:"Tooth discoloration + photosensitivity + GI upset. Drug class?",
-    c:["Penicillins","Tetracyclines","Macrolides","Sulfonamides"], a:1,
-    p:"<strong>Tetracyclines (doxycycline, minocycline)</strong> = 30S inhibitors. <em>SE: tooth discoloration in kids, photosensitivity, GI upset, deposit in bones</em>. Avoid in pregnancy, kids <8. Avoid divalent cations. Doxy-specific use: Lyme, Rickettsia, Chlamydia, MRSA skin." },
-  { topic:"AntiMicro", tag:"DRUG_CHOICE", q:"C. difficile colitis treatment of choice?",
-    c:["IV vancomycin","Oral vancomycin or fidaxomicin","Metronidazole IV","Ceftriaxone"], a:1,
-    p:"<strong>C. diff → ORAL vancomycin</strong> (or fidaxomicin). <em>Oral vanco is poorly absorbed = stays in gut where you want it</em>. IV vanco won't reach gut lumen. Dx: stool toxin assay (NOT culture). Trigger: ANY antibiotic. Severe/recurrent → fecal transplant." },
-  { topic:"AntiMicro", tag:"MOA", q:"Trimethoprim-sulfamethoxazole (TMP-SMX) MOA?",
-    c:["Cell wall inhibitor","Sequential block of folate synthesis (PABA → DHF → THF)","30S inhibitor","DNA gyrase"], a:1,
-    p:"<strong>TMP-SMX = sequential folate blockade</strong>. <em>Sulfa blocks dihydropteroate synthase</em> (PABA→DHF), <em>TMP blocks dihydrofolate reductase</em> (DHF→THF). SE: hyperK, kernicterus in newborns, hemolysis in G6PD, hypersensitivity (SJS/TEN), serum sickness. Used for: PCP, UTI, MRSA skin, Toxo prophylaxis." },
-  { topic:"AntiMicro", tag:"MOA", q:"Acyclovir activation requires?",
-    c:["Host cell kinase","Viral thymidine kinase (HSV/VZV-specific)","Liver CYP","Spontaneous"], a:1,
-    p:"<strong>Acyclovir → activated by viral thymidine kinase</strong> → guanine analog → chain termination. <em>Selective for HSV/VZV-infected cells</em>. Doesn't work for CMV (CMV uses UL97 kinase → ganciclovir). SE: nephrotox if dehydrated (crystalluria) — hydrate aggressively." },
-  { topic:"AntiMicro", tag:"MOA", q:"Isoniazid MOA + main side effect to remember?",
-    c:["Inhibits mycolic acid synthesis; B6 deficiency → peripheral neuropathy","Cell wall; ototoxicity","Folate; rash","Ribosome; tendinitis"], a:0,
-    p:"<strong>INH = inhibits mycolic acid synthesis</strong> (TB cell wall). <em>Causes B6 deficiency → peripheral neuropathy</em>. Always co-administer pyridoxine (B6). Also can cause hepatitis, drug-induced lupus, sideroblastic anemia. Activated by mycobacterial KatG (catalase-peroxidase). Resistance via KatG mutation." },
-  { topic:"AntiMicro", tag:"DRUG_CHOICE", q:"Empiric treatment of community-acquired pneumonia (outpatient)?",
-    c:["Amoxicillin alone","Azithromycin (macrolide)","Vancomycin","Ceftriaxone"], a:1,
-    p:"<strong>Outpatient CAP → azithromycin</strong> (covers atypicals + S. pneumo). <em>If recent antibiotic exposure → respiratory fluoroquinolone (levofloxacin)</em>. Inpatient non-ICU: FQ alone OR β-lactam + macrolide. ICU: β-lactam + (macrolide OR FQ)." },
-  { topic:"AntiMicro", tag:"DRUG_CHOICE", q:"Pneumocystis jirovecii pneumonia treatment?",
-    c:["Amphotericin B","TMP-SMX","Fluconazole","Caspofungin"], a:1,
-    p:"<strong>PCP → TMP-SMX</strong> (treatment AND prophylaxis when CD4<200). Add steroids if PaO2<70 or A-a gradient>35. Dx: bronchoalveolar lavage with silver stain. Bilateral ground-glass infiltrates on CXR." },
-  { topic:"AntiMicro", tag:"SE", q:"Antifungal causing nephrotoxicity + 'shake and bake' fever?",
-    c:["Fluconazole","Amphotericin B","Caspofungin","Terbinafine"], a:1,
-    p:"<strong>Amphotericin B = 'amphoTERRIBLE'</strong>. Binds ergosterol → forms membrane pores. <em>SE: nephrotox (#1), 'shake and bake' (rigors + fever from infusion), hypoK, hypoMg, anemia</em>. Premedicate with diphenhydramine + acetaminophen. Liposomal forms = less nephrotox." },
-  { topic:"AntiMicro", tag:"MOA", q:"Mechanism of azoles (fluconazole, itraconazole)?",
-    c:["Bind ergosterol, form pores","Inhibit ergosterol synthesis (14-α demethylase)","β-glucan synthesis","Squalene epoxidase"], a:1,
-    p:"<strong>Azoles → inhibit 14-α demethylase → ↓ ergosterol synthesis</strong>. SE: hepatotoxicity, gynecomastia (esp. ketoconazole — also blocks steroid synthesis), QT prolongation, P450 inhibition (drug interactions). Fluconazole: cryptococcal meningitis, candida." },
+/* ===== AUTONOMIC PHARMACOLOGY ===== */
+{m:"auto",q:"A farmer has diarrhea, urination, miosis, bronchospasm, lacrimation, salivation, and muscle fasciculations after pesticide exposure. The antidote is atropine PLUS what?",c:["Pralidoxime (2-PAM)","Physostigmine","Naloxone","Flumazenil"],a:0,why:"Organophosphates inhibit acetylcholinesterase → cholinergic excess (DUMBELS). Atropine blocks muscarinic effects; pralidoxime regenerates acetylcholinesterase (if given before 'aging').",p:"Organophosphate poisoning = cholinergic excess (DUMBELS). Antidote = <b>atropine + pralidoxime</b> (2-PAM)."},
+{m:"auto",q:"Atropine blocks muscarinic receptors, producing which set of effects?",c:["Tachycardia, dry mouth, mydriasis, urinary retention","Miosis and bradycardia","Salivation and sweating","Bronchospasm and diarrhea"],a:0,why:"Muscarinic blockade → 'hot, dry, red, blind, mad': tachycardia, dry mouth/skin, mydriasis with blurred vision, urinary retention, constipation, hyperthermia.",p:"Antimuscarinic (atropine) = <b>dry, hot, red, blind, mad</b> + tachycardia + urinary retention."},
+{m:"auto",q:"Beta-1 adrenergic receptors are found primarily in the heart. Beta-2 receptors predominate where?",c:["Lungs and vascular/bronchial smooth muscle","The heart","The kidney only","The brain"],a:0,why:"Beta-2 receptors mediate bronchodilation and vasodilation (lungs, vascular and bronchial smooth muscle, uterus). Beta-1 = heart (↑HR/contractility) and renin release.",p:"β1 = heart (1 heart). β2 = <b>lungs + smooth muscle</b> (2 lungs) → bronchodilation/vasodilation."},
+{m:"auto",q:"Stimulation of alpha-1 adrenergic receptors causes what?",c:["Vasoconstriction (raising blood pressure)","Vasodilation","Bronchodilation","Increased heart rate"],a:0,why:"Alpha-1 → vascular smooth muscle contraction (vasoconstriction, ↑BP), mydriasis, and internal urethral sphincter contraction. Phenylephrine is a selective α1 agonist.",p:"α1 = <b>vasoconstriction</b> (↑BP), mydriasis, sphincter contraction. (Phenylephrine = α1 agonist.)"},
+{m:"auto",q:"Clonidine lowers blood pressure by stimulating which receptor, reducing central sympathetic outflow?",c:["Alpha-2","Beta-1","Alpha-1","Muscarinic"],a:0,why:"Alpha-2 receptors are presynaptic/central; their stimulation (clonidine, methyldopa) reduces sympathetic outflow → lower BP. Rebound hypertension can follow abrupt withdrawal.",p:"α2 (presynaptic) → <b>↓ sympathetic outflow</b>. Clonidine, methyldopa. Watch for rebound HTN."},
+{m:"auto",q:"Nicotinic acetylcholine receptors differ from muscarinic receptors because they are what type of receptor?",c:["Ligand-gated ion channels (ionotropic)","G-protein-coupled","Receptor tyrosine kinases","Intracellular/nuclear"],a:0,why:"Nicotinic receptors are ligand-gated ion channels (fast) at the neuromuscular junction, autonomic ganglia, and adrenal medulla. Muscarinic receptors are G-protein-coupled.",p:"Nicotinic = <b>ligand-gated ion channel</b> (NMJ, ganglia, adrenal medulla). Muscarinic = GPCR."},
+{m:"auto",q:"Nonselective beta-blockers (e.g., propranolol) should be used cautiously in which patients, because of beta-2 blockade?",c:["Asthmatics (bronchospasm risk)","Hypertensive patients","Patients with angina","Elderly patients"],a:0,why:"Beta-2 blockade can trigger bronchoconstriction → caution in asthma/COPD. Cardioselective β1-blockers (metoprolol, atenolol) are safer.",p:"Nonselective β-blockers → bronchospasm in <b>asthma/COPD</b>. Use β1-selective (metoprolol/atenolol)."},
+{m:"auto",q:"Bethanechol, a muscarinic agonist, is used to treat what?",c:["Urinary retention and postoperative ileus","Hypertension","Asthma","Open-angle glaucoma"],a:0,why:"Bethanechol stimulates muscarinic receptors → increased bladder detrusor and GI smooth muscle activity → relieves urinary retention and postoperative ileus (resistant to AChE).",p:"Bethanechol = muscarinic agonist → <b>bladder + gut motility</b> (urinary retention, ileus)."},
 
-  // ── CNS / PSYCH PHARM ──────────────────────────────────────────────
-  { topic:"CNS", tag:"DRUG_CHOICE", q:"First-line for diabetic peripheral neuropathic pain?",
-    c:["NSAIDs","TCAs (e.g., amitriptyline) or gabapentin","SSRIs","Opioids"], a:1,
-    p:"<strong>Neuropathic pain → TCA (amitriptyline) or gabapentin</strong>. Duloxetine (SNRI) also approved. NSAIDs/opioids are weak for nerve pain. <em>Elderly: use nortriptyline</em> (less BBB penetration, less anticholinergic SE). TCA SE: anti-cholinergic + cardiotox (CCC: coma, convulsions, cardiotox)." },
-  { topic:"CNS", tag:"SE", q:"SSRI side effect that's actually USED therapeutically?",
-    c:["Cardiotoxicity","Anorgasmia → treats premature ejaculation","Weight gain","Sedation"], a:1,
-    p:"<strong>SSRI anorgasmia → bug becomes feature for premature ejaculation</strong>. Other SSRI SE: GI upset, insomnia (fluoxetine specifically), QT prolongation (citalopram at high dose), <em>SIADH (esp. elderly)</em>, ↑ suicide risk in young. Takes 4-6 weeks for effect. Don't combine with MAOI (serotonin syndrome)." },
-  { topic:"CNS", tag:"DRUG_CHOICE", q:"Antidepressant for patient who's depressed AND has anorexia (low appetite)?",
-    c:["Fluoxetine","Bupropion","Mirtazapine (α2 antagonist, stimulates appetite)","Paroxetine"], a:2,
-    p:"<strong>Mirtazapine = α2 antagonist → ↑ appetite + sedation</strong>. Useful for depression + anorexia, or depression with insomnia. <em>Bupropion = AVOID in eating disorders or seizure disorders</em> (lowers seizure threshold). Bupropion good for: depression + smoking cessation, no sexual SE." },
-  { topic:"CNS", tag:"MOA", q:"Bupropion MOA?",
-    c:["SSRI","NE + DA reuptake inhibitor; nicotinic antagonist","SNRI","MAOI"], a:1,
-    p:"<strong>Bupropion = NDRI (NE + DA reuptake inhibitor)</strong> + nicotinic antagonist. Used for depression + smoking cessation. <em>No sexual SE</em>. <em>Lowers seizure threshold — avoid in eating disorders, seizure history, head trauma</em>." },
-  { topic:"CNS", tag:"DRUG_CHOICE", q:"Acute opioid overdose. Drug?",
-    c:["Flumazenil","Naloxone","Methadone","Naltrexone"], a:1,
-    p:"<strong>Opioid OD → naloxone</strong> (acute, IV/IM/intranasal). <strong>Naltrexone</strong> = oral, used to PREVENT relapse in alcohol dependence (↓ cravings) and opioid dependence (in already-detoxed patients). Methadone = long-acting μ-agonist for withdrawal/maintenance." },
-  { topic:"CNS", tag:"DRUG_CHOICE", q:"Benzodiazepine overdose antidote?",
-    c:["Naloxone","Flumazenil","Atropine","Physostigmine"], a:1,
-    p:"<strong>Benzo OD → flumazenil</strong> (competitive GABA-A antagonist). <em>Use cautiously</em> — can precipitate seizures in chronic benzo users. Q strategy: if naloxone tried first and didn't work → flumazenil; if both failed → barbiturates." },
-  { topic:"CNS", tag:"DRUG_CHOICE", q:"Status epilepticus first-line?",
-    c:["Phenytoin","IV benzodiazepine (lorazepam or diazepam)","Levetiracetam","Phenobarbital"], a:1,
-    p:"<strong>Status epilepticus: BENZO FIRST</strong> (lorazepam, diazepam, midazolam). Then phenytoin/fosphenytoin. Then phenobarbital. Refractory → general anesthesia (propofol, thiopental, midazolam drip)." },
-  { topic:"CNS", tag:"SE", q:"Phenytoin chronic side effects?",
-    c:["Cough","Gingival hyperplasia + hirsutism + megaloblastic anemia (folate)","Cardiotox","Renal failure"], a:1,
-    p:"<strong>Phenytoin SE</strong>: gingival hyperplasia, hirsutism, megaloblastic anemia (interferes with folate), <em>fetal hydantoin syndrome (cleft palate, microcephaly)</em>, drug-induced lupus, P450 inducer, peripheral neuropathy, osteopenia. Zero-order kinetics at high dose." },
-  { topic:"CNS", tag:"DRUG_CHOICE", q:"Trigeminal neuralgia prevention?",
-    c:["Gabapentin","Carbamazepine (Na channel blocker)","Phenytoin","Valproate"], a:1,
-    p:"<strong>Trigeminal neuralgia → carbamazepine</strong>. Episodes are too short (30-60 sec) to abort — focus on prevention. SE of carbamazepine: <em>SIADH, agranulocytosis, aplastic anemia, SJS (esp. HLA-B*1502 in Asians), P450 inducer</em>." },
-  { topic:"CNS", tag:"DRUG_CHOICE", q:"Migraine prophylaxis?",
-    c:["Sumatriptan","Propranolol","Acetaminophen","Verapamil"], a:1,
-    p:"<strong>Migraine prevention → propranolol</strong> (β-blocker). Abortive: <em>NSAIDs first → sumatriptan</em> (5-HT1B/1D agonist). <strong>Cluster headache</strong>: abortive = O2; prevention = verapamil. <strong>Tension</strong>: rest + acetaminophen." },
-  { topic:"CNS", tag:"SE", q:"Antipsychotic with highest agranulocytosis risk + best for treatment-resistant schizophrenia?",
-    c:["Haloperidol","Clozapine","Risperidone","Olanzapine"], a:1,
-    p:"<strong>Clozapine = best for refractory schizophrenia + ↓ suicidality</strong> BUT <em>requires weekly CBC for agranulocytosis</em>. Other clozapine SE: seizures, myocarditis, weight gain, drooling. Atypicals also cause: weight gain, T2DM, hyperprolactinemia (esp. risperidone), QT prolongation." },
-  { topic:"CNS", tag:"SE", q:"Neuroleptic Malignant Syndrome treatment?",
-    c:["Cyproheptadine","Stop antipsychotic + dantrolene + bromocriptine","Naloxone","Activated charcoal"], a:1,
-    p:"<strong>NMS = high fever + muscle rigidity + AMS + autonomic instability + ↑CK</strong>. Tx: stop antipsychotic + supportive care + <em>dantrolene (relaxes muscle by blocking ryanodine Ca release)</em> + bromocriptine (D2 agonist). Compare: <em>Serotonin syndrome → cyproheptadine</em>. <em>Malignant hyperthermia → dantrolene</em>." },
-  { topic:"CNS", tag:"DRUG_CHOICE", q:"Bipolar disorder maintenance?",
-    c:["SSRI","Lithium, valproate, or atypicals","Buspirone","Bupropion"], a:1,
-    p:"<strong>Bipolar maintenance: lithium, valproate, lamotrigine, atypicals</strong>. <em>Lithium SE: tremor, hypothyroidism, nephrogenic DI, Ebstein anomaly (teratogen — atrialization of RV)</em>. Narrow therapeutic window — monitor levels. Valproate teratogen too (NTDs). Lamotrigine: SJS risk." },
-  { topic:"CNS", tag:"DRUG_CHOICE", q:"Parkinson's first-line in younger patient?",
-    c:["Carbidopa-levodopa","Selegiline","Bromocriptine","Amantadine"], a:0,
-    p:"<strong>Parkinson's: carbidopa-levodopa = most effective</strong>. Carbidopa = peripheral DOPA decarboxylase inhibitor → more L-DOPA reaches brain + less peripheral SE. <em>Long-term L-DOPA causes 'on-off' phenomena and dyskinesias</em>. <strong>Selegiline (MAO-B)</strong> can cause serotonin syndrome. <strong>Bromocriptine</strong> for prolactinoma." },
+/* ===== CARDIOVASCULAR & DIURETICS ===== */
+{m:"cv",q:"ACE inhibitors lower blood pressure by blocking angiotensin I-to-II conversion. Which renal effect makes them first-line in diabetic nephropathy?",c:["They dilate the efferent arteriole (↓intraglomerular pressure)","They constrict the afferent arteriole","They raise intraglomerular pressure","They block the aldosterone receptor"],a:0,why:"Less angiotensin II → efferent arteriolar dilation → lower intraglomerular pressure → reduced hyperfiltration and proteinuria (renoprotective). A small rise in creatinine is expected.",p:"ACEi/ARB → <b>efferent arteriole dilation</b> → ↓intraglomerular pressure (renoprotective in diabetes/proteinuria)."},
+{m:"cv",q:"Furosemide acts on the thick ascending limb of the loop of Henle by inhibiting which transporter?",c:["The Na-K-2Cl cotransporter","The Na-Cl cotransporter","ENaC","Carbonic anhydrase"],a:0,why:"Loop diuretics block the Na-K-2Cl cotransporter (NKCC2) → most potent diuresis; side effects include ototoxicity, hypokalemia, hypocalcemia, and metabolic alkalosis.",p:"Loop diuretics (furosemide) = <b>Na-K-2Cl</b> in thick ascending limb. Most potent; ↓K, ↓Ca, ototoxic."},
+{m:"cv",q:"Thiazide diuretics act at the distal convoluted tubule and characteristically cause RETENTION of which electrolyte (so they are used to prevent recurrent kidney stones)?",c:["Calcium","Potassium","Sodium","Magnesium"],a:0,why:"Thiazides (block the Na-Cl cotransporter) increase calcium reabsorption → useful for calcium stones. Side effects: hypokalemia, hyperGlycemia, hyperLipidemia, hyperUricemia, hyperCalcemia, hyponatremia.",p:"Thiazides = DCT (Na-Cl), <b>retain calcium</b> (treat Ca stones). Cause hypo-K + hyper-GLUC (Glucose, Lipids, Uric acid, Ca)."},
+{m:"cv",q:"Spironolactone spares potassium by ANTAGONIZING which hormone's receptor in the collecting duct?",c:["Aldosterone","Antidiuretic hormone","Cortisol","Angiotensin II"],a:0,why:"Spironolactone/eplerenone block the aldosterone (mineralocorticoid) receptor → potassium sparing; spironolactone also causes gynecomastia. Amiloride/triamterene block ENaC directly.",p:"Spironolactone = <b>aldosterone-receptor antagonist</b> (K-sparing). Side effect: gynecomastia."},
+{m:"cv",q:"Acetazolamide inhibits carbonic anhydrase in the proximal tubule, causing loss of which ion and a metabolic acidosis?",c:["Bicarbonate","Potassium","Calcium","Chloride"],a:0,why:"Carbonic anhydrase inhibition → bicarbonate wasting → metabolic acidosis (self-limiting diuresis). Uses: glaucoma, altitude sickness, alkalinizing urine.",p:"Acetazolamide (CA inhibitor, PCT) → <b>bicarbonate</b> loss → metabolic acidosis. Glaucoma, altitude sickness."},
+{m:"cv",q:"Beta-blockers reduce mortality after a myocardial infarction primarily by doing what?",c:["Decreasing myocardial oxygen demand (↓HR and contractility)","Causing vasodilation","Increasing contractility","Producing diuresis"],a:0,why:"Beta-1 blockade lowers heart rate and contractility → reduced myocardial oxygen demand and remodeling → improved post-MI survival; also antiarrhythmic.",p:"β-blockers post-MI → <b>↓ myocardial O2 demand</b> (↓HR, ↓contractility) → ↓mortality + antiarrhythmic."},
+{m:"cv",q:"Nitroglycerin relieves angina mainly by releasing nitric oxide, which causes venodilation and thereby reduces what?",c:["Preload","Afterload only","Heart rate","Contractility"],a:0,why:"Nitrates → NO → venodilation → reduced preload (and myocardial wall stress/oxygen demand). Tolerance and headache are common; avoid with PDE-5 inhibitors.",p:"Nitrates → NO → venodilation → <b>↓preload</b> (↓wall stress/O2 demand). Don't combine with sildenafil."},
+{m:"cv",q:"Dihydropyridine calcium channel blockers (e.g., amlodipine, nifedipine) act mainly on which tissue?",c:["Vascular smooth muscle (vasodilation)","Cardiac conduction tissue","The kidney","The lungs"],a:0,why:"Dihydropyridines preferentially relax vascular smooth muscle (vasodilation, lower BP; side effect: peripheral edema). Non-DHPs (verapamil, diltiazem) act on the heart (↓HR/contractility).",p:"DHP CCBs (amlodipine) = <b>vascular</b> (vasodilation, edema). Non-DHP (verapamil/diltiazem) = heart."},
 
-  // ── ENDOCRINE / REPRO PHARM ────────────────────────────────────────
-  { topic:"Endo", tag:"MOA", q:"Metformin MOA?",
-    c:["Stimulates insulin secretion","↓ Hepatic gluconeogenesis + ↑ peripheral insulin sensitivity","Inhibits α-glucosidase","Aldose reductase inhibitor"], a:1,
-    p:"<strong>Metformin = first-line T2DM</strong>. ↓ Hepatic gluconeogenesis (primary) + ↑ peripheral insulin sensitivity. <em>Activates AMP kinase</em>. Doesn't cause hypoglycemia (no insulin secretion). SE: <strong>lactic acidosis</strong> (avoid in renal failure, contrast use), GI upset, B12 deficiency. <em>Hold before contrast imaging</em>." },
-  { topic:"Endo", tag:"SE", q:"Sulfonylurea (glipizide, glyburide) main side effect?",
-    c:["Lactic acidosis","Hypoglycemia","Pancreatitis","Heart failure"], a:1,
-    p:"<strong>Sulfonylureas → hypoglycemia + weight gain</strong>. MOA: close K-ATP channel on β-cells → depolarization → Ca influx → insulin release. Glyburide has highest hypoglycemia risk. <em>Don't use in elderly</em> — falls/fractures." },
-  { topic:"Endo", tag:"SE", q:"SGLT-2 inhibitor (canagliflozin) main side effects?",
-    c:["Lactic acidosis","Genitourinary infections + euglycemic DKA","Pancreatitis","Hyperprolactinemia"], a:1,
-    p:"<strong>SGLT-2i (-flozins) → ↑ candidal/UTI infections + euglycemic DKA</strong>. Block glucose reabsorption in PCT. <em>Reduce CV mortality + slow CKD progression — Mehlman emphasizes these benefits</em>. Used in HFrEF too." },
-  { topic:"Endo", tag:"MOA", q:"PTU vs methimazole in pregnancy?",
-    c:["Both safe","Methimazole 1st trimester only","PTU 1st trimester (methimazole = aplasia cutis), switch to methimazole 2nd-3rd","Neither safe in pregnancy"], a:2,
-    p:"<strong>Pregnancy: PTU 1st trimester, methimazole 2nd-3rd</strong>. <em>Methimazole = teratogenic 1st tri (aplasia cutis)</em>. <em>PTU long-term = hepatotoxic</em>. Both inhibit thyroperoxidase. PTU also blocks 5'-deiodinase (peripheral T4→T3). Both can cause agranulocytosis (mouth ulcers + fever)." },
-  { topic:"Endo", tag:"DRUG_CHOICE", q:"Treatment for prolactinoma?",
-    c:["Surgery first","Bromocriptine or cabergoline (D2 agonists)","Radiation","Octreotide"], a:1,
-    p:"<strong>Prolactinoma → D2 agonist (bromocriptine, cabergoline)</strong>. Dopamine inhibits prolactin → D2 agonists shrink the tumor. Surgery only if drug-resistant or visual field defects worsen. <em>Antipsychotics + metoclopramide cause hyperprolactinemia (D2 blockade)</em>." },
-  { topic:"Endo", tag:"MOA", q:"Octreotide MOA + uses?",
-    c:["GH antagonist; acromegaly","Somatostatin analog; acromegaly + esophageal varices + carcinoid","Insulin analog; DM","ADH analog; DI"], a:1,
-    p:"<strong>Octreotide = somatostatin analog</strong>. Uses: acromegaly, esophageal/gastric varices (vasoconstrictor), carcinoid syndrome, severe diarrhea. Inhibits GH, glucagon, insulin, gastrin, secretin. SE: gallstones, GI upset." },
-  { topic:"Endo", tag:"DRUG_CHOICE", q:"BPH and androgenetic alopecia drug?",
-    c:["Tamsulosin","Finasteride (5α-reductase inhibitor)","Spironolactone","Flutamide"], a:1,
-    p:"<strong>Finasteride = 5α-reductase inhibitor → ↓DHT</strong>. Used for BPH + male pattern baldness. SE: <em>↓ libido, gynecomastia, ED</em>. Tamsulosin = α1-blocker (relaxes prostate smooth muscle), used acutely. Combo for BPH = both." },
-  { topic:"Endo", tag:"DRUG_CHOICE", q:"Tamoxifen vs raloxifene — woman with intact uterus needs?",
-    c:["Tamoxifen","Raloxifene (no endometrial agonism)","Either","Neither — only TCA/SNRI"], a:1,
-    p:"<strong>Tamoxifen = partial agonist at endometrium → ↑ endometrial cancer</strong>. <em>NEVER tamoxifen in woman with intact uterus if alternative exists</em>. <strong>Raloxifene = pure antagonist at endometrium</strong> + agonist at bone — used for osteoporosis + breast CA prevention. Both: antagonist at breast, agonist at bone." },
-  { topic:"Endo", tag:"MOA", q:"Clomiphene MOA?",
-    c:["FSH analog","SERM — blocks negative feedback at hypothalamus → ↑GnRH → ↑LH/FSH","GnRH antagonist","Aromatase inhibitor"], a:1,
-    p:"<strong>Clomiphene = SERM at hypothalamus → blocks estrogen negative feedback → ↑GnRH → ↑LH/FSH → ovulation</strong>. Used for PCOS-related infertility. SE: <em>ovarian hyperstimulation syndrome (OHSS)</em>, multiple gestations." },
-  { topic:"Endo", tag:"MOA", q:"Continuous leuprolide is technically a GnRH agonist. Why does it act like an antagonist?",
-    c:["Direct receptor blockade","Receptor desensitization → ↓LH/FSH","Inhibits LH only","Blocks aromatase"], a:1,
-    p:"<strong>Continuous leuprolide → desensitizes GnRH receptors → ↓LH/FSH</strong>. Pulsatile release is needed for normal signaling. Used for: prostate CA, endometriosis, fibroids, precocious puberty. <em>Pulsatile leuprolide ↑ LH/FSH (used for fertility — opposite effect!)</em>." },
+/* ===== TOXICITIES & ANTIDOTES ===== */
+{m:"tox",q:"A patient on warfarin starts an antibiotic and their INR spikes dangerously high. The new drug is most likely a cytochrome P450 what?",c:["Inhibitor (raises warfarin levels)","Inducer (lowers warfarin levels)","Neither","Pure substrate"],a:0,why:"A CYP450 inhibitor slows warfarin metabolism → higher levels → elevated INR and bleeding risk. Inhibitors include macrolides, azoles, isoniazid, cimetidine, and grapefruit juice.",p:"CYP <b>inhibitor</b> → ↑ drug levels (↑INR on warfarin). Inhibitors: macrolides, azoles, INH, cimetidine, grapefruit."},
+{m:"tox",q:"Rifampin can cause oral contraceptive failure because it is a potent cytochrome P450 what?",c:["Inducer (lowers drug levels)","Inhibitor (raises drug levels)","Substrate","Receptor antagonist"],a:0,why:"CYP450 inducers speed metabolism → lower drug levels (and OCP failure). Inducers: rifampin, phenytoin, carbamazepine, phenobarbital, St. John's wort, chronic alcohol, griseofulvin.",p:"CYP <b>inducer</b> → ↓ drug levels. Inducers: rifampin, phenytoin, carbamazepine, phenobarbital, St. John's wort."},
+{m:"tox",q:"The anticoagulant effect of warfarin (which lowers vitamin K-dependent clotting factors) is reversed ACUTELY with what?",c:["Fresh frozen plasma or PCC, plus vitamin K","Protamine sulfate","Naloxone","Mesna"],a:0,why:"Acute warfarin reversal needs immediate factor replacement (FFP or prothrombin complex concentrate); vitamin K works but takes hours to days.",p:"Warfarin reversal: <b>FFP/PCC now + vitamin K</b> (vitamin K alone is too slow acutely)."},
+{m:"tox",q:"The anticoagulant effect of unfractionated heparin is reversed by which agent?",c:["Protamine sulfate","Vitamin K","Fresh frozen plasma","Idarucizumab"],a:0,why:"Protamine sulfate binds and neutralizes heparin (partially reverses LMWH too). Vitamin K/FFP reverse warfarin; idarucizumab reverses dabigatran.",p:"Heparin reversal = <b>protamine sulfate</b>. (Dabigatran = idarucizumab; warfarin = vitamin K/FFP.)"},
+{m:"tox",q:"Muscle pain with elevated creatine kinase (rarely rhabdomyolysis) is the characteristic adverse effect of which lipid-lowering class?",c:["Statins (HMG-CoA reductase inhibitors)","Bile acid resins","Niacin","Ezetimibe"],a:0,why:"Statin myopathy ranges from myalgia to rhabdomyolysis; risk rises with fibrates (gemfibrozil) and CYP inhibitors. Also monitor for hepatotoxicity.",p:"Statins → <b>myopathy/↑CK/rhabdomyolysis</b> (worse with fibrates) + hepatotoxicity."},
+{m:"tox",q:"NSAIDs inhibit cyclooxygenase; besides gastric ulcers, what is their characteristic renal adverse effect?",c:["Acute kidney injury (afferent arteriole constriction)","Hyperkalemia as the only effect","Hypoglycemia","Hepatic necrosis"],a:0,why:"NSAIDs block prostaglandins that dilate the afferent arteriole → afferent constriction → reduced renal perfusion → acute kidney injury (especially with volume depletion).",p:"NSAIDs → block prostaglandins → <b>afferent constriction → AKI</b> (plus gastric ulcers). COX-1 protects the stomach."},
+{m:"tox",q:"Which chemotherapy agent characteristically causes peripheral neuropathy because it inhibits microtubule formation?",c:["Vincristine","Doxorubicin","Cisplatin","Methotrexate"],a:0,why:"Vincristine (a vinca alkaloid) blocks microtubule polymerization → peripheral neuropathy. Doxorubicin → cardiotoxicity; cisplatin → nephro/ototoxicity; bleomycin → lung fibrosis.",p:"Vincristine = microtubule inhibitor → <b>peripheral neuropathy</b>. (Vinca = 'pins and needles.')"},
+{m:"tox",q:"Nausea, blurry yellow-tinged vision, and arrhythmias, worsened by hypokalemia and reversed by a specific antibody-fragment antidote, indicate toxicity from which cardiac glycoside?",c:["Digoxin","Lithium","Warfarin","Theophylline"],a:0,why:"Digoxin toxicity: GI upset, yellow-green visual halos, and arrhythmias; hypokalemia worsens it (K competes at the Na/K ATPase). Antidote = digoxin-specific antibody fragments (Fab).",p:"Digoxin tox = nausea + yellow vision + arrhythmia; worse if hypokalemic. Antidote = <b>digoxin-specific Fab</b>."},
 
-  // ── PAIN / INFLAMMATION / GOUT ─────────────────────────────────────
-  { topic:"Pain", tag:"MOA", q:"Aspirin MOA?",
-    c:["Reversible COX inhibitor","Irreversible COX-1 + COX-2 inhibitor (acetylates serine)","COX-2 selective","Prostaglandin analog"], a:1,
-    p:"<strong>Aspirin = IRREVERSIBLE COX inhibitor</strong> (acetylates serine residue). Other NSAIDs = reversible. <em>SE: GI bleeds (↓ mucosal protection), nephropathy, asthma (shunts arachidonic acid → leukotrienes), tinnitus, Reye syndrome in kids</em>. Antidote for OD: <strong>sodium bicarbonate</strong> (alkalinize urine, ↑ excretion). Causes mixed metabolic acidosis + respiratory alkalosis." },
-  { topic:"Pain", tag:"DRUG_CHOICE", q:"Acute gout treatment?",
-    c:["Allopurinol","NSAIDs (indomethacin) or colchicine or steroids","Probenecid","Febuxostat"], a:1,
-    p:"<strong>Acute gout: NSAIDs, colchicine, or steroids</strong>. <em>NEVER start allopurinol during acute attack — can WORSEN it</em>. Allopurinol/febuxostat for chronic prevention. Colchicine MOA: <em>inhibits microtubule polymerization → ↓ neutrophil migration</em>. Probenecid = uricosuric (↑ excretion)." },
-  { topic:"Pain", tag:"MOA", q:"Allopurinol MOA?",
-    c:["Uricosuric","Xanthine oxidase inhibitor","COX inhibitor","NMDA antagonist"], a:1,
-    p:"<strong>Allopurinol = xanthine oxidase inhibitor</strong>. <em>Critical: don't give with 6-MP or azathioprine</em> — both metabolized by xanthine oxidase → toxicity. Used for chronic gout + tumor lysis prophylaxis. Febuxostat = newer XO inhibitor." },
-  { topic:"Pain", tag:"DRUG_CHOICE", q:"Rheumatoid arthritis first-line DMARD?",
-    c:["Hydroxychloroquine","Methotrexate","Etanercept","Sulfasalazine"], a:1,
-    p:"<strong>RA first-line DMARD = methotrexate</strong>. MOA: dihydrofolate reductase inhibitor. <em>SE: pulmonary fibrosis, hepatotoxicity, neutropenia, mucositis, teratogenic</em>. Toxicity rescue: <em>leucovorin (folinic acid, NOT folic acid)</em>. If MTX fails → add TNF-α inhibitor (infliximab, adalimumab, etanercept)." },
-  { topic:"Pain", tag:"MOA", q:"Etanercept vs infliximab/adalimumab — what's different?",
-    c:["MOA","Etanercept = recombinant TNF-α receptor (decoy); others = anti-TNF mAbs","Infliximab is oral","All three are identical"], a:1,
-    p:"<strong>Etanercept = RECEPTOR (decoy/sponge)</strong>. <em>Infliximab + adalimumab = monoclonal antibodies against TNF-α</em>. All three used for RA, IBD, ankylosing spondylitis, psoriasis. <em>Pre-screen for TB (reactivation risk)</em>." },
-  { topic:"Pain", tag:"MOA", q:"NSAIDs and renal effects mechanism?",
-    c:["Direct nephrotoxin","↓ Prostaglandin → ↓ afferent arteriolar dilation → ↓ renal blood flow → ↑ Na/water retention","Block aldosterone","ADH antagonist"], a:1,
-    p:"<strong>NSAIDs ↓ prostaglandins → ↓ afferent arteriolar dilation → ↓ RBF</strong> → ↑ proximal Na/water reabsorption → edema, ↓ GFR. <em>This is also why NSAIDs blunt antihypertensive effects + cause AKI in volume-depleted patients</em>. Naproxen is Mehlman's favorite NSAID for these vignettes." },
-
-  // ── HEME/ONC PHARM ─────────────────────────────────────────────────
-  { topic:"HemeOnc", tag:"MOA", q:"Heparin MOA?",
-    c:["Vitamin K antagonist","Activates antithrombin III → inactivates IIa, IXa, Xa, XIa, XIIa","Direct thrombin inhibitor","Factor Xa inhibitor"], a:1,
-    p:"<strong>Heparin → activates antithrombin III</strong> → inactivates thrombin (IIa) + IXa + Xa + XIa + XIIa. <em>Monitor with PTT</em>. Reversal: <strong>protamine sulfate</strong>. <em>HIT = autoantibodies to heparin-PF4 complex</em> → paradoxical thrombosis + thrombocytopenia. Tx of HIT: stop heparin + start direct thrombin inhibitor (argatroban, dabigatran)." },
-  { topic:"HemeOnc", tag:"MOA", q:"Warfarin MOA?",
-    c:["Activates antithrombin III","Inhibits vitamin K epoxide reductase → ↓ functional II, VII, IX, X, C, S","Factor Xa inhibitor","Direct thrombin inhibitor"], a:1,
-    p:"<strong>Warfarin = inhibits vitamin K epoxide reductase</strong>. ↓ Functional II, VII, IX, X + protein C/S. <em>Monitor with PT/INR</em>. Initial procoagulant phase (protein C ↓ first, half-life is shortest) → bridge with heparin. <em>Reversal: vitamin K (slow) or FFP/PCC (fast)</em>. Teratogenic. P450-sensitive (lots of interactions)." },
-  { topic:"HemeOnc", tag:"DRUG_CHOICE", q:"Acetaminophen overdose antidote?",
-    c:["Activated charcoal only","N-acetylcysteine (regenerates glutathione)","Sodium bicarbonate","Vitamin K"], a:1,
-    p:"<strong>Acetaminophen OD → N-acetylcysteine</strong>. <em>'Regenerates reduced glutathione' — memorize this exact phrase</em>. NAPQI metabolite depletes glutathione → liver necrosis. Asymptomatic 24-48hr, then fulminant hepatitis. Activated charcoal if presents within 1-2hr." },
-  { topic:"HemeOnc", tag:"SE", q:"Doxorubicin's most feared toxicity?",
-    c:["Pulmonary fibrosis","Dilated cardiomyopathy (free radicals)","Hemorrhagic cystitis","Nephrotoxicity"], a:1,
-    p:"<strong>Doxorubicin (Adriamycin) → DCM</strong>. Mechanism: intercalates DNA + generates free radicals. Cardiac mitochondria don't have catalase → susceptible. <em>Dexrazoxane mitigates toxicity (mops up free radicals)</em>. Cumulative dose-dependent." },
-  { topic:"HemeOnc", tag:"SE", q:"Cyclophosphamide's classic toxicity + antidote?",
-    c:["Pulmonary fibrosis; leucovorin","Hemorrhagic cystitis (acrolein metabolite); MESNA","Cardiotox; dexrazoxane","Nephrotox; saline"], a:1,
-    p:"<strong>Cyclophosphamide → hemorrhagic cystitis</strong>. Acrolein metabolite damages bladder. <em>MESNA neutralizes acrolein with thiol group</em>. MOA: alkylates guanine N7. Bleomycin = pulmonary fibrosis. Cisplatin = nephro/oto/neurotox; mitigated by saline + amifostine." },
-  { topic:"HemeOnc", tag:"SE", q:"Methotrexate antidote?",
-    c:["Folic acid","Leucovorin (folinic acid)","Vitamin K","Dexrazoxane"], a:1,
-    p:"<strong>MTX rescue = LEUCOVORIN (folinic acid)</strong>, NOT folic acid. <em>Leucovorin bypasses the dihydrofolate reductase block</em> (folic acid still requires DHFR to be reduced). Also given with 5-FU to potentiate effect (different mechanism — stabilizes thymidylate synthase complex)." },
-  { topic:"HemeOnc", tag:"MOA", q:"Hydroxyurea uses?",
-    c:["Anticoagulant","↑ HbF in sickle cell + ↓ cell production in polycythemia vera","Antibiotic","Antifungal"], a:1,
-    p:"<strong>Hydroxyurea = ribonucleotide reductase inhibitor</strong>. Uses: <em>↑ HbF in sickle cell (↓ painful crises)</em>; ↓ marrow cells in polycythemia vera (prevents hyperviscosity); CML, AML." },
-  { topic:"HemeOnc", tag:"SE", q:"Trastuzumab toxicity?",
-    c:["Pulmonary fibrosis","Cardiotoxicity","Nephrotoxicity","Hemorrhagic cystitis"], a:1,
-    p:"<strong>Trastuzumab → cardiotoxicity</strong>. Anti-HER2 mAb for HER2+ breast cancer. <em>Get baseline echo before starting + monitor</em>. Compare: rituximab (anti-CD20) → ↑ PML risk; natalizumab (anti-α4-integrin) → ↑ PML risk." },
-
-  // ── PULM / GI PHARM ────────────────────────────────────────────────
-  { topic:"PulmGI", tag:"DRUG_CHOICE", q:"Asthma exacerbation acute treatment?",
-    c:["Inhaled corticosteroid","Albuterol (SABA) + IV methylprednisolone","Theophylline","Montelukast"], a:1,
-    p:"<strong>Acute asthma: SABA (albuterol) + systemic steroids</strong>. <em>ICS (fluticasone, beclomethasone) = PREVENTION only — no role in acute</em>. Severe: add ipratropium, IV Mg, terbutaline, intubation. Chronic prevention ladder: SABA PRN → ICS → LABA → LTRA → biologics (omalizumab if IgE high)." },
-  { topic:"PulmGI", tag:"MOA", q:"Montelukast MOA?",
-    c:["β2 agonist","Leukotriene receptor (LTC/D/E4) antagonist","Lipoxygenase inhibitor","Mast cell stabilizer"], a:1,
-    p:"<strong>Montelukast/zafirlukast = leukotriene RECEPTOR antagonists</strong>. <em>Zileuton = lipoxygenase inhibitor (blocks synthesis)</em>. Used for asthma (esp. <em>aspirin-induced asthma</em> — COX block shunts AA to leukotrienes) and exercise-induced asthma." },
-  { topic:"PulmGI", tag:"MOA", q:"Omeprazole MOA?",
-    c:["H2 receptor antagonist","Irreversibly inhibits H/K-ATPase on gastric parietal cells","Antacid","Sucralfate-like"], a:1,
-    p:"<strong>PPIs (-prazoles) → irreversibly block H/K-ATPase</strong> on parietal cells. <em>SE long-term: B12 deficiency, hypoMg, ↑ C. diff/CAP risk, ↓ Ca absorption (osteoporosis), rebound acid hypersecretion</em>. H2 blockers (cimetidine — P450 inhibitor + antiandrogen) less potent." },
-  { topic:"PulmGI", tag:"DRUG_CHOICE", q:"Misoprostol use?",
-    c:["GERD","NSAID-induced ulcer prevention; cervical ripening; medical abortion","Acute MI","H. pylori"], a:1,
-    p:"<strong>Misoprostol = PGE1 analog</strong>. Uses: NSAID-ulcer prevention (replaces lost prostaglandins), cervical ripening, induction of labor, medical abortion (with mifepristone). <em>Contraindicated in pregnancy unless terminating</em>." },
-  { topic:"PulmGI", tag:"DRUG_CHOICE", q:"H. pylori triple therapy?",
-    c:["Amoxicillin + ciprofloxacin + omeprazole","Clarithromycin + amoxicillin + PPI","Vancomycin + metronidazole + PPI","Azithromycin + ceftriaxone"], a:1,
-    p:"<strong>H. pylori triple: PPI + clarithromycin + amoxicillin</strong> (or metronidazole if penicillin allergy) for 14 days. <em>Quadruple (if resistance suspected): PPI + bismuth + tetracycline + metronidazole</em>." },
-  { topic:"PulmGI", tag:"MOA", q:"Ondansetron MOA?",
-    c:["D2 antagonist","5-HT3 receptor antagonist","Anticholinergic","H1 antagonist"], a:1,
-    p:"<strong>Ondansetron = 5-HT3 antagonist</strong>. Used for chemo/radiation/post-op N/V. <em>SE: QT prolongation, headache, constipation</em>. Alternative antiemetics by mechanism: <em>metoclopramide (D2 blocker) — TD risk; promethazine (H1 + D2) — sedating</em>." },
-
-  // ── ANTIDOTES / TOXICOLOGY ─────────────────────────────────────────
-  { topic:"Antidotes", tag:"ANTIDOTE", q:"Organophosphate poisoning (sarin, malathion) treatment?",
-    c:["Atropine alone","Atropine + pralidoxime","Naloxone","Physostigmine"], a:1,
-    p:"<strong>Organophosphate (acetylcholinesterase inhibitor) → atropine + pralidoxime</strong>. Atropine = symptom control (anti-muscarinic). <em>Pralidoxime regenerates cholinesterase IF given before 'aging'</em>. Sx: <em>SLUDGE-M</em> (Salivation, Lacrimation, Urination, Diarrhea, GI cramps, Emesis, Miosis) + DUMBBELSS muscarinic effects." },
-  { topic:"Antidotes", tag:"ANTIDOTE", q:"TCA overdose treatment?",
-    c:["Activated charcoal alone","Sodium bicarbonate (alkalinize, ↓ Na channel binding)","Naloxone","Flumazenil"], a:1,
-    p:"<strong>TCA OD → sodium bicarbonate</strong>. Alkalinizes blood → ↓ TCA Na channel binding → reduces cardiotoxicity (the C in 3 C's: Coma, Convulsions, Cardiotoxicity). Wide QRS on ECG. Also gives anticholinergic toxidrome." },
-  { topic:"Antidotes", tag:"ANTIDOTE", q:"Methanol or ethylene glycol poisoning?",
-    c:["Activated charcoal","Fomepizole (alcohol dehydrogenase inhibitor) or ethanol","Naloxone","Sodium bicarb alone"], a:1,
-    p:"<strong>Methanol/ethylene glycol → fomepizole (preferred) or ethanol</strong>. Both are ADH inhibitors — prevent conversion to toxic metabolites (formic acid for methanol → blindness; oxalic acid for ethylene glycol → renal failure + Ca-oxalate stones). Add bicarb + dialysis if severe. Anion-gap metabolic acidosis." },
-  { topic:"Antidotes", tag:"ANTIDOTE", q:"Iron overdose antidote?",
-    c:["Naloxone","Deferoxamine (or deferasirox)","Dimercaprol","Penicillamine"], a:1,
-    p:"<strong>Iron OD → deferoxamine (or oral deferasirox)</strong> — chelates iron. Vignette: <em>kid eats mom's prenatal vitamins → bloody vomiting + metabolic acidosis</em>. Also used for transfusional hemochromatosis. Compare: <em>primary hemochromatosis → therapeutic phlebotomy</em>." },
-  { topic:"Antidotes", tag:"ANTIDOTE", q:"Carbon monoxide poisoning treatment?",
-    c:["Methylene blue","100% O2 → hyperbaric O2 if severe","Atropine","Pralidoxime"], a:1,
-    p:"<strong>CO poisoning → 100% O2; hyperbaric if severe (loss of consciousness, pregnancy, ↑ COHb)</strong>. CO has 200x affinity for Hb vs O2 → left-shifted curve, anemic hypoxia. Cherry-red skin (rare in real life). Pulse ox falsely normal (can't distinguish COHb)." },
-  { topic:"Antidotes", tag:"ANTIDOTE", q:"Methemoglobinemia treatment?",
-    c:["Activated charcoal","Methylene blue","Vitamin C","Naloxone"], a:1,
-    p:"<strong>Methemoglobinemia → methylene blue</strong> (regenerates reduced Hb via NADPH-methemoglobin reductase). Causes: dapsone, benzocaine (topical anesthetic), nitrites, sulfonamides. <em>Avoid methylene blue in G6PD deficiency</em> — can cause hemolysis. Cyanosis not improving with O2 = clue." },
-  { topic:"Antidotes", tag:"ANTIDOTE", q:"Cyanide poisoning antidote?",
-    c:["Atropine","Hydroxocobalamin (or sodium thiosulfate, or nitrites)","Naloxone","Methylene blue"], a:1,
-    p:"<strong>Cyanide → hydroxocobalamin (preferred), sodium thiosulfate, or amyl/sodium nitrites</strong>. CN binds cytochrome a3 → halts ETC. Source: <em>nitroprusside infusion (long use), house fires, almonds</em>. Sx: bitter almond breath, lactic acidosis, cherry-red blood." },
-  { topic:"Antidotes", tag:"ANTIDOTE", q:"Lead poisoning chelation in adults?",
-    c:["Deferoxamine","EDTA + dimercaprol (severe); succimer (mild/peds)","Penicillamine first-line","Methylene blue"], a:1,
-    p:"<strong>Lead poisoning</strong>: severe → <em>EDTA + dimercaprol</em>; less severe or kids → <em>succimer</em>. Sx: microcytic anemia + basophilic stippling, abdominal pain, neuropathy (wrist/foot drop in adults), cognitive issues in kids, <em>burton lines on gums</em>. Source: old paint, batteries, water pipes." },
-  { topic:"Antidotes", tag:"ANTIDOTE", q:"Beta-blocker overdose antidote?",
-    c:["Atropine alone","Glucagon (bypasses β-receptor → ↑ cAMP)","Naloxone","Calcium gluconate"], a:1,
-    p:"<strong>β-blocker OD → glucagon</strong>. Glucagon activates Gs protein directly, bypassing the β-receptor → ↑ cAMP → ↑ inotropy + chronotropy. Also: IV fluids, atropine, calcium, high-dose insulin/glucose if refractory." },
-
-  // ── MECHANISM / RECEPTOR ───────────────────────────────────────────
-  { topic:"Mechanism", tag:"RECEPTOR", q:"α1 receptor activation: which second messenger?",
-    c:["↑cAMP","IP3 + DAG (Gq)","↓cAMP","cGMP"], a:1,
-    p:"<strong>Gq receptors = HAVe 1 M&M</strong>: H1, α1, V1, M1, M3 → ↑ phospholipase C → IP3 + DAG → Ca release. <strong>Gi = MAD 2's</strong>: M2, α2, D2 → ↓ cAMP. <strong>Gs = the rest</strong>: β1, β2, D1, H2, V2 → ↑ cAMP." },
-  { topic:"Mechanism", tag:"RECEPTOR", q:"Atropine MOA + classic poisoning toxidrome?",
-    c:["Cholinesterase inhibitor","Muscarinic antagonist; 'red as a beet, dry as a bone, hot as a hare, mad as a hatter'","α antagonist","β agonist"], a:1,
-    p:"<strong>Atropine = muscarinic antagonist (anti-cholinergic)</strong>. Toxidrome: <em>'Red, Dry, Hot, Mad, Blind, Full'</em> — flushed skin, anhidrosis, hyperthermia, delirium, mydriasis, urinary retention. Uses: bradycardia, organophosphate poisoning, pre-op (↓ secretions). Antidote for tox: <em>physostigmine</em>." },
-  { topic:"Mechanism", tag:"DRUG_CHOICE", q:"Drug for myasthenia gravis symptomatic treatment?",
-    c:["Atropine","Pyridostigmine (cholinesterase inhibitor)","Edrophonium","Bethanechol"], a:1,
-    p:"<strong>MG → pyridostigmine</strong> (long-acting AChE inhibitor). <em>Edrophonium = short-acting, was used for diagnosis ('Tensilon test') — now mostly historical</em>. Crisis Tx: plasmapheresis or IVIG; long-term: thymectomy, immunosuppression." },
-  { topic:"Mechanism", tag:"RECEPTOR", q:"Albuterol works via which receptor?",
-    c:["β1","β2 (Gs → ↑cAMP → bronchodilation)","α1","M3"], a:1,
-    p:"<strong>β2 agonist (albuterol) → Gs → ↑cAMP → smooth muscle relaxation → bronchodilation</strong>. SE: <em>tremor, tachycardia, hypoK (drives K intracellular)</em>. LABAs: salmeterol, formoterol. Terbutaline = SC β2 used as tocolytic + severe asthma." },
-
-  // ── BONUS — IMMUNO/MISC HY ─────────────────────────────────────────
-  { topic:"Mechanism", tag:"MOA", q:"Tacrolimus MOA + main side effect?",
-    c:["mTOR inhibitor; dyslipidemia","Binds FK506 → ↓ calcineurin → ↓ IL-2; diabetes","Anti-CD20; PML","Anti-TNF; reactivates TB"], a:1,
-    p:"<strong>Tacrolimus = binds FK506 → ↓ calcineurin → ↓ IL-2 transcription</strong>. SE: <em>diabetes (HY), nephrotox, neurotox</em>. Compare: <em>cyclosporine</em> (binds cyclophilin, same mechanism, similar SE except no diabetes; gingival hyperplasia, hypertrichosis); <em>sirolimus</em> (mTOR; ↓ IL-2 responsiveness; dyslipidemia; not nephrotoxic)." },
-  { topic:"Mechanism", tag:"MOA", q:"Rituximab MOA + main risk?",
-    c:["Anti-CD3; cytokine storm","Anti-CD20 mAb; ↑ PML risk (JC virus)","Anti-CD19; tumor lysis","Anti-IL-6; infections"], a:1,
-    p:"<strong>Rituximab = anti-CD20 on B cells</strong>. Used for non-Hodgkin lymphoma, CLL, RA, ITP, vasculitides. <em>Risk: progressive multifocal leukoencephalopathy (PML) from JC virus reactivation</em>. <em>Natalizumab (anti-α4-integrin) for MS also has PML risk</em>." }
+/* ===== MECHANISMS & MISC ===== */
+{m:"moa",q:"Sulfonylureas (e.g., glipizide) lower blood glucose by CLOSING which channel on pancreatic beta cells, triggering insulin release?",c:["The ATP-sensitive potassium channel","A sodium channel","GLUT4","An L-type calcium channel"],a:0,why:"Sulfonylureas close beta-cell K-ATP channels → depolarization → calcium influx → insulin secretion. Main risk: hypoglycemia (and weight gain).",p:"Sulfonylureas close the <b>K-ATP channel</b> → insulin release. Risk: hypoglycemia."},
+{m:"moa",q:"Metformin, the first-line drug for type 2 diabetes, lowers glucose mainly by inhibiting what?",c:["Hepatic gluconeogenesis","Insulin secretion","Intestinal glucose absorption","GLUT4 translocation"],a:0,why:"Metformin decreases hepatic gluconeogenesis (and improves insulin sensitivity) without causing hypoglycemia or weight gain; rare but serious risk is lactic acidosis.",p:"Metformin = ↓<b>hepatic gluconeogenesis</b>. No hypoglycemia/weight gain. Risk: lactic acidosis."},
+{m:"moa",q:"Omeprazole reduces stomach acid by IRREVERSIBLY inhibiting which pump in gastric parietal cells?",c:["The H/K ATPase (proton pump)","The Na/K ATPase","The histamine H2 receptor","The muscarinic M3 receptor"],a:0,why:"Proton pump inhibitors irreversibly block the H/K ATPase (final step of acid secretion). Long-term risks: low B12/magnesium, C. difficile, fractures.",p:"PPIs (omeprazole) = irreversible <b>H/K ATPase</b> block. Long-term: ↓B12/Mg, C. diff, fractures."},
+{m:"moa",q:"Heparin works IMMEDIATELY by activating which endogenous anticoagulant?",c:["Antithrombin III","Vitamin K","Protein C","Plasmin"],a:0,why:"Heparin potentiates antithrombin III → inhibits thrombin (IIa) and factor Xa; rapid onset, monitored by aPTT; risk of heparin-induced thrombocytopenia (HIT).",p:"Heparin activates <b>antithrombin III</b> (inhibits IIa + Xa). Immediate; monitor aPTT; watch for HIT."},
+{m:"moa",q:"Warfarin inhibits the synthesis of vitamin K-dependent clotting factors by blocking which enzyme?",c:["Vitamin K epoxide reductase","Antithrombin III","Cyclooxygenase","Thrombin directly"],a:0,why:"Warfarin blocks vitamin K epoxide reductase → ↓ factors II, VII, IX, X (and proteins C and S); delayed onset, monitored by PT/INR; teratogenic. Initial transient hypercoagulability (protein C falls first).",p:"Warfarin blocks <b>vitamin K epoxide reductase</b> → ↓II,VII,IX,X. Delayed; monitor PT/INR; teratogen."},
+{m:"moa",q:"Fluoxetine and sertraline treat depression by selectively blocking the reuptake of which neurotransmitter?",c:["Serotonin","Dopamine","Norepinephrine","GABA"],a:0,why:"SSRIs block presynaptic serotonin reuptake → more synaptic serotonin; first-line for depression and anxiety. Risk: serotonin syndrome (especially with MAO inhibitors).",p:"SSRIs (fluoxetine, sertraline) block <b>serotonin</b> reuptake. Risk: serotonin syndrome."},
+{m:"moa",q:"Benzodiazepines enhance GABA-A receptor activity by increasing the FREQUENCY of chloride channel opening. Barbiturates instead increase what?",c:["The duration of channel opening","The frequency of opening","The channel amplitude","Nothing — they block GABA"],a:0,why:"Benzos increase the FREQUENCY of GABA-A Cl⁻ channel opening; barbiturates increase the DURATION (and are more dangerous in overdose: respiratory depression).",p:"Benzos = ↑<b>frequency</b> ('Frenzo-diazepines'); barbiturates = ↑<b>duration</b> ('barbiDURATES'). Both ↑ GABA-A Cl⁻ current."},
+{m:"moa",q:"Penicillins and cephalosporins kill bacteria by inhibiting which process?",c:["Bacterial cell wall synthesis","Bacterial protein synthesis","DNA gyrase","Folate synthesis"],a:0,why:"Beta-lactams bind penicillin-binding proteins (transpeptidases) → block peptidoglycan cross-linking → cell wall synthesis inhibition → bactericidal.",p:"β-lactams (penicillins/cephalosporins) = inhibit <b>cell wall synthesis</b> (bind PBPs/transpeptidase)."}
 ];
 
-// ============================================================================
-// SYSTEMS / TOPICS
-// ============================================================================
-const SYSTEMS = ["Cardio","AntiMicro","CNS","Endo","Pain","HemeOnc","PulmGI","Antidotes","Mechanism"];
+const VAULT=[
+{t:"PK Basics",b:"<b>Bioavailability (F):</b> IV = 100%; oral lower (first-pass). <b>Vd</b> = dose/[plasma] (high Vd = lipophilic, tissue-bound). <b>Half-life:</b> ~4–5 to steady state. <b>Clearance</b> sets the maintenance dose.",g:"PK/PD"},
+{t:"Kinetics & Dosing",b:"<b>Zero-order</b> = constant AMOUNT cleared ('PEA': Phenytoin, Ethanol, Aspirin high-dose). <b>First-order</b> = constant fraction (most drugs). <b>Loading dose</b> = Vd-based (unchanged in failure); <b>maintenance dose</b> = clearance-based (↓ in renal/hepatic failure).",g:"PK/PD"},
+{t:"Pharmacodynamics",b:"<b>Potency</b> = dose needed (left shift = more potent). <b>Efficacy</b> = max effect (Emax). <b>Competitive antagonist</b> = ↓potency, surmountable (same Emax). <b>Noncompetitive/irreversible</b> = ↓efficacy (↓Emax).",g:"PK/PD"},
+{t:"Adrenergic Receptors",b:"<b>α1</b> = vasoconstriction, mydriasis, sphincters (phenylephrine). <b>α2</b> = ↓sympathetic outflow (clonidine). <b>β1</b> = heart + renin ('1 heart'). <b>β2</b> = bronchodilation/vasodilation ('2 lungs'). β3 = lipolysis/bladder.",g:"Autonomics"},
+{t:"Cholinergic Crisis",b:"Organophosphates inhibit AChE → cholinergic excess: <b>DUMBELS</b> (Diarrhea, Urination, Miosis, Bronchospasm, Emesis, Lacrimation, Salivation) + fasciculations. Antidote = <b>atropine + pralidoxime (2-PAM)</b>. Antimuscarinic excess (atropine) = 'hot, dry, red, blind, mad' → physostigmine.",g:"Autonomics"},
+{t:"Diuretic Sites",b:"<b>Acetazolamide</b> (PCT, CA inhibitor → ↓HCO3, acidosis). <b>Furosemide</b> (TAL, Na-K-2Cl → most potent, ↓K/Ca, ototoxic). <b>Thiazide</b> (DCT, Na-Cl → ↓K, ↑Ca/Glucose/Lipids/Urate, hyponatremia). <b>K-sparing</b> (collecting duct — spironolactone/aldo + gynecomastia; amiloride/ENaC).",g:"Cardio-renal"},
+{t:"Antihypertensives",b:"<b>ACEi/ARB</b> = efferent dilation, renoprotective (cough/angioedema with ACEi). <b>CCB</b>: DHP (amlodipine = vascular, edema), non-DHP (verapamil/diltiazem = heart). <b>β-blockers</b> = ↓O2 demand, post-MI. <b>Nitrates</b> = ↓preload (venodilation).",g:"Cardio-renal"},
+{t:"CYP450 Inducers vs Inhibitors",b:"<b>Inducers</b> (↓ drug levels): rifampin, phenytoin, carbamazepine, phenobarbital, St. John's wort, chronic alcohol, griseofulvin. <b>Inhibitors</b> (↑ drug levels): cimetidine, ketoconazole/azoles, macrolides, grapefruit, isoniazid, ritonavir, amiodarone.",g:"Tox"},
+{t:"Anticoagulants",b:"<b>Heparin</b> = activates antithrombin III (IIa + Xa); immediate, monitor aPTT, reverse with protamine, risk HIT. <b>Warfarin</b> = blocks vitamin K epoxide reductase (↓II,VII,IX,X); delayed, monitor PT/INR, teratogen, reverse with vitamin K + FFP/PCC. <b>DOACs</b> = direct Xa (-xaban) or thrombin (dabigatran) inhibitors.",g:"Tox"},
+{t:"Antidotes",b:"Acetaminophen → NAC · Opioids → naloxone · Benzos → flumazenil · Warfarin → vitamin K/FFP/PCC · Heparin → protamine · Digoxin → digoxin-Fab · Organophosphate → atropine + pralidoxime · Iron → deferoxamine · Methanol/ethylene glycol → fomepizole · Lead → EDTA/succimer.",g:"Tox"},
+{t:"Diabetes Drugs",b:"<b>Metformin</b> (↓hepatic gluconeogenesis, no hypoglycemia, lactic acidosis — first-line). <b>Sulfonylureas</b> (close K-ATP → insulin, hypoglycemia). <b>SGLT2i</b> (-flozin). <b>GLP-1</b> (-tide). <b>DPP-4</b> (-gliptin). <b>TZDs</b> (-glitazone).",g:"Mechanisms"},
+{t:"Antimicrobial MOA",b:"<b>Cell wall:</b> β-lactams, vancomycin. <b>Protein synthesis 30S:</b> aminoglycosides, tetracyclines. <b>50S:</b> macrolides, clindamycin, linezolid. <b>DNA gyrase:</b> fluoroquinolones. <b>Folate:</b> sulfonamides, trimethoprim. <b>RNA pol:</b> rifampin.",g:"Mechanisms"}
+];
 
-const STATE = {
-  hp: 3, maxHp: 3, xp: 0, level: 1, streak: 0, bestStreak: 0,
-  mode: 'menu', currentQ: null, modeQs: [], modeIdx: 0,
-  modeStats: { correct: 0, total: 0 },
-  systemMastery: {}, achievements: {},
-  totalAnswered: 0, totalCorrect: 0
+const MODES={
+  daily:{name:"Daily Dose",ic:"💊",desc:"15 random questions across all of pharmacology. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Refill",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  pkpd:{name:"Pharmacokinetics & Dynamics",ic:"🦴",desc:"The foundation: bioavailability, Vd, half-life, kinetics order, potency vs efficacy.",pick:()=>shuffle(QBANK.filter(q=>q.m==="pkpd"))},
+  auto:{name:"Autonomic Pharmacology",ic:"⚡",desc:"Cholinergic vs adrenergic receptors, organophosphates, and the toxidromes.",pick:()=>shuffle(QBANK.filter(q=>q.m==="auto"))},
+  cv:{name:"Cardiovascular & Diuretics",ic:"❤️",desc:"ACEi/CCB/β-blockers/nitrates and the diuretic classes by site of action.",pick:()=>shuffle(QBANK.filter(q=>q.m==="cv"))},
+  tox:{name:"Toxicities & Antidotes",ic:"☠️",desc:"CYP450 inducers/inhibitors, anticoagulant reversal, statins, digoxin.",pick:()=>shuffle(QBANK.filter(q=>q.m==="tox"))},
+  moa:{name:"Mechanisms & Misc",ic:"🔬",desc:"Diabetes drugs, PPIs, anticoagulants, SSRIs, benzos, and beta-lactams.",pick:()=>shuffle(QBANK.filter(q=>q.m==="moa"))}
 };
-SYSTEMS.forEach(s => { STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
+const MODE_TAGS={pkpd:"Pharmacokinetics / Dynamics",auto:"Autonomic Pharmacology",cv:"Cardiovascular / Diuretics",tox:"Toxicities / Antidotes",moa:"Mechanisms / Misc"};
 
-const ACHIEVEMENTS = [
-  { id: 'first_dose', name: 'First Dose', desc: 'Answer your first question', icon: '💉' },
-  { id: 'streak_5', name: 'Combo Therapy', desc: '5-question streak', icon: '🔥' },
-  { id: 'streak_10', name: 'Drug Synergy', desc: '10-question streak', icon: '⚡' },
-  { id: 'level_5', name: 'Pharm Tech', desc: 'Reach Level 5', icon: '🧪' },
-  { id: 'level_10', name: 'Pharmacist', desc: 'Reach Level 10', icon: '⚗️' },
-  { id: 'master_antidotes', name: 'Toxicologist', desc: 'Master Antidotes (90%+, 4+ seen)', icon: '☠️' },
-  { id: 'master_cardio', name: 'Cardiology Pharm', desc: 'Master Cardio Pharm (90%+, 4+ seen)', icon: '❤️' },
-  { id: 'master_antimicro', name: 'Microbe Slayer', desc: 'Master AntiMicro (90%+, 4+ seen)', icon: '🦠' },
-  { id: 'perfect_round', name: 'Therapeutic Window', desc: 'Perfect 10/10 round', icon: '💯' },
-  { id: 'survivor', name: 'No Side Effects', desc: 'Endless: 20 in a row', icon: '🛡️' }
-];
+const SAVE_KEY="pharm_arsenal_v2";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
-// ============================================================================
-// PERSISTENCE
-// ============================================================================
-function loadSave() {
-  try {
-    const v = localStorage.getItem('pharm_arsenal_save');
-    if (v) {
-      const data = JSON.parse(v);
-      Object.assign(STATE, data);
-      SYSTEMS.forEach(s => { if (!STATE.systemMastery[s]) STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
-      toast('SAVE LOADED', 'xp');
-    }
-  } catch (e) {}
-}
-function save() {
-  try {
-    const data = {
-      hp: STATE.hp, maxHp: STATE.maxHp, xp: STATE.xp, level: STATE.level,
-      bestStreak: STATE.bestStreak, systemMastery: STATE.systemMastery,
-      achievements: STATE.achievements, totalAnswered: STATE.totalAnswered,
-      totalCorrect: STATE.totalCorrect
-    };
-    localStorage.setItem('pharm_arsenal_save', JSON.stringify(data));
-  } catch (e) {}
-}
+let session=null;
+const app=document.getElementById("app");
 
-// ============================================================================
-// UTILS
-// ============================================================================
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-function pickRandom(arr, n) { return shuffle(arr).slice(0, n); }
-function toast(msg, cls='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + cls;
-  setTimeout(() => t.className = 'toast ' + cls, 1800);
-}
-function unlock(id) {
-  if (STATE.achievements[id]) return;
-  const ach = ACHIEVEMENTS.find(a => a.id === id);
-  if (!ach) return;
-  STATE.achievements[id] = true;
-  toast(`🏆 ${ach.name}!`, 'xp');
-  save();
-}
-function checkAchievements() {
-  if (STATE.totalAnswered >= 1) unlock('first_dose');
-  if (STATE.streak >= 5) unlock('streak_5');
-  if (STATE.streak >= 10) unlock('streak_10');
-  if (STATE.level >= 5) unlock('level_5');
-  if (STATE.level >= 10) unlock('level_10');
-  ['Antidotes','Cardio','AntiMicro'].forEach((sys, i) => {
-    const m = STATE.systemMastery[sys];
-    if (m.seen >= 4 && (m.correct/m.seen) >= 0.9) {
-      unlock(['master_antidotes','master_cardio','master_antimicro'][i]);
-    }
-  });
-}
-
-// ============================================================================
-// HUD
-// ============================================================================
-function renderHUD() {
-  let hearts = '';
-  for (let i = 0; i < STATE.maxHp; i++) {
-    hearts += `<span class="heart ${i < STATE.hp ? '' : 'lost'}">♥</span>`;
-  }
-  document.getElementById('hearts').innerHTML = hearts;
-  document.getElementById('xp-display').textContent = STATE.xp;
-  document.getElementById('lvl-display').textContent = STATE.level;
-  document.getElementById('streak-display').textContent = STATE.streak + '🔥';
-}
-function gainXP(amt) {
-  STATE.xp += amt;
-  const needed = STATE.level * 50;
-  if (STATE.xp >= needed) {
-    STATE.xp -= needed;
-    STATE.level++;
-    STATE.maxHp = Math.min(5, 3 + Math.floor(STATE.level / 5));
-    STATE.hp = STATE.maxHp;
-    toast(`LEVEL UP! Lvl ${STATE.level}`, 'xp');
-  }
-  renderHUD();
-}
-
-// ============================================================================
-// SCREENS
-// ============================================================================
-const panel = document.getElementById('panel');
-
-function renderMenu() {
-  STATE.mode = 'menu';
-  renderHUD();
-  panel.innerHTML = `
-    <h2 style="font-family:'Press Start 2P',monospace; font-size:18px; color:var(--cyber-yellow); margin-bottom:8px; text-align:center;">★ SELECT MODE ★</h2>
-    <p style="text-align:center; color:var(--text-dim); margin-bottom:20px; font-size:16px;">First 4 modes train question PATTERNS. Bottom 2 train by drug CLASS.</p>
-    <div class="menu-grid">
-      <div class="menu-card" onclick="startMode('daily')">
-        <span class="menu-icon">🧪</span>
-        <div class="menu-title">DAILY LAB</div>
-        <div class="menu-desc">10 random Qs. Mixed pattern training.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('endless')">
-        <span class="menu-icon">⚗️</span>
-        <div class="menu-title">ENDLESS HUNT</div>
-        <div class="menu-desc">Survive as long as you can.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('moa')">
-        <span class="menu-icon">🔬</span>
-        <div class="menu-title">MOA LAB</div>
-        <div class="menu-desc">Mechanism-of-action focus.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('se')">
-        <span class="menu-icon">⚠️</span>
-        <div class="menu-title">SIDE EFFECT SLEUTH</div>
-        <div class="menu-desc">Identify drug from SE profile.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('antidote')">
-        <span class="menu-icon">☠️</span>
-        <div class="menu-title">ANTIDOTE ARENA</div>
-        <div class="menu-desc">Toxicology + reversal agents.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('cardio')">
-        <span class="menu-icon">❤️</span>
-        <div class="menu-title">CARDIO PHARM</div>
-        <div class="menu-desc">All cardio drug classes.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('antimicro')">
-        <span class="menu-icon">🦠</span>
-        <div class="menu-title">MICROBE WAR</div>
-        <div class="menu-desc">Antibiotics, antifungals, antivirals.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('cns')">
-        <span class="menu-icon">🧠</span>
-        <div class="menu-title">CNS LAB</div>
-        <div class="menu-desc">Psych, seizure, opioid, anesthetic.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('hemonc')">
-        <span class="menu-icon">🩸</span>
-        <div class="menu-title">HEME/ONC LAB</div>
-        <div class="menu-desc">Anticoag, antiplt, chemo.</div>
-      </div>
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">℞</div>
+    <h1>PHARM ARSENAL</h1>
+    <div class="sub">Pharmacology — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("pkpd",m.pkpd,"special")}${tile("auto",m.auto,"")}${tile("cv",m.cv,"")}${tile("tox",m.tox,"")}${tile("moa",m.moa,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The catchy pharm tools — kinetics, the receptor map, diuretic sites, CYP450, antidotes, and more.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
     </div>
-    <div class="system-progress">
-      <h3 style="font-family:'Press Start 2P',monospace; font-size:13px; color:var(--plasma); margin:24px 0 12px;">⊟ DRUG-CLASS MASTERY ⊟</h3>
-      ${SYSTEMS.map(sys => {
-        const m = STATE.systemMastery[sys];
-        const pct = m.seen ? Math.round(m.correct / m.seen * 100) : 0;
-        return `
-          <div class="system-bar">
-            <div class="system-name">${sys}</div>
-            <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-            <div class="system-pct">${pct}% (${m.correct}/${m.seen})</div>
-          </div>`;
-      }).join('')}
-    </div>
-    <div class="controls">
-      <button class="btn btn-secondary" onclick="showAchievements()">🏆 ACHIEVEMENTS</button>
-      <button class="btn btn-secondary" onclick="showStats()">📊 STATS</button>
-      <button class="btn btn-secondary" onclick="showSyncModal()">🔄 SYNC</button>
-      <button class="btn btn-danger" onclick="resetSave()">⟲ RESET</button>
-    </div>
-  `;
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
 }
-
-function startMode(mode) {
-  STATE.mode = mode;
-  STATE.modeStats = { correct: 0, total: 0 };
-  STATE.modeIdx = 0;
-  STATE.hp = STATE.maxHp;
-
-  let pool = QBANK;
-  let limit = 10;
-  if (mode === 'moa') pool = QBANK.filter(q => q.tag === 'MOA');
-  else if (mode === 'se') pool = QBANK.filter(q => q.tag === 'SE');
-  else if (mode === 'antidote') pool = QBANK.filter(q => q.topic === 'Antidotes' || q.tag === 'ANTIDOTE');
-  else if (mode === 'cardio') pool = QBANK.filter(q => q.topic === 'Cardio');
-  else if (mode === 'antimicro') pool = QBANK.filter(q => q.topic === 'AntiMicro');
-  else if (mode === 'cns') pool = QBANK.filter(q => q.topic === 'CNS');
-  else if (mode === 'hemonc') pool = QBANK.filter(q => q.topic === 'HemeOnc');
-  else if (mode === 'endless') { pool = QBANK; limit = 999; }
-
-  STATE.modeQs = mode === 'endless' ? shuffle(pool) : pickRandom(pool, Math.min(limit, pool.length));
-  STATE.modeStats.total = STATE.modeQs.length;
-  renderHUD();
-  nextQuestion();
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
 }
-
-function nextQuestion() {
-  if (STATE.hp <= 0) return endRound('LIFE LOST');
-  if (STATE.modeIdx >= STATE.modeQs.length) {
-    if (STATE.mode === 'endless') {
-      STATE.modeQs = shuffle(QBANK); STATE.modeIdx = 0;
-    } else return endRound('COMPLETE');
-  }
-  STATE.currentQ = STATE.modeQs[STATE.modeIdx];
-  renderQuestion();
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
 }
-
-function renderQuestion() {
-  const q = STATE.currentQ;
-  const progressTxt = STATE.mode === 'endless'
-    ? `Q${STATE.modeStats.correct + 1} • ENDLESS`
-    : `Q${STATE.modeIdx + 1} / ${STATE.modeQs.length}`;
-  panel.innerHTML = `
-    <div class="question-area">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-        <span class="q-tag">${q.tag} • ${q.topic}</span>
-        <span style="font-family:'JetBrains Mono',monospace; color:var(--text-dim); font-size:14px;">${progressTxt}</span>
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
       </div>
-      <div class="q-text">${q.q}</div>
-      <div class="choices" id="choices">
-        ${q.c.map((c, i) => `
-          <button class="choice" data-idx="${i}" onclick="answer(${i})">
-            <span class="key">${String.fromCharCode(65 + i)}</span>
-            <span>${c}</span>
-          </button>`).join('')}
-      </div>
-      <div id="feedback"></div>
-    </div>
-  `;
-}
-
-function answer(idx) {
-  const q = STATE.currentQ;
-  const isCorrect = idx === q.a;
-  document.querySelectorAll('.choice').forEach((el, i) => {
-    el.classList.add('disabled');
-    el.onclick = null;
-    if (i === q.a) el.classList.add('correct');
-    else if (i === idx) el.classList.add('wrong');
-  });
-
-  STATE.totalAnswered++;
-  STATE.systemMastery[q.topic].seen++;
-  if (isCorrect) {
-    STATE.totalCorrect++;
-    STATE.systemMastery[q.topic].correct++;
-    STATE.modeStats.correct++;
-    STATE.streak++;
-    if (STATE.streak > STATE.bestStreak) STATE.bestStreak = STATE.streak;
-    const xpGain = 10 + Math.min(STATE.streak * 2, 20);
-    gainXP(xpGain);
-    toast(`+${xpGain} XP`, 'xp');
-    if (STATE.mode === 'endless' && STATE.streak >= 20) unlock('survivor');
-  } else {
-    STATE.streak = 0;
-    STATE.hp--;
-    toast('-1 HP', 'error');
-  }
-  renderHUD();
-  checkAchievements();
-  save();
-
-  document.getElementById('feedback').innerHTML = `
-    <div class="pearl-box">
-      <div class="pearl-label">💎 MEHLMAN PEARL</div>
-      <div class="pearl-text">${q.p}</div>
-    </div>
-    <div class="controls">
-      <button class="btn btn-secondary" onclick="renderMenu()">◄ MENU</button>
-      <button class="btn" onclick="advance()">${STATE.modeIdx + 1 >= STATE.modeQs.length && STATE.mode !== 'endless' ? 'FINISH ►' : 'NEXT ►'}</button>
-    </div>
-  `;
-}
-
-function advance() {
-  STATE.modeIdx++;
-  nextQuestion();
-}
-
-function endRound(reason) {
-  const correct = STATE.modeStats.correct;
-  const total = STATE.modeStats.total;
-  const livePct = total > 0 ? Math.round(correct/total*100) : 0;
-
-  let rank, rankColor;
-  if (livePct === 100 && total >= 10) { rank = 'S'; rankColor = 'var(--cyber-yellow)'; unlock('perfect_round'); }
-  else if (livePct >= 90) { rank = 'A'; rankColor = 'var(--lime)'; }
-  else if (livePct >= 75) { rank = 'B'; rankColor = 'var(--acid-green)'; }
-  else if (livePct >= 60) { rank = 'C'; rankColor = 'var(--lab-purple)'; }
-  else { rank = 'D'; rankColor = 'var(--warning-red)'; }
-
-  const reasonMsg = reason === 'LIFE LOST' ? 'OVERDOSE — OUT OF HP' : 'ROUND COMPLETE';
-  panel.innerHTML = `
-    <div class="results-screen">
-      <div class="results-title">${reasonMsg}</div>
-      <div class="rank-badge" style="color:${rankColor}; border-color:${rankColor}; box-shadow: 0 0 30px ${rankColor};">RANK ${rank}</div>
-      <div class="results-stats">
-        <div class="stat-block"><span class="stat-num">${correct}</span><span class="stat-label">CORRECT</span></div>
-        <div class="stat-block"><span class="stat-num">${livePct}%</span><span class="stat-label">ACCURACY</span></div>
-        <div class="stat-block"><span class="stat-num">${STATE.bestStreak}</span><span class="stat-label">BEST STREAK</span></div>
-      </div>
-      <div class="controls" style="justify-content:center;">
-        <button class="btn btn-secondary" onclick="renderMenu()">◄ MENU</button>
-        <button class="btn" onclick="startMode('${STATE.mode}')">↻ RETRY</button>
-      </div>
-    </div>
-  `;
-  STATE.streak = 0;
-  renderHUD();
-  save();
-}
-
-
-// ============================================================================
-// SYNC — Export / Import save codes across devices
-// ============================================================================
-function showSyncModal() {
-  const data = {
-    hp: STATE.hp, maxHp: STATE.maxHp, xp: STATE.xp, level: STATE.level,
-    bestStreak: STATE.bestStreak, systemMastery: STATE.systemMastery,
-    achievements: STATE.achievements, totalAnswered: STATE.totalAnswered,
-    totalCorrect: STATE.totalCorrect
-  };
-  const code = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-
-  const html = `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <h2>🔄 SYNC SAVE</h2>
-        <p style="font-size:14px; opacity:0.75; margin-bottom:18px;">Transfer your progress between devices. Copy code from one, paste on the other.</p>
-
-        <div style="margin-bottom:20px; padding:14px; background:rgba(0,0,0,0.25); border-radius:4px; border:1px solid rgba(128,128,128,0.25);">
-          <h3 style="font-size:15px; margin-bottom:8px; opacity:0.9;">📤 EXPORT &mdash; from this device</h3>
-          <p style="font-size:13px; opacity:0.65; margin-bottom:8px;">Copy this code, then paste it on your other device:</p>
-          <textarea id="sync-export-code" readonly style="width:100%; height:90px; font-family:monospace; font-size:11px; padding:8px; background:rgba(0,0,0,0.45); color:inherit; border:1px solid rgba(128,128,128,0.4); border-radius:3px; resize:none; word-break:break-all;">${code}</textarea>
-          <button class="btn btn-secondary" style="margin-top:10px; width:100%;" onclick="copyExportCode()">📋 Copy to Clipboard</button>
-        </div>
-
-        <div style="margin-bottom:20px; padding:14px; background:rgba(0,0,0,0.25); border-radius:4px; border:1px solid rgba(128,128,128,0.25);">
-          <h3 style="font-size:15px; margin-bottom:8px; opacity:0.9;">📥 IMPORT &mdash; from another device</h3>
-          <p style="font-size:13px; opacity:0.65; margin-bottom:8px;">Paste a save code from your other device:</p>
-          <textarea id="sync-import-code" placeholder="Paste save code here..." style="width:100%; height:90px; font-family:monospace; font-size:11px; padding:8px; background:rgba(0,0,0,0.45); color:inherit; border:1px solid rgba(128,128,128,0.4); border-radius:3px; resize:none;"></textarea>
-          <button class="btn" style="margin-top:10px; width:100%;" onclick="applyImport()">✓ Apply Import</button>
-        </div>
-
-        <div style="text-align:center;">
-          <button class="btn btn-secondary" onclick="closeModal()">CLOSE</button>
-        </div>
-      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
     </div>`;
-  document.body.insertAdjacentHTML('beforeend', html);
 }
-
-function copyExportCode() {
-  const ta = document.getElementById('sync-export-code');
-  if (!ta) return;
-  ta.select();
-  ta.setSelectionRange(0, 99999);
-  let ok = false;
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(ta.value).then(
-      () => toast('COPIED!', 'xp'),
-      () => {
-        try { ok = document.execCommand('copy'); } catch (e) {}
-        if (ok) toast('COPIED!', 'xp');
-        else toast('Select & copy manually', 'error');
-      }
-    );
-  } else {
-    try { ok = document.execCommand('copy'); } catch (e) {}
-    if (ok) toast('COPIED!', 'xp');
-    else toast('Select & copy manually', 'error');
-  }
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:28px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">Pharm memory tools — catchy on purpose</div>
+    </div>
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
 }
-
-function applyImport() {
-  const ta = document.getElementById('sync-import-code');
-  if (!ta) return;
-  const code = ta.value.trim();
-  if (!code) { toast('Paste a code first', 'error'); return; }
-  try {
-    let json;
-    try { json = decodeURIComponent(escape(atob(code))); }
-    catch (e) { json = atob(code); }
-    const data = JSON.parse(json);
-    if (typeof data.xp !== 'number' || !data.systemMastery) {
-      throw new Error('Invalid save format');
-    }
-    if (!confirm('This will REPLACE your current progress on this device. Continue?')) return;
-    Object.assign(STATE, data);
-    SYSTEMS.forEach(s => { if (!STATE.systemMastery[s]) STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
-    if (!STATE.achievements) STATE.achievements = {};
-    save();
-    closeModal();
-    toast('SAVE IMPORTED!', 'xp');
-    renderMenu();
-  } catch (e) {
-    toast('Invalid code — try again', 'error');
-  }
-}
-
-function showAchievements() {
-  const html = `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <h2>🏆 ACHIEVEMENTS</h2>
-        <div class="achievement-list">
-          ${ACHIEVEMENTS.map(a => `
-            <div class="achievement ${STATE.achievements[a.id] ? 'unlocked' : 'locked'}">
-              <span class="ach-icon">${STATE.achievements[a.id] ? a.icon : '🔒'}</span>
-              <div>
-                <strong>${a.name}</strong><br>
-                <span style="font-size:13px; color:var(--text-dim);">${a.desc}</span>
-              </div>
-            </div>`).join('')}
-        </div>
-        <button class="btn" onclick="closeModal()">CLOSE</button>
-      </div>
-    </div>`;
-  document.body.insertAdjacentHTML('beforeend', html);
-}
-
-function showStats() {
-  const totalPct = STATE.totalAnswered ? Math.round(STATE.totalCorrect/STATE.totalAnswered*100) : 0;
-  const html = `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <h2>📊 LIFETIME STATS</h2>
-        <p><strong style="color:var(--cyber-yellow)">Total Answered:</strong> ${STATE.totalAnswered}</p>
-        <p><strong style="color:var(--lime)">Total Correct:</strong> ${STATE.totalCorrect}</p>
-        <p><strong style="color:var(--acid-green)">Lifetime Accuracy:</strong> ${totalPct}%</p>
-        <p><strong style="color:var(--plasma)">Best Streak:</strong> ${STATE.bestStreak}🔥</p>
-        <p><strong style="color:var(--lab-purple)">Current Level:</strong> ${STATE.level}</p>
-        <p><strong>Achievements:</strong> ${Object.keys(STATE.achievements).length} / ${ACHIEVEMENTS.length}</p>
-        <button class="btn" onclick="closeModal()">CLOSE</button>
-      </div>
-    </div>`;
-  document.body.insertAdjacentHTML('beforeend', html);
-}
-
-function closeModal() { document.querySelector('.modal-overlay')?.remove(); }
-
-function resetSave() {
-  if (!confirm('Reset ALL Pharm Arsenal progress?')) return;
-  try { localStorage.removeItem('pharm_arsenal_save'); } catch (e) {}
-  STATE.hp = 3; STATE.maxHp = 3; STATE.xp = 0; STATE.level = 1;
-  STATE.streak = 0; STATE.bestStreak = 0; STATE.totalAnswered = 0; STATE.totalCorrect = 0;
-  STATE.achievements = {};
-  SYSTEMS.forEach(s => { STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
-  toast('SAVE RESET');
-  renderMenu();
-}
-
-document.addEventListener('keydown', (e) => {
-  if (STATE.mode === 'menu' || !STATE.currentQ) return;
-  const choices = document.querySelectorAll('.choice:not(.disabled)');
-  if (choices.length === 0) {
-    if (e.key === 'Enter') {
-      const nextBtn = document.querySelector('.controls .btn:not(.btn-secondary):not(.btn-danger)');
-      nextBtn?.click();
-    }
-    return;
-  }
-  const keyIdx = ['a','b','c','d','1','2','3','4'].indexOf(e.key.toLowerCase());
-  if (keyIdx >= 0) {
-    const idx = keyIdx >= 4 ? keyIdx - 4 : keyIdx;
-    if (choices[idx]) answer(idx);
-  }
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
 });
-
-loadSave();
-renderMenu();
+menu();
 </script>
 </body>
 </html>

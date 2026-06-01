@@ -3,1327 +3,301 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SUFFIX SHOWDOWN — Drug Naming Conventions</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=IBM+Plex+Mono:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<title>SUFFIX SHOWDOWN — Drug Name to Class</title>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Sora:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg-deep: #0a0e14;
-  --bg-mid: #131a22;
-  --bg-card: #1c2530;
-  --rx-green: #2d8a4f;
-  --rx-green-bright: #4dbb70;
-  --rx-amber: #f4a82c;
-  --rx-amber-bright: #ffc459;
-  --caution-red: #e84858;
-  --paper: #f5ecd9;
-  --paper-deep: #e8dcbf;
-  --ink: #1a1a1a;
-  --muted-blue: #5882a8;
-  --text: #f0e8d5;
-  --text-dim: #7a8090;
-  --grid: rgba(244, 168, 44, 0.04);
+:root{
+  --bg:#0a0a0f;
+  --bg2:#12101a;
+  --panel:#17151f;
+  --panel-hi:#211d2c;
+  --cyan:#f97316;        /* arcade orange primary */
+  --cyan-dim:#c2410c;
+  --amber:#22d3ee;       /* electric cyan accent */
+  --amber-hi:#67e8f9;
+  --red:#94a3b8;         /* slate used for WRONG */
+  --green:#4ade80;
+  --text:#fdf0e6;
+  --dim:#b0a08f;
+  --line:rgba(249,115,22,.16);
+  --glow:rgba(249,115,22,.5);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  background: var(--bg-deep);
-  color: var(--text);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 16px;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-body {
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;min-height:100vh;overflow-x:hidden}
+body{
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(45, 138, 79, 0.10), transparent 50%),
-    radial-gradient(ellipse at 70% 80%, rgba(244, 168, 44, 0.08), transparent 50%),
-    linear-gradient(180deg, #0a0e14 0%, #131a22 100%);
+    radial-gradient(ellipse at 16% 0%,rgba(249,115,22,.13),transparent 55%),
+    radial-gradient(ellipse at 88% 100%,rgba(34,211,238,.08),transparent 55%),
+    linear-gradient(180deg,#0a0a0f,#12101a);
 }
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 50px 50px;
-  pointer-events: none; z-index: 0;
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 4px);
 }
-#app { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 20px; }
+#app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px}
 
-/* HEADER */
-.title-bar {
-  text-align: center;
-  margin-bottom: 24px;
-  padding: 12px 0 20px;
-  border-bottom: 3px solid var(--rx-amber);
-  position: relative;
-}
-.rx-stamp {
-  display: inline-block;
-  background: var(--rx-green);
-  color: var(--paper);
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 36px;
-  width: 60px;
-  height: 60px;
-  line-height: 60px;
-  border-radius: 50%;
-  margin-bottom: 8px;
-  letter-spacing: 0;
-  border: 3px solid var(--rx-amber);
-  box-shadow: 0 0 20px rgba(45, 138, 79, 0.4);
-}
-h1.game-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 46px;
-  font-weight: 400;
-  letter-spacing: 8px;
-  color: var(--rx-amber);
-  text-shadow: 0 0 20px rgba(244, 168, 44, 0.4);
-  margin-top: 4px;
-}
-.subtitle {
-  color: var(--rx-green-bright);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 14px;
-  margin-top: 4px;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-}
-.subtitle::before, .subtitle::after { content: '◆ '; color: var(--rx-amber); }
-.subtitle::after { content: ' ◆'; }
+.hdr{text-align:center;padding:18px 0 16px;border-bottom:2px solid var(--cyan-dim);margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:12px;
+  background:linear-gradient(150deg,var(--cyan),var(--cyan-dim));color:#0a0a0f;
+  font-family:'Bungee';font-size:22px;margin-bottom:10px;box-shadow:0 0 26px var(--glow)}
+h1{font-family:'Bungee';font-size:30px;letter-spacing:.5px;color:var(--cyan);text-shadow:0 0 18px var(--glow);line-height:1.1}
+.sub{font-family:'Space Mono';font-size:11px;color:var(--dim);letter-spacing:2px;margin-top:8px;text-transform:uppercase}
 
-/* HUD */
-.hud { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-.hud-cell {
-  background: var(--bg-card);
-  border: 1px solid var(--rx-green);
-  border-radius: 4px;
-  padding: 8px 12px;
-  position: relative;
-}
-.hud-label {
-  font-size: 10px;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-weight: 600;
-}
-.hud-value { font-size: 24px; margin-top: 2px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; }
-.hud-value.hp { color: var(--caution-red); }
-.hud-value.xp { color: var(--rx-amber); }
-.hud-value.streak { color: var(--rx-green-bright); }
-.hud-value.lvl { color: var(--paper); }
-.hearts { display: inline-flex; gap: 4px; }
-.heart { font-size: 22px; filter: drop-shadow(0 0 4px var(--caution-red)); }
-.heart.lost { filter: grayscale(1) brightness(0.3); }
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--cyan);opacity:.65}
+.tile:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 26px rgba(0,0,0,.55)}
+.tile.amber::after{background:var(--amber)}
+.tile.special::after{background:linear-gradient(var(--amber),var(--cyan))}
+.tile .ic{font-size:24px}
+.tile h3{font-family:'Sora';font-weight:700;font-size:17px;margin:7px 0 5px;letter-spacing:.1px;line-height:1.25}
+.tile p{font-size:12.5px;color:var(--dim);line-height:1.45}
+.tile .meta{font-family:'Space Mono';font-size:10px;color:var(--cyan);margin-top:9px;letter-spacing:1px}
+.tile.amber .meta{color:var(--amber-hi)}
 
-/* PANEL — looks like a prescription pad */
-.panel {
-  background:
-    repeating-linear-gradient(0deg, rgba(45, 138, 79, 0.03) 0px, rgba(45, 138, 79, 0.03) 1px, transparent 1px, transparent 32px),
-    linear-gradient(180deg, var(--bg-card), var(--bg-mid));
-  border: 2px solid var(--rx-amber);
-  border-radius: 4px;
-  padding: 28px;
-  position: relative;
-  box-shadow: 0 0 30px rgba(244, 168, 44, 0.12), inset 0 0 30px rgba(0, 0, 0, 0.3);
-  min-height: 400px;
-}
-.panel::before {
-  content: '℞';
-  position: absolute;
-  top: 6px; left: 14px;
-  color: var(--rx-amber);
-  font-size: 24px;
-  font-weight: 700;
-  opacity: 0.6;
-}
+.section-label{font-family:'Space Mono';font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line)}
 
-/* MENU */
-.menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.menu-card {
-  background: linear-gradient(135deg, rgba(45, 138, 79, 0.08), rgba(244, 168, 44, 0.06));
-  border: 1px solid var(--rx-green);
-  border-radius: 3px;
-  padding: 20px 16px;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-}
-.menu-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(45, 138, 79, 0.30);
-  border-color: var(--rx-amber);
-}
-.menu-icon { font-size: 32px; margin-bottom: 10px; display: block; }
-.menu-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  letter-spacing: 2px;
-  color: var(--rx-amber);
-  margin-bottom: 4px;
-}
-.menu-desc { color: var(--text-dim); font-size: 13px; line-height: 1.4; }
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'Space Mono';font-size:12px}
+.qcount{color:var(--dim)}
+.streak{color:var(--amber-hi)}
+.bar{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:.3s}
+.modtag{display:inline-block;font-family:'Space Mono';font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyan-dim);border-radius:20px;padding:3px 11px;margin-bottom:14px;text-transform:uppercase}
+.stem{font-size:18.5px;line-height:1.5;font-weight:600;margin-bottom:20px}
+.choices{display:flex;flex-direction:column;gap:11px}
+.choice{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.14s;font-size:15.5px;display:flex;gap:12px;align-items:flex-start}
+.choice .k{font-family:'Space Mono';font-size:13px;color:var(--cyan);font-weight:700;flex-shrink:0}
+.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}
+.choice.correct{border-color:var(--green);background:rgba(74,222,128,.13)}
+.choice.correct .k{color:var(--green)}
+.choice.wrong{border-color:var(--red);background:rgba(148,163,184,.14)}
+.choice.wrong .k{color:var(--red)}
+.choice.disabled{pointer-events:none;opacity:.85}
 
-/* QUESTION — emphasis on the SUFFIX visually */
-.question-area { animation: fadeIn 0.3s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.explain{margin-top:18px;border-radius:12px;padding:15px 16px;background:var(--panel);border-left:3px solid var(--cyan);animation:rise .25s ease}
+.explain.miss{border-left-color:var(--red)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.explain .lab{font-family:'Space Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.explain .why{font-size:14.5px;line-height:1.5}
+.pearl{margin-top:11px;background:rgba(34,211,238,.09);border:1px dashed var(--amber);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5}
+.pearl b{color:var(--amber-hi);font-family:'Sora';font-weight:700;font-size:13px}
 
-.q-tag {
-  display: inline-block;
-  background: var(--rx-green);
-  color: var(--paper);
-  padding: 4px 12px;
-  border-radius: 2px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 2px;
-  margin-bottom: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
+.btn{font-family:'Bungee';letter-spacing:.5px;border:none;border-radius:10px;padding:13px 22px;cursor:pointer;font-size:14px;transition:.15s}
+.btn-next{background:linear-gradient(145deg,var(--cyan),var(--cyan-dim));color:#0a0a0f;margin-top:18px;width:100%}
+.btn-next:hover{box-shadow:0 0 18px var(--glow)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);margin-top:18px}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
 
-/* THE SUFFIX/DRUG DISPLAY — big and front-and-center */
-.drug-display {
-  background:
-    repeating-linear-gradient(0deg, rgba(45, 138, 79, 0.05) 0px, rgba(45, 138, 79, 0.05) 1px, transparent 1px, transparent 28px),
-    var(--paper);
-  border: 3px solid var(--ink);
-  border-radius: 4px;
-  padding: 32px 24px;
-  margin-bottom: 18px;
-  text-align: center;
-  position: relative;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-.drug-display::before {
-  content: 'PRESCRIPTION';
-  position: absolute;
-  top: 6px; left: 12px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 3px;
-  color: var(--ink);
-  opacity: 0.4;
-  font-weight: 600;
-}
-.drug-display::after {
-  content: '℞';
-  position: absolute;
-  top: 4px; right: 14px;
-  color: var(--rx-green);
-  font-size: 22px;
-  font-weight: 700;
-  opacity: 0.6;
-}
-.drug-display .label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  color: var(--ink);
-  opacity: 0.5;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-.drug-display .drug-name {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 64px;
-  color: var(--ink);
-  letter-spacing: 4px;
-  line-height: 1;
-}
-.drug-display .drug-name .stem {
-  color: var(--caution-red);
-  text-decoration: underline;
-  text-decoration-thickness: 3px;
-  text-decoration-color: var(--rx-amber);
-  text-underline-offset: 8px;
-}
-.drug-display.suffix-only .drug-name {
-  font-size: 80px;
-  color: var(--caution-red);
-}
-.drug-display.suffix-only .drug-name::before {
-  content: '— ';
-  color: var(--ink);
-  opacity: 0.4;
-}
+.result{text-align:center;padding:30px 16px}
+.score-big{font-family:'Bungee';font-size:58px;color:var(--cyan);line-height:1;text-shadow:0 0 18px var(--glow)}
+.rank{font-family:'Space Mono';font-weight:700;font-size:13px;letter-spacing:3px;text-transform:uppercase;margin:12px 0 22px}
+.statrow{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.statrow div{font-family:'Space Mono';font-size:12px;color:var(--dim)}
+.statrow b{display:block;font-size:24px;color:var(--text);font-family:'Sora';font-weight:700}
 
-.q-text {
-  font-size: 18px;
-  line-height: 1.5;
-  margin-bottom: 18px;
-  color: var(--text);
-  padding: 12px 16px;
-  background: rgba(0, 0, 0, 0.3);
-  border-left: 3px solid var(--rx-amber);
-  border-radius: 2px;
-  font-family: 'IBM Plex Mono', monospace;
-}
+.vault-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:12px;border-left:3px solid var(--amber)}
+.vault-card h4{font-family:'Sora';font-weight:700;color:var(--amber-hi);font-size:16px;margin-bottom:7px;letter-spacing:.1px;line-height:1.25}
+.vault-card p{font-size:14px;line-height:1.55;color:var(--text)}
+.vault-card .tag{font-family:'Space Mono';font-size:10px;color:var(--dim);letter-spacing:1px;display:block;margin-top:7px}
 
-.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.choice {
-  background: var(--bg-card);
-  border: 1px solid var(--text-dim);
-  color: var(--text);
-  padding: 14px 16px;
-  border-radius: 3px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 15px;
-  font-weight: 500;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.12s;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.choice:hover:not(.disabled) {
-  border-color: var(--rx-green-bright);
-  background: rgba(45, 138, 79, 0.08);
-  transform: translateY(-1px);
-}
-.choice .key {
-  background: var(--rx-amber);
-  color: var(--ink);
-  font-family: 'Bebas Neue', sans-serif;
-  font-weight: 700;
-  font-size: 18px;
-  width: 32px;
-  height: 32px;
-  line-height: 32px;
-  text-align: center;
-  border-radius: 3px;
-  flex-shrink: 0;
-}
-.choice.correct {
-  background: rgba(45, 138, 79, 0.20);
-  border-color: var(--rx-green-bright);
-  animation: pulseGreen 0.5s;
-}
-.choice.correct .key { background: var(--rx-green-bright); color: var(--bg-deep); }
-.choice.wrong {
-  background: rgba(232, 72, 88, 0.18);
-  border-color: var(--caution-red);
-  animation: shake 0.4s;
-}
-.choice.wrong .key { background: var(--caution-red); color: white; }
-.choice.disabled { cursor: default; opacity: 0.55; }
-@keyframes pulseGreen { 0%, 100% { box-shadow: 0 0 0 0 rgba(77, 187, 112, 0); } 50% { box-shadow: 0 0 25px 3px rgba(77, 187, 112, 0.4); } }
-@keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
-
-/* PEARL — quick and snappy */
-.pearl-box {
-  margin-top: 18px;
-  background: linear-gradient(135deg, rgba(244, 168, 44, 0.10), rgba(45, 138, 79, 0.06));
-  border: 1px solid var(--rx-amber);
-  border-left: 4px solid var(--rx-amber);
-  padding: 14px 18px;
-  border-radius: 3px;
-  animation: fadeIn 0.4s 0.15s both;
-}
-.pearl-label {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 14px;
-  color: var(--rx-amber);
-  letter-spacing: 3px;
-  margin-bottom: 6px;
-}
-.pearl-text { font-size: 16px; line-height: 1.5; color: var(--paper); }
-.pearl-text strong { color: var(--rx-amber-bright); font-weight: 700; }
-.pearl-text em { color: var(--rx-green-bright); font-style: normal; font-weight: 600; }
-.pearl-text code { background: rgba(244, 168, 44, 0.15); color: var(--rx-amber-bright); padding: 1px 6px; border-radius: 2px; font-family: 'IBM Plex Mono', monospace; }
-
-/* CONTROLS */
-.controls { display: flex; justify-content: space-between; margin-top: 20px; gap: 10px; flex-wrap: wrap; }
-.btn {
-  background: var(--rx-amber);
-  color: var(--ink);
-  border: none;
-  padding: 10px 22px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 16px;
-  letter-spacing: 3px;
-  cursor: pointer;
-  border-radius: 2px;
-  transition: all 0.12s;
-}
-.btn:hover { background: var(--rx-amber-bright); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(244, 168, 44, 0.4); }
-.btn-secondary { background: transparent; color: var(--rx-amber); border: 1px solid var(--rx-amber); }
-.btn-secondary:hover { background: var(--rx-amber); color: var(--ink); }
-.btn-danger { background: var(--caution-red); color: white; }
-
-/* PROGRESS */
-.system-progress { margin-top: 22px; }
-.system-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
-.system-name { width: 180px; font-size: 14px; color: var(--paper); font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
-.bar-track { flex: 1; background: rgba(0,0,0,0.4); height: 16px; border-radius: 2px; overflow: hidden; border: 1px solid var(--text-dim); }
-.bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--rx-green), var(--rx-amber));
-  transition: width 0.5s ease;
-}
-.system-pct { width: 80px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--rx-amber-bright); font-weight: 700; }
-
-/* TOAST */
-.toast {
-  position: fixed;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-200%);
-  background: var(--rx-amber);
-  color: var(--ink);
-  padding: 10px 26px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 16px;
-  letter-spacing: 2px;
-  border-radius: 3px;
-  box-shadow: 0 4px 16px rgba(244, 168, 44, 0.5);
-  z-index: 9999;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-.toast.error { background: var(--caution-red); color: white; }
-.toast.xp { background: var(--rx-green-bright); color: var(--bg-deep); }
-
-/* MODAL */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(10, 14, 20, 0.85);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1001;
-  backdrop-filter: blur(6px);
-  animation: fadeIn 0.3s;
-}
-.modal {
-  background: var(--bg-mid);
-  border: 2px solid var(--rx-amber);
-  padding: 28px;
-  border-radius: 4px;
-  max-width: 580px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-.modal h2 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--rx-amber); margin-bottom: 14px; letter-spacing: 3px; }
-.modal p { font-size: 15px; line-height: 1.5; margin-bottom: 10px; }
-.achievement-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 14px 0; }
-.achievement {
-  padding: 8px 10px;
-  border: 1px solid var(--text-dim);
-  border-radius: 2px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.achievement.unlocked { border-color: var(--rx-amber); background: rgba(244, 168, 44, 0.08); color: var(--rx-amber-bright); }
-.achievement.locked { opacity: 0.4; }
-.ach-icon { font-size: 20px; }
-
-/* RESULTS */
-.results-screen { text-align: center; padding: 20px; }
-.results-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 38px;
-  color: var(--rx-amber);
-  margin-bottom: 20px;
-  letter-spacing: 5px;
-  text-shadow: 0 0 18px var(--rx-amber);
-}
-.results-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 20px 0; }
-.stat-block { padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--rx-green); border-radius: 3px; }
-.stat-num { font-size: 32px; font-family: 'Bebas Neue', sans-serif; color: var(--rx-amber); display: block; }
-.stat-label { font-size: 11px; color: var(--text-dim); letter-spacing: 2px; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; }
-.rank-badge {
-  display: inline-block;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 40px;
-  padding: 12px 28px;
-  margin: 14px 0;
-  border: 3px solid;
-  border-radius: 4px;
-  letter-spacing: 6px;
-}
-
-@media (max-width: 700px) {
-  h1.game-title { font-size: 32px; letter-spacing: 4px; }
-  .hud { grid-template-columns: repeat(2, 1fr); }
-  .menu-grid { grid-template-columns: 1fr; }
-  .system-name { width: 120px; font-size: 12px; }
-  .results-stats { grid-template-columns: 1fr; }
-  .panel { padding: 18px; }
-  .drug-display .drug-name { font-size: 42px; letter-spacing: 2px; }
-  .drug-display.suffix-only .drug-name { font-size: 54px; }
-  .choices { grid-template-columns: 1fr; }
-}
+.back{font-family:'Space Mono';font-size:11px;color:var(--dim);cursor:pointer;letter-spacing:1px;display:inline-flex;gap:6px;align-items:center;margin-bottom:16px}
+.back:hover{color:var(--cyan)}
+footer{text-align:center;font-family:'Space Mono';font-size:10px;color:var(--dim);margin:28px 0 8px;letter-spacing:1px}
 </style>
 </head>
 <body>
-
-<div class="toast" id="toast"></div>
-
-<div id="app">
-  <div class="title-bar">
-    <div class="rx-stamp">℞</div>
-    <h1 class="game-title">SUFFIX SHOWDOWN</h1>
-    <div class="subtitle">Drug Naming Conventions</div>
-  </div>
-
-  <div class="hud">
-    <div class="hud-cell"><div class="hud-label">Vitality</div><div class="hud-value hp"><span class="hearts" id="hearts"></span></div></div>
-    <div class="hud-cell"><div class="hud-label">XP</div><div class="hud-value xp" id="xp-display">0</div></div>
-    <div class="hud-cell"><div class="hud-label">Rank</div><div class="hud-value lvl" id="lvl-display">1</div></div>
-    <div class="hud-cell"><div class="hud-label">Streak</div><div class="hud-value streak" id="streak-display">0🔥</div></div>
-  </div>
-
-  <div class="panel" id="panel"></div>
-</div>
-
+<div id="app"></div>
 <script>
-// ============================================================================
-// QUESTION BANK — drug suffix recognition
-// type: 's2c' = stem to class, 'd2c' = drug name to class,
-//       'c2s' = class to stem, 'tricky' = confusion pairs
-// ============================================================================
-const QBANK = [
-
-  // ── CARDIO ─────────────────────────────────────────────────────────
-  { topic:"Cardio", type:"s2c", stem:"-olol", q:"What class does this suffix indicate?",
-    c:["α1-blocker","β-blocker","ACE inhibitor","Calcium channel blocker"], a:1,
-    p:"<strong>-olol = β-blocker</strong>. Propran<em>olol</em>, aten<em>olol</em>, metopr<em>olol</em>, biso<em>prolol</em>, carvedi<em>lol</em>, labeta<em>lol</em>. <em>Carvedilol + labetalol</em> are the mixed α/β blockers." },
-
-  { topic:"Cardio", type:"d2c", drug:"Lisinopril", stem:"-pril", q:"Class?",
-    c:["β-blocker","ARB","ACE inhibitor","α1-blocker"], a:2,
-    p:"<strong>-pril = ACE inhibitor</strong>. Lisino<em>pril</em>, capto<em>pril</em>, enala<em>pril</em>, rami<em>pril</em>. <em>Side effects: dry cough + angioedema (from bradykinin buildup), hyperK, ARF in bilateral RAS, teratogenic</em>." },
-
-  { topic:"Cardio", type:"s2c", stem:"-sartan", q:"What class?",
-    c:["ACE inhibitor","ARB (angiotensin II receptor blocker)","β-blocker","Statin"], a:1,
-    p:"<strong>-sartan = ARB</strong>. Lo<em>sartan</em>, val<em>sartan</em>, irbe<em>sartan</em>, telmi<em>sartan</em>. <em>Same indications as ACEi but NO cough/angioedema (doesn't affect bradykinin)</em>. Still teratogenic + hyperK." },
-
-  { topic:"Cardio", type:"s2c", stem:"-dipine", q:"What class?",
-    c:["Non-DHP CCB","Dihydropyridine CCB","β-blocker","Diuretic"], a:1,
-    p:"<strong>-dipine = dihydropyridine (DHP) calcium channel blocker</strong>. Amlo<em>dipine</em>, nife<em>dipine</em>, nicar<em>dipine</em>, clevi<em>dipine</em>. <em>Acts on vascular smooth muscle → peripheral edema common</em>. Non-DHP (verapamil, diltiazem) = act on cardiac nodes." },
-
-  { topic:"Cardio", type:"s2c", stem:"-statin", q:"What class?",
-    c:["β-blocker","HMG-CoA reductase inhibitor","ACE inhibitor","Bile acid sequestrant"], a:1,
-    p:"<strong>-statin = HMG-CoA reductase inhibitor</strong>. Atorva<em>statin</em>, rosuva<em>statin</em>, simva<em>statin</em>, prava<em>statin</em>. <em>SE: myopathy (#1 on NBME) + hepatotoxicity</em>. Lowers LDL primarily." },
-
-  { topic:"Cardio", type:"s2c", stem:"-zosin", q:"What class?",
-    c:["β-blocker","α1-blocker","α2-agonist","CCB"], a:1,
-    p:"<strong>-zosin = α1-blocker</strong>. Pra<em>zosin</em>, doxa<em>zosin</em>, tera<em>zosin</em>, tamsu<em>losin</em>. <em>Uses: BPH (relax prostate smooth muscle), HTN, PTSD nightmares (prazosin)</em>. SE: <em>1st-dose orthostatic hypotension</em>." },
-
-  { topic:"Cardio", type:"d2c", drug:"Sildenafil", stem:"-afil", q:"Class?",
-    c:["PDE-5 inhibitor","β-blocker","Vasodilator (nitrate)","CCB"], a:0,
-    p:"<strong>-afil = PDE-5 inhibitor</strong>. Silden<em>afil</em>, tadal<em>afil</em>, varden<em>afil</em>. <em>Uses: ED, pulmonary HTN</em>. <em>CONTRAINDICATED with nitrates → severe hypotension</em>." },
-
-  { topic:"Cardio", type:"s2c", stem:"-xaban", q:"What class?",
-    c:["Direct thrombin inhibitor","Direct factor Xa inhibitor","Heparin","Vitamin K antagonist"], a:1,
-    p:"<strong>-xaban = direct factor Xa inhibitor</strong>. Riva<em>roxaban</em>, api<em>xaban</em>, edo<em>xaban</em>. <em>Oral, no INR monitoring needed</em>. Reversal: <em>andexanet alfa</em>. Compare: <em>-gatran = direct thrombin inhibitor</em> (dabigatran)." },
-
-  { topic:"Cardio", type:"s2c", stem:"-parin", q:"What class?",
-    c:["Vitamin K antagonist","Heparin / LMWH","Factor Xa inhibitor","Antiplatelet"], a:1,
-    p:"<strong>-parin = heparin / LMWH</strong>. He<em>parin</em>, enoxa<em>parin</em>, dalte<em>parin</em>, fondapari<em>nux</em>. <em>Activates antithrombin III → inhibits IIa + Xa</em>. Reversal: <em>protamine sulfate</em>. Monitor PTT (UFH only)." },
-
-  { topic:"Cardio", type:"tricky", drug:"Warfarin", stem:"-arin", q:"Warfarin's class? (don't be fooled by '-arin' looking like heparin)",
-    c:["LMWH","Vitamin K antagonist","Factor Xa inhibitor","Direct thrombin inhibitor"], a:1,
-    p:"<strong>Warfarin = vitamin K antagonist</strong>, NOT a heparin despite ending in '-arin.' <em>Inhibits vitamin K epoxide reductase → ↓ factors II, VII, IX, X + protein C/S</em>. Monitor: PT/INR. Reversal: <em>vitamin K (slow), FFP/PCC (fast)</em>. Teratogenic." },
-
-  // ── ANTIMICROBIALS ────────────────────────────────────────────────
-  { topic:"Antimicro", type:"s2c", stem:"-cillin", q:"What class?",
-    c:["Macrolide","Penicillin","Cephalosporin","Tetracycline"], a:1,
-    p:"<strong>-cillin = penicillin</strong>. Peni<em>cillin</em>, amoxi<em>cillin</em>, ampi<em>cillin</em>, oxa<em>cillin</em>, piperacillin. <em>β-lactam, inhibits transpeptidase → ↓ cell wall</em>. Bactericidal. Resistance: β-lactamase, altered PBP." },
-
-  { topic:"Antimicro", type:"s2c", stem:"-floxacin", q:"What class?",
-    c:["Tetracycline","Aminoglycoside","Fluoroquinolone","Macrolide"], a:2,
-    p:"<strong>-floxacin = fluoroquinolone</strong>. Cipro<em>floxacin</em>, levo<em>floxacin</em>, moxi<em>floxacin</em>. <em>Inhibits DNA gyrase + topo IV</em>. SE: <em>tendinitis (Achilles rupture), QT prolongation, cartilage damage (avoid in kids/pregnancy)</em>. Chelated by Ca/Mg/Al/Fe." },
-
-  { topic:"Antimicro", type:"s2c", stem:"-cycline", q:"What class?",
-    c:["Tetracycline","Macrolide","Cephalosporin","Aminoglycoside"], a:0,
-    p:"<strong>-cycline = tetracycline</strong>. Tetra<em>cycline</em>, doxy<em>cycline</em>, mino<em>cycline</em>, tige<em>cycline</em>. <em>30S ribosome inhibitor</em>. SE: <em>tooth discoloration (avoid <8yo), photosensitivity, Fanconi syndrome (expired)</em>. Used for: Lyme, Rickettsia, Chlamydia, MRSA skin." },
-
-  { topic:"Antimicro", type:"tricky", drug:"Azithromycin", stem:"-mycin", q:"This drug is a... (careful — '-mycin' is tricky!)",
-    c:["Aminoglycoside","Macrolide","Tetracycline","Sulfa drug"], a:1,
-    p:"<strong>Azithromycin = MACROLIDE</strong> despite ending in '-mycin.' Eryth<em>romycin</em>, clarithromycin, azithromycin = macrolides (50S inhibitors). <em>Strepto<em>mycin</em>, genta<em>micin</em>, neo<em>mycin</em> = AMINOGLYCOSIDES</em> (30S inhibitors). <strong>Trick: the '-thromycin' subset is macrolides; '-micin/-mycin' alone is more often aminoglycoside.</strong>" },
-
-  { topic:"Antimicro", type:"d2c", drug:"Gentamicin", stem:"-micin", q:"Class?",
-    c:["Macrolide","Aminoglycoside","Tetracycline","Cephalosporin"], a:1,
-    p:"<strong>Gentamicin = aminoglycoside</strong>. Genta<em>micin</em>, neo<em>mycin</em>, tobra<em>mycin</em>, strepto<em>mycin</em>, amika<em>cin</em>. <em>30S ribosome inhibitor</em>. SE: <em>nephrotox + ototox + NMJ blockade</em>. Synergize with β-lactams. Requires O2 — useless vs anaerobes." },
-
-  { topic:"Antimicro", type:"s2c", stem:"cef-/ceph-", q:"What class? (this stem is at the BEGINNING of the name)",
-    c:["Cephalosporin","Penicillin","Carbapenem","Macrolide"], a:0,
-    p:"<strong>cef-/ceph- = cephalosporin</strong>. <em>Cef</em>azolin, <em>cef</em>triaxone, <em>cef</em>tazidime, <em>ceph</em>alexin, <em>cef</em>epime. β-lactam ring like penicillins. <em>Cross-allergy with PCN ~5-10%</em>. Generations 1-5 = increasing gram(-) coverage. 4th gen (cefepime) + 5th gen (ceftaroline) cover Pseudomonas + MRSA respectively." },
-
-  { topic:"Antimicro", type:"s2c", stem:"-penem", q:"What class?",
-    c:["Penicillin","Cephalosporin","Carbapenem","Monobactam"], a:2,
-    p:"<strong>-penem = carbapenem</strong>. Imi<em>penem</em>, mero<em>penem</em>, doripenem, ertapenem. <em>Broadest-spectrum β-lactams</em>. Imipenem given with cilastatin (inhibits renal dehydropeptidase that breaks it down). SE: seizures (esp. imipenem in renal failure)." },
-
-  { topic:"Antimicro", type:"s2c", stem:"-bactam", q:"What class?",
-    c:["β-lactamase inhibitor","Cephalosporin","Aminoglycoside","Macrolide"], a:0,
-    p:"<strong>-bactam = β-lactamase inhibitor</strong>. Sul<em>bactam</em>, tazo<em>bactam</em>, avi<em>bactam</em>, clavulanate (the exception — no -bactam). <em>NOT antibiotics themselves</em> — combined with β-lactams to extend coverage. Augmentin = amox + clavulanate; piperacillin-tazobactam = Zosyn." },
-
-  { topic:"Antimicro", type:"tricky", stem:"-azole", q:"This suffix has TWO uses. Pick the more common pharm class:",
-    c:["Antifungal (most '-azoles')","Antiprotozoal","Both — depends on the specific drug","β-blocker"], a:2,
-    p:"<strong>'-azole' is split-use</strong>:<br>• <em>Antifungals</em>: fluconazole, ketoconazole, itraconazole, voriconazole, posaconazole (inhibit 14-α demethylase → ↓ ergosterol).<br>• <em>Antiprotozoals</em>: metroni<em>dazole</em>, tini<em>dazole</em> (forms toxic free radicals in anaerobes/protozoa).<br><strong>Tip: '-conazole' = antifungal. 'metro-/tini-' starts the antiprotozoals.</strong>" },
-
-  { topic:"Antimicro", type:"s2c", stem:"-vir", q:"What class?",
-    c:["Antifungal","Antibacterial","Antiviral","Anthelmintic"], a:2,
-    p:"<strong>-vir = antiviral</strong>. Acyclo<em>vir</em>, ganci<em>clovir</em>, valacy<em>clovir</em>, oseltami<em>vir</em>, rito<em>navir</em>. <em>Subclasses</em>: -<em>navir</em> = HIV protease inhibitor; -<em>tegravir</em> = HIV integrase inhibitor; -<em>tamivir</em> = neuraminidase inhibitor (flu)." },
-
-  { topic:"Antimicro", type:"s2c", stem:"-navir", q:"What HIV drug class?",
-    c:["NRTI","NNRTI","Protease inhibitor","Integrase inhibitor"], a:2,
-    p:"<strong>-navir = HIV protease inhibitor</strong>. Rito<em>navir</em>, ata<em>zanavir</em>, dar<em>unavir</em>, lopi<em>navir</em>. <em>Block HIV protease → uncleaved polyprotein → non-infectious virion</em>. SE: hyperglycemia/lipodystrophy, GI upset, P450 inhibition (ritonavir = booster)." },
-
-  { topic:"Antimicro", type:"s2c", stem:"-tegravir", q:"What HIV drug class?",
-    c:["Protease inhibitor","Integrase inhibitor","NRTI","Fusion inhibitor"], a:1,
-    p:"<strong>-tegravir = HIV integrase inhibitor</strong>. Dolu<em>tegravir</em>, ralte<em>gravir</em>, elvi<em>tegravir</em>, bicte<em>gravir</em>. <em>Block integrase → HIV DNA can't insert into host genome</em>. First-line in modern HAART regimens. Few SE: weight gain, headache." },
-
-  { topic:"Antimicro", type:"s2c", stem:"-tamivir", q:"What class?",
-    c:["HIV protease inhibitor","Neuraminidase inhibitor (influenza)","Antifungal","Antiprotozoal"], a:1,
-    p:"<strong>-tamivir = neuraminidase inhibitor (influenza)</strong>. Osel<em>tamivir</em> (oral), zana<em>mivir</em> (inhaled), peramivir (IV). <em>Block neuraminidase → virion can't bud from host cell</em>. Effective if started within 48hr of symptom onset." },
-
-  // ── CNS / PSYCH ────────────────────────────────────────────────────
-  { topic:"CNS", type:"s2c", stem:"-zepam / -zolam", q:"What class?",
-    c:["Barbiturate","Benzodiazepine","SSRI","TCA"], a:1,
-    p:"<strong>-zepam / -zolam = benzodiazepine</strong>. Loraz<em>epam</em>, diaz<em>epam</em>, midaz<em>olam</em>, alpraz<em>olam</em>, clonaz<em>epam</em>, triaz<em>olam</em>. <em>Bind GABA-A → ↑ frequency of Cl- channel opening</em>. Antidote: <em>flumazenil</em>." },
-
-  { topic:"CNS", type:"s2c", stem:"-barbital", q:"What class?",
-    c:["Benzodiazepine","Barbiturate","SSRI","Antipsychotic"], a:1,
-    p:"<strong>-barbital = barbiturate</strong>. Pheno<em>barbital</em>, pento<em>barbital</em>, secobarbital, thiopental. <em>Bind GABA-A → ↑ DURATION of Cl- channel opening</em>. <em>More dangerous than benzos</em> — no respiratory ceiling. Induce CYP450. No good antidote." },
-
-  { topic:"CNS", type:"s2c", stem:"-triptyline / -ipramine", q:"What class?",
-    c:["SSRI","SNRI","TCA (tricyclic antidepressant)","MAOI"], a:2,
-    p:"<strong>-triptyline / -ipramine = TCA</strong>. Ami<em>triptyline</em>, nor<em>triptyline</em>, imi<em>pramine</em>, clomi<em>pramine</em>, desi<em>pramine</em>. <em>Block NE + 5HT reuptake + anticholinergic + α1 block + Na channel</em>. <strong>'3 C's of OD: Coma, Convulsions, Cardiotoxicity'</strong>. Antidote: sodium bicarb." },
-
-  { topic:"CNS", type:"tricky", drug:"Sumatriptan", stem:"-triptan", q:"Don't confuse — what is '-triptan'?",
-    c:["TCA","Migraine abortive (5-HT1B/1D agonist)","Antipsychotic","SSRI"], a:1,
-    p:"<strong>-triptan = migraine abortive</strong>, NOT a TCA! Suma<em>triptan</em>, riza<em>triptan</em>. <em>5-HT1B/1D agonist → vasoconstriction</em>. <em>Don't confuse with -triptyline (TCA)</em>. Avoid in CAD (vasoconstriction). Avoid combining with SSRI/MAOI (serotonin syndrome)." },
-
-  { topic:"CNS", type:"s2c", stem:"-oxetine", q:"What class?",
-    c:["TCA","SSRI / SNRI","MAOI","Antipsychotic"], a:1,
-    p:"<strong>-oxetine = SSRI / SNRI</strong>. Flu<em>oxetine</em>, par<em>oxetine</em>, dul<em>oxetine</em> (SNRI), atom<em>oxetine</em> (ADHD). <em>Most are pure SSRI; duloxetine is SNRI</em>. <em>-pram/-pram = also SSRI</em> (citalo<em>pram</em>, escitalo<em>pram</em>)." },
-
-  { topic:"CNS", type:"s2c", stem:"-peridol / -peridone", q:"What class?",
-    c:["Benzodiazepine","Antipsychotic","SSRI","Barbiturate"], a:1,
-    p:"<strong>-peridol / -peridone = antipsychotic</strong>. Halo<em>peridol</em> (typical, 1st gen), risperi<em>done</em> (atypical), paliperi<em>done</em>. <em>Typicals (-peridol) → high EPS risk; atypicals (-peridone, -pine, -done) → metabolic SE</em>. <strong>Mnemonic: 'old peridol = typical, new peridone = atypical.'</strong>" },
-
-  { topic:"CNS", type:"s2c", stem:"-azine", q:"What class? (e.g., chlorpromazine)",
-    c:["Atypical antipsychotic","Typical antipsychotic (phenothiazine)","Benzodiazepine","Antimuscarinic"], a:1,
-    p:"<strong>-azine = phenothiazine (typical antipsychotic)</strong>. Chlorprom<em>azine</em>, fluphen<em>azine</em>, prochlorper<em>azine</em>, promethazine. <em>D2 antagonists → EPS, hyperprolactinemia, NMS</em>. Chlorpromazine = corneal deposits; thioridazine = retinal deposits." },
-
-  { topic:"CNS", type:"s2c", stem:"-caine", q:"What class?",
-    c:["Local anesthetic","Inhaled anesthetic","Opioid","Benzodiazepine"], a:0,
-    p:"<strong>-caine = local anesthetic</strong>. Lido<em>caine</em>, bupiva<em>caine</em>, mepiva<em>caine</em>, procaine, cocaine. <em>Block Na channels</em>. <strong>Esters (1 'i' in name, like procaine)</strong> → PABA metabolite → allergy risk. <strong>Amides (2 'i's, like lidocaine)</strong> → metabolized by liver → safer." },
-
-  { topic:"CNS", type:"s2c", stem:"-flurane", q:"What class?",
-    c:["Local anesthetic","Inhaled anesthetic","NMJ blocker","Opioid"], a:1,
-    p:"<strong>-flurane = inhaled anesthetic</strong>. Iso<em>flurane</em>, sevo<em>flurane</em>, des<em>flurane</em>, en<em>flurane</em>, halothane (exception). <em>Trigger malignant hyperthermia in susceptible patients (RYR1 mutation) → dantrolene</em>." },
-
-  { topic:"CNS", type:"s2c", stem:"-curium / -curonium", q:"What class?",
-    c:["Depolarizing NMJ blocker","Non-depolarizing NMJ blocker","Inhaled anesthetic","Local anesthetic"], a:1,
-    p:"<strong>-curium / -curonium = non-depolarizing NMJ blocker</strong>. Atra<em>curium</em>, cis<em>atracurium</em>, vec<em>uronium</em>, roc<em>uronium</em>, pancuronium. <em>Competitive ACh antagonists at NMJ</em>. Reversal: <em>neostigmine + glycopyrrolate</em>. Depolarizing = succinylcholine (no antidote until block wears off; can cause MH + hyperK)." },
-
-  // ── ENDO / DIABETES ────────────────────────────────────────────────
-  { topic:"Endo", type:"s2c", stem:"-glitazone", q:"What class?",
-    c:["Sulfonylurea","Thiazolidinedione (TZD)","DPP-4 inhibitor","SGLT-2 inhibitor"], a:1,
-    p:"<strong>-glitazone = TZD (thiazolidinedione)</strong>. Pio<em>glitazone</em>, rosi<em>glitazone</em>. <em>PPAR-γ agonist → ↑ insulin sensitivity</em>. SE: <em>weight gain, edema, HF, fractures, hepatotoxicity</em>. Black box: HF risk." },
-
-  { topic:"Endo", type:"s2c", stem:"-gliptin", q:"What class?",
-    c:["GLP-1 agonist","DPP-4 inhibitor","SGLT-2 inhibitor","TZD"], a:1,
-    p:"<strong>-gliptin = DPP-4 inhibitor</strong>. Sita<em>gliptin</em>, lina<em>gliptin</em>, saxa<em>gliptin</em>, alo<em>gliptin</em>. <em>Block DPP-4 → ↑ endogenous GLP-1 → ↑ insulin, ↓ glucagon</em>. Weight neutral, low hypoglycemia risk. SE: pancreatitis (rare), URI." },
-
-  { topic:"Endo", type:"s2c", stem:"-flozin", q:"What class?",
-    c:["SGLT-2 inhibitor","DPP-4 inhibitor","TZD","Sulfonylurea"], a:0,
-    p:"<strong>-flozin = SGLT-2 inhibitor</strong>. Cana<em>gliflozin</em>, dapa<em>gliflozin</em>, empa<em>gliflozin</em>, ertu<em>gliflozin</em>. <em>Block glucose reabsorption in PCT → glucosuria</em>. <strong>BIG: ↓ CV mortality + slow CKD progression</strong>. SE: GU infections, euglycemic DKA, volume depletion." },
-
-  { topic:"Endo", type:"s2c", stem:"-glutide / -natide", q:"What class?",
-    c:["DPP-4 inhibitor","GLP-1 agonist","Insulin","SGLT-2 inhibitor"], a:1,
-    p:"<strong>-glutide / -natide = GLP-1 agonist</strong>. Lira<em>glutide</em>, sema<em>glutide</em>, dula<em>glutide</em>, exe<em>natide</em>. <em>↑ insulin, ↓ glucagon, slow gastric emptying → weight loss</em>. Indications now: T2DM + obesity. SE: nausea, pancreatitis (rare), thyroid C-cell tumors (black box). SC injection (oral semaglutide exists)." },
-
-  { topic:"Endo", type:"s2c", stem:"-asone / -isolone / -olone", q:"What class?",
-    c:["Antiandrogen","Corticosteroid","Estrogen","Thyroid hormone"], a:1,
-    p:"<strong>-asone / -isolone / -olone = corticosteroid</strong>. Dexameth<em>asone</em>, beclometh<em>asone</em>, fluticasone, prednis<em>olone</em>, methylprednis<em>olone</em>, hydrocortisone. <em>SE: hyperglycemia, osteoporosis, immunosuppression, weight gain, HPA axis suppression, cataracts, AVN, psychosis</em>." },
-
-  { topic:"Endo", type:"s2c", stem:"-lutamide", q:"What class?",
-    c:["Estrogen","Progestin","Antiandrogen","Androgen"], a:2,
-    p:"<strong>-lutamide = antiandrogen</strong>. Fl<em>utamide</em>, bical<em>utamide</em>, nil<em>utamide</em>, en<em>zalutamide</em>. <em>Block androgen receptor</em>. Used for prostate cancer. <em>'Lut' = anti-luteinizing/anti-androgenic effect</em>." },
-
-  // ── GI / GU ────────────────────────────────────────────────────────
-  { topic:"GI", type:"s2c", stem:"-prazole", q:"What class?",
-    c:["H2 blocker","PPI","Antacid","5-HT3 antagonist"], a:1,
-    p:"<strong>-prazole = PPI (proton pump inhibitor)</strong>. Ome<em>prazole</em>, pantopr<em>azole</em>, esomeprazole, lansoprazole. <em>Irreversibly inhibit H/K-ATPase</em> on gastric parietal cells. SE long-term: <em>B12 deficiency, hypoMg, C. diff, CAP, osteoporosis, rebound acid</em>." },
-
-  { topic:"GI", type:"tricky", stem:"-tidine", q:"What class?",
-    c:["PPI","H2 blocker","Antacid","5-HT3 antagonist"], a:1,
-    p:"<strong>-tidine = H2 blocker</strong>. Cime<em>tidine</em>, rani<em>tidine</em> (withdrawn — NDMA), famo<em>tidine</em>, niza<em>tidine</em>. <em>Block H2 receptors on parietal cells → ↓ acid</em>. <strong>Cimetidine = P450 inhibitor + antiandrogen (gynecomastia)</strong>. <em>Don't confuse with -tigine (lamotrigine = anticonvulsant) or -dine alone</em>." },
-
-  { topic:"GI", type:"s2c", stem:"-setron", q:"What class?",
-    c:["H2 blocker","D2 antagonist antiemetic","5-HT3 antagonist (antiemetic)","Antacid"], a:2,
-    p:"<strong>-setron = 5-HT3 antagonist (antiemetic)</strong>. Ondan<em>setron</em>, granise<em>tron</em>, palonosetron, dolase<em>tron</em>. <em>Used for chemo/post-op/radiation N/V</em>. SE: <em>QT prolongation, headache, constipation, serotonin syndrome (rare)</em>. First-line for chemo nausea." },
-
-  { topic:"GI", type:"s2c", stem:"-prost / -prostol", q:"What class?",
-    c:["Antimuscarinic","Prostaglandin analog","Steroid","Bile acid"], a:1,
-    p:"<strong>-prost / -prostol = prostaglandin analog</strong>. Mi<em>soprostol</em> (PGE1 — NSAID ulcer prevention, cervical ripening, medical abortion), latano<em>prost</em>/bimato<em>prost</em>/travo<em>prost</em> (PGF2α — glaucoma, ↑ uveoscleral outflow), epo<em>prostenol</em> (pulm HTN)." },
-
-  // ── PULM / IMMUNO ──────────────────────────────────────────────────
-  { topic:"Pulm", type:"s2c", stem:"-terol", q:"What class?",
-    c:["β-blocker","β2-agonist (bronchodilator)","Inhaled steroid","Anticholinergic"], a:1,
-    p:"<strong>-terol = β2-agonist</strong>. Albu<em>terol</em>, salme<em>terol</em>, forme<em>terol</em>, terbu<em>taline</em>, levalbu<em>terol</em>. <em>Short-acting (SABA): albuterol, levalbuterol</em>. <em>Long-acting (LABA): salmeterol, formoterol</em>. SE: <em>tremor, tachycardia, hypoK</em>. Terbutaline = tocolytic." },
-
-  { topic:"Pulm", type:"tricky", drug:"Atenolol", stem:"-terol vs -olol", q:"Atenolol — careful! Don't confuse '-olol' and '-terol.' Class?",
-    c:["β2-agonist","β-blocker (cardioselective β1)","α1-blocker","ACE inhibitor"], a:1,
-    p:"<strong>Atenolol = β-blocker (-olol)</strong>. <em>-olol = β-blockers; -terol = β2-agonists</em>. Cardioselective β1 blockers: <em>'A BEAM' — Atenolol, Betaxolol, Esmolol, Acebutolol, Metoprolol</em>. Non-selective: propranolol, nadolol, timolol. Mixed α/β: carvedilol, labetalol." },
-
-  { topic:"Pulm", type:"s2c", stem:"-tropium / -tropine", q:"What class?",
-    c:["β2-agonist","Anticholinergic (muscarinic antagonist)","Inhaled steroid","Leukotriene blocker"], a:1,
-    p:"<strong>-tropium / -tropine = muscarinic antagonist</strong>. A<em>tropine</em>, ipra<em>tropium</em> (short-acting), tio<em>tropium</em> (long-acting), umec<em>lidinium</em>. <em>Block M3 in airway → bronchodilation</em>. Used for COPD primarily; atropine for bradycardia + organophosphate poisoning." },
-
-  // ── PAIN / INFLAMMATION ────────────────────────────────────────────
-  { topic:"Pain", type:"s2c", stem:"-rofen / -fenac", q:"What class?",
-    c:["Opioid","NSAID","Steroid","Acetaminophen-like"], a:1,
-    p:"<strong>-rofen / -fenac = NSAID</strong>. Ibup<em>rofen</em>, ketop<em>rofen</em>, naprosyn (naproxen), diclo<em>fenac</em>, ketoro<em>lac</em>. <em>Reversible COX-1 + COX-2 inhibitors</em>. <em>Aspirin = irreversible (acetylates serine)</em>. SE: GI ulcer, AKI, ↑ BP, asthma exacerbation (aspirin-sensitive)." },
-
-  { topic:"Pain", type:"s2c", stem:"-coxib", q:"What class?",
-    c:["Non-selective NSAID","COX-2 selective inhibitor","Opioid","Steroid"], a:1,
-    p:"<strong>-coxib = COX-2 selective inhibitor</strong>. Cele<em>coxib</em>, rofe<em>coxib</em> (withdrawn — CV events), val<em>decoxib</em>. <em>Selective COX-2 → ↓ GI ulcer risk but ↑ CV thrombotic events (no platelet COX-1 inhibition)</em>. Used for RA, OA in patients with GI risk." },
-
-  // ── HEME / ONC ─────────────────────────────────────────────────────
-  { topic:"HemeOnc", type:"s2c", stem:"-mab", q:"What class? (broadest answer)",
-    c:["Tyrosine kinase inhibitor","Monoclonal antibody","Antifungal","Antiviral"], a:1,
-    p:"<strong>-mab = monoclonal antibody</strong>. Rituxi<em>mab</em> (anti-CD20), trastuzu<em>mab</em> (anti-HER2), infli<em>ximab</em> (anti-TNF), adalimu<em>mab</em>, ipili<em>mumab</em>, pembrolizu<em>mab</em>. <strong>Naming substems</strong>: -<em>zumab</em> = humanized; -<em>mumab</em> = fully human; -<em>ximab</em> = chimeric; -<em>omab</em> = murine." },
-
-  { topic:"HemeOnc", type:"s2c", stem:"-nib / -tinib", q:"What class?",
-    c:["Monoclonal antibody","Small molecule kinase inhibitor","Alkylating agent","Antibiotic"], a:1,
-    p:"<strong>-nib / -tinib = small molecule kinase inhibitor</strong>. Imati<em>nib</em> (BCR-ABL, CML), erloti<em>nib</em> (EGFR), suni<em>tinib</em>, ibru<em>tinib</em> (BTK), tofaci<em>tinib</em> (JAK), pembroli<em>nib</em>. Oral; -mabs are infused. Many target-specific therapies; varying SE profiles." },
-
-  { topic:"HemeOnc", type:"s2c", stem:"-rubicin", q:"What class?",
-    c:["Alkylating agent","Anthracycline (DNA intercalator + free radicals)","Antimetabolite","Vinca alkaloid"], a:1,
-    p:"<strong>-rubicin = anthracycline</strong>. Dau<em>norubicin</em>, dox<em>orubicin</em>, ida<em>rubicin</em>, epirubicin. <em>Intercalate DNA + generate free radicals + inhibit topo II</em>. <strong>Classic SE: dilated cardiomyopathy</strong> (cumulative). Cardioprotection: <em>dexrazoxane</em> (iron chelator)." },
-
-  { topic:"HemeOnc", type:"s2c", stem:"-platin", q:"What class?",
-    c:["Anthracycline","Platinum-based alkylator","Antimetabolite","Mitotic inhibitor"], a:1,
-    p:"<strong>-platin = platinum chemo</strong>. Cis<em>platin</em>, carbo<em>platin</em>, oxali<em>platin</em>. <em>Cross-link DNA → apoptosis</em>. SE: <em>nephrotox, ototox, peripheral neuropathy</em>. Cisplatin nephrotox: hydrate + amifostine (free radical scavenger)." },
-
-  // ── MISC / TRICKY ───────────────────────────────────────────────────
-  { topic:"Tricky", type:"tricky", stem:"-mycin (the ambiguous one)", q:"Which is TRUE about '-mycin'?",
-    c:["Always means aminoglycoside","Always means macrolide","'-thromycin' = macrolide; other '-mycins/-micins' often aminoglycoside","Always means tetracycline"], a:2,
-    p:"<strong>'-mycin' has TWO common meanings</strong>:<br>• <em>-thromycin = MACROLIDE</em> (erythromycin, azithromycin, clarithromycin — 50S inhibitor)<br>• <em>-mycin / -micin (alone) = often AMINOGLYCOSIDE</em> (gentamicin, streptomycin, neomycin, tobramycin — 30S inhibitor)<br><em>Exceptions: vancomycin (glycopeptide), clindamycin (lincosamide).</em> The suffix isn't 100% reliable here — context matters." },
-
-  { topic:"Tricky", type:"tricky", stem:"-azole (split)", q:"Fluconazole vs metronidazole — both end in '-azole.' Same class?",
-    c:["Yes — both antifungals","Yes — both antiprotozoals","No — fluconazole = antifungal; metronidazole = antiprotozoal/antianaerobic","Yes — both antibacterials"], a:2,
-    p:"<strong>'-azole' is split between antifungals and antiprotozoals</strong>.<br>• <em>'-conazole'</em> → antifungals (fluconazole, ketoconazole, etc.) — block ergosterol synthesis<br>• <em>metro-/tini-dazole</em> → antiprotozoal + anti-anaerobic — form toxic free radicals<br><strong>Tip: 'azole' alone tells you nothing. Read the prefix.</strong>" },
-
-  { topic:"Tricky", type:"tricky", stem:"-triptyline vs -triptan", q:"Amitriptyline vs sumatriptan — same drug class? (look at the suffix carefully!)",
-    c:["Yes — both antidepressants","Yes — both migraine drugs","No — amitriptyline = TCA; sumatriptan = migraine abortive","Yes — both anticonvulsants"], a:2,
-    p:"<strong>Different classes, similar-looking suffixes</strong>:<br>• <em>-triptyline / -ipramine = TCA</em> (amitriptyline, imipramine) — block NE/5HT reuptake<br>• <em>-triptan = migraine abortive</em> (sumatriptan, rizatriptan) — 5-HT1B/1D agonist<br><strong>Crucial because TCAs treat MIGRAINE prophylaxis too — easy to confuse on the test.</strong>" },
-
-  { topic:"Tricky", type:"tricky", stem:"-pidone vs -peridol", q:"Risperidone vs haloperidol — both antipsychotics, but...",
-    c:["Both typical","Both atypical","Risperidone = atypical, haloperidol = typical","Risperidone = typical, haloperidol = atypical"], a:2,
-    p:"<strong>Antipsychotic generations</strong>:<br>• <em>Typical (1st gen)</em>: -peridol (halo<em>peridol</em>), -azine (chlorpr<em>omazine</em>), -ene (thi<em>othixene</em>). High EPS risk.<br>• <em>Atypical (2nd gen)</em>: -peridone (risper<em>idone</em>, palip<em>eridone</em>), -pine (olanza<em>pine</em>, queti<em>apine</em>, cloza<em>pine</em>), -done (zipra<em>sidone</em>, lurasi<em>done</em>). Metabolic SE > EPS." },
-
-  { topic:"Tricky", type:"tricky", stem:"-gliptin vs -glitazone vs -flozin", q:"All three are T2DM drugs. Which targets the KIDNEY?",
-    c:["-gliptin (DPP-4 inhibitor)","-glitazone (TZD/PPAR-γ agonist)","-flozin (SGLT-2 inhibitor — blocks PCT glucose reabsorption)","All three"], a:2,
-    p:"<strong>T2DM '-G' drugs cheat sheet</strong>:<br>• <em>-gliptin</em> = DPP-4 inhibitor → ↑ endogenous GLP-1 (gut)<br>• <em>-glutide / -natide</em> = GLP-1 agonist (injectable, weight loss, gut)<br>• <em>-glitazone</em> = TZD → PPAR-γ → ↑ insulin sensitivity (fat/muscle)<br>• <em>-flozin</em> = SGLT-2 inhibitor → block PCT glucose reabsorption (kidney) → glucosuria + CV/CKD benefits" },
-
-  { topic:"Tricky", type:"tricky", stem:"-zosin vs -olol", q:"Tamsulosin (-osin) for BPH — does it lower BP like a β-blocker (-olol)?",
-    c:["Yes — same mechanism","Both lower BP but DIFFERENT mechanisms: -zosin = α1-blocker; -olol = β-blocker","Neither lowers BP","Only β-blockers lower BP"], a:1,
-    p:"<strong>Different targets, both can lower BP</strong>:<br>• <em>-zosin = α1-blocker</em> → vasodilation (esp. prazosin/doxazosin); tamsulosin is uroselective (mostly prostate, less BP effect)<br>• <em>-olol = β-blocker</em> → ↓ HR + contractility<br><em>Tamsulosin is the exception — minimal BP drop compared to other α1 blockers because it's uroselective</em>." },
-
-  { topic:"Tricky", type:"tricky", drug:"Heparin vs Warfarin", q:"Both anticoagulants. Which is monitored by PT/INR?",
-    c:["Heparin","Warfarin","Both","Neither"], a:1,
-    p:"<strong>Monitor cheat sheet</strong>:<br>• <em>Warfarin = PT/INR</em> (extrinsic pathway, factor VII has shortest half-life — drops first)<br>• <em>Heparin (UFH) = PTT</em> (intrinsic)<br>• <em>LMWH (enoxaparin)</em> = no routine monitoring (anti-Xa if needed)<br>• <em>DOACs (-xaban, -gatran)</em> = no routine monitoring<br><strong>Reversal: warfarin → vit K / FFP; heparin → protamine.</strong>" },
-
-  // ── ADDITIONAL CARDIO / MISC HIGH-YIELD ────────────────────────────
-  { topic:"Cardio", type:"d2c", drug:"Spironolactone", stem:"-olactone", q:"Class?",
-    c:["Loop diuretic","Thiazide diuretic","Potassium-sparing diuretic (aldosterone antagonist)","CCB"], a:2,
-    p:"<strong>-olactone = aldosterone antagonist (K-sparing diuretic)</strong>. Spir<em>onolactone</em>, eplerenone (no -olactone but same class). <em>Block aldosterone receptor in collecting duct → K-sparing</em>. <strong>Spiro mortality benefit in HFrEF</strong>. SE: gynecomastia (spiro — antiandrogen), hyperK." },
-
-  { topic:"Cardio", type:"d2c", drug:"Furosemide", stem:"-emide", q:"Class?",
-    c:["Loop diuretic","Thiazide diuretic","K-sparing diuretic","ACE inhibitor"], a:0,
-    p:"<strong>-emide / -semide = loop diuretic</strong>. Furos<em>emide</em>, torsemide, bumetanide. <em>Block Na/K/2Cl in thick ascending limb</em>. Most efficacious diuretic for fluid unloading. SE: <em>ototoxicity, hypoK, hypoMg, hypoCa, sulfa allergy</em>. Does NOT decrease mortality in HF." },
-
-  { topic:"Cardio", type:"d2c", drug:"Hydrochlorothiazide", stem:"-thiazide", q:"Class?",
-    c:["Loop diuretic","Thiazide diuretic","K-sparing","Carbonic anhydrase inhibitor"], a:1,
-    p:"<strong>-thiazide = thiazide diuretic</strong>. Hydrochloro<em>thiazide</em>, chloro<em>thiazide</em>, chlorthalidone (no -thiazide but same class), indapamide. <em>Block Na/Cl in DCT</em>. <em>↑ Ca reabsorption (opposite of loops)</em>. SE: <em>hyperGluc, hyperLipid, hyperUric (gout), hypoK, hypoNa, sulfa allergy</em>." },
-
-  { topic:"Misc", type:"s2c", stem:"-leukin", q:"What class?",
-    c:["Monoclonal antibody","Interleukin (cytokine)","Tyrosine kinase inhibitor","Steroid"], a:1,
-    p:"<strong>-leukin = recombinant interleukin</strong>. Aldes<em>leukin</em> (IL-2 — renal cell CA, melanoma), oprel<em>vekin</em> (IL-11). <em>Boost immune function</em>. SE: <em>capillary leak syndrome, hypotension, fevers</em>." },
-
-  { topic:"Cardio", type:"d2c", drug:"Amiodarone", stem:"-arone", q:"Class?",
-    c:["β-blocker","Class III antiarrhythmic (K+ channel blocker)","ACE inhibitor","CCB"], a:1,
-    p:"<strong>Amiodarone = Class III antiarrhythmic</strong>. K+ channel blocker, also has Class I/II/IV properties. <em>40% iodine by weight</em> → thyroid issues. Check PFTs, TFTs, LFTs at baseline. SE: <em>pulm fibrosis, corneal deposits, blue-grey skin, thyroid dysfunction, hepatotoxicity</em>." },
-
-  { topic:"CNS", type:"s2c", stem:"-pine (atypical antipsychotics + CCBs)", q:"What class? (ambiguous — pick the most common psych use)",
-    c:["Benzodiazepine","Atypical antipsychotic (also some CCBs use this)","Antidepressant","Anticonvulsant"], a:1,
-    p:"<strong>'-pine' is used in MULTIPLE classes</strong>:<br>• <em>Atypical antipsychotics</em>: olanza<em>pine</em>, queti<em>apine</em>, cloza<em>pine</em>, asena<em>pine</em><br>• <em>DHP CCBs</em>: amlo<em>dipine</em>, nife<em>dipine</em> (more specifically '-dipine')<br>• <em>TCAs (older)</em>: imipra<em>mine</em> family (not '-pine' though)<br>Context matters — antipsychotic '-pine' drugs cause metabolic SE." },
-
-  { topic:"Antimicro", type:"d2c", drug:"Vancomycin", stem:"-mycin (exception)", q:"Class?",
-    c:["Macrolide","Aminoglycoside","Glycopeptide","Tetracycline"], a:2,
-    p:"<strong>Vancomycin = GLYCOPEPTIDE</strong>, NOT a macrolide or aminoglycoside despite '-mycin.' <em>Binds D-Ala-D-Ala → blocks cell wall transpeptidation</em>. Used for: MRSA, severe gram(+) infections, ORAL for C. diff (poor absorption is FEATURE not bug). SE: <em>'red man' syndrome (histamine, rate-related), nephrotox, ototox</em>." },
-
-  { topic:"Endo", type:"d2c", drug:"Metformin", stem:"(no characteristic stem)", q:"Class?",
-    c:["Sulfonylurea","Biguanide (↓ hepatic gluconeogenesis)","DPP-4 inhibitor","TZD"], a:1,
-    p:"<strong>Metformin = biguanide</strong>. <em>Doesn't follow a recognizable suffix pattern</em>. ↓ Hepatic gluconeogenesis (primary) + ↑ insulin sensitivity. Activates AMP kinase. <strong>First-line T2DM</strong>. SE: <em>lactic acidosis (avoid in renal failure, hold before contrast), B12 deficiency, GI upset</em>. No hypoglycemia (no insulin secretion)." },
-
-  { topic:"Endo", type:"d2c", drug:"Glipizide", stem:"-glinide / glipizide", q:"Class? (don't confuse with -gliptin or -flozin)",
-    c:["GLP-1 agonist","Sulfonylurea (insulin secretagogue)","DPP-4 inhibitor","SGLT-2 inhibitor"], a:1,
-    p:"<strong>Sulfonylureas don't follow a clean suffix</strong>: <em>gli<em>pizide</em>, gli<em>mepiride</em>, gly<em>buride</em></em>. <em>Close K-ATP channel on β-cells → insulin secretion</em>. SE: <em>hypoglycemia + weight gain</em> (esp. glyburide — avoid in elderly). Meglitinides (-glinide: repaglinide, nateglinide) = same mechanism, shorter-acting." },
-
-  // ── EXTRA EDGE CASES ────────────────────────────────────────────────
-  { topic:"Antimicro", type:"s2c", stem:"-onide / -isolide", q:"Inhaled steroids end in what? (e.g., budesonide)",
-    c:["β2-agonist","Inhaled corticosteroid","Anticholinergic","Leukotriene blocker"], a:1,
-    p:"<strong>-onide / -isolide = inhaled corticosteroid</strong>. Bude<em>sonide</em>, flu<em>ticasone</em> (-asone), bec<em>lomethasone</em>, mometasone, ciclesonide. <em>Maintenance therapy for asthma, NOT acute (use SABA + oral steroids for exacerbations)</em>. SE: oral candidiasis (rinse mouth), dysphonia." },
-
-  { topic:"Pulm", type:"s2c", stem:"-lukast", q:"What class?",
-    c:["β2-agonist","Leukotriene receptor antagonist","Inhaled steroid","Anticholinergic"], a:1,
-    p:"<strong>-lukast = leukotriene receptor antagonist (LTRA)</strong>. Monte<em>lukast</em>, zafir<em>lukast</em>. <em>Block LTC/D/E4 receptors</em>. Best for: <em>aspirin-induced asthma + exercise-induced bronchospasm</em>. <em>Zileuton</em> (different stem) = lipoxygenase inhibitor (blocks LT synthesis upstream)." },
-
-  { topic:"HemeOnc", type:"d2c", drug:"Methotrexate", stem:"-trexate", q:"Class?",
-    c:["Alkylating agent","Antimetabolite (DHFR inhibitor)","Anthracycline","Monoclonal antibody"], a:1,
-    p:"<strong>-trexate = antimetabolite (DHFR inhibitor)</strong>. Metho<em>trexate</em>, pemetrexed. <em>Inhibits dihydrofolate reductase → ↓ purine + thymidylate synthesis</em>. Uses: <em>chemo (ALL, choriocarcinoma), RA (1st line DMARD), psoriasis, ectopic pregnancy</em>. <strong>Rescue: leucovorin (folinic acid, NOT folic acid)</strong>." },
-
-  { topic:"Misc", type:"s2c", stem:"-ase (e.g., alteplase)", q:"What class?",
-    c:["Statin","Enzyme (often thrombolytic)","Steroid","ACE inhibitor"], a:1,
-    p:"<strong>-ase = enzyme</strong>. <em>Often thrombolytics</em>: alte<em>plase</em>, tene<em>cteplase</em>, reteplase, streptokinase, urokinase (tissue plasminogen activators — convert plasminogen to plasmin). Also: <em>α-glucosidase, sacrosidase, hyaluronidase</em>. Other ASE enzymes used pharmacologically." }
+/* correct = index into c[]; choices shuffle at render. Stems give the SUFFIX + example drugs only — never the class name. */
+const QBANK=[
+/* ===== CARDIOVASCULAR & RENAL ===== */
+{m:"cv",q:"Drugs ending in '-pril' (such as lisinopril and enalapril) belong to which class?",c:["ACE inhibitors","Angiotensin receptor blockers","Beta blockers","Calcium channel blockers"],a:0,why:"'-pril' = ACE inhibitors (block angiotensin I→II). Side effects: dry cough, angioedema, hyperkalemia; teratogenic. First-line in heart failure and diabetic nephropathy.",p:"<b>-pril</b> = ACE inhibitors. Cough/angioedema/hyperkalemia; renoprotective; teratogen."},
+{m:"cv",q:"Drugs ending in '-sartan' (such as losartan and valsartan) act as which class?",c:["Angiotensin II receptor blockers","ACE inhibitors","Aldosterone antagonists","Renin inhibitors"],a:0,why:"'-sartan' = ARBs (block the AT1 receptor). Same indications as ACE inhibitors but NO cough (don't raise bradykinin); still hyperkalemia and teratogenicity.",p:"<b>-sartan</b> = ARBs. Like ACE inhibitors but NO cough (no bradykinin rise)."},
+{m:"cv",q:"Drugs ending in '-olol' (such as metoprolol and propranolol) belong to which class?",c:["Beta-adrenergic blockers","Alpha-adrenergic blockers","Calcium channel blockers","ACE inhibitors"],a:0,why:"'-olol' = beta blockers (↓ heart rate, contractility, renin). Used post-MI, in heart failure, arrhythmia, and hypertension; caution in asthma (nonselective) and can mask hypoglycemia.",p:"<b>-olol</b> = beta blockers. Post-MI, HF, arrhythmia; caution in asthma; mask hypoglycemia."},
+{m:"cv",q:"Drugs ending in '-dipine' (such as amlodipine and nifedipine) are which class?",c:["Dihydropyridine calcium channel blockers","Beta blockers","ACE inhibitors","Nitrates"],a:0,why:"'-dipine' = dihydropyridine CCBs (act on vascular smooth muscle → vasodilation; side effect: peripheral edema). Non-DHPs (verapamil, diltiazem) act on the heart.",p:"<b>-dipine</b> = dihydropyridine CCBs (vascular → vasodilation, ankle edema). Verapamil/diltiazem = heart."},
+{m:"cv",q:"Drugs ending in '-statin' (such as atorvastatin and simvastatin) belong to which lipid-lowering class?",c:["HMG-CoA reductase inhibitors","Fibrates","Bile acid resins","PCSK9 inhibitors"],a:0,why:"'-statin' = HMG-CoA reductase inhibitors (block cholesterol synthesis, the rate-limiting step). Most effective at lowering LDL; side effects: myopathy/↑CK, hepatotoxicity.",p:"<b>-statin</b> = HMG-CoA reductase inhibitors. Best LDL-lowering; myopathy + hepatotoxicity."},
+{m:"cv",q:"Drugs ending in '-afil' (such as sildenafil and tadalafil) belong to which class?",c:["Phosphodiesterase-5 inhibitors","Beta blockers","Nitrates","Alpha blockers"],a:0,why:"'-afil' = PDE-5 inhibitors (↑ cGMP → smooth muscle relaxation; erectile dysfunction, pulmonary hypertension). Contraindicated with nitrates (dangerous hypotension).",p:"<b>-afil</b> = PDE-5 inhibitors (↑cGMP). ED, pulmonary HTN. NEVER with nitrates."},
+{m:"cv",q:"Anticoagulants ending in '-parin' (such as enoxaparin and dalteparin) are which class?",c:["Low-molecular-weight heparins","Direct thrombin inhibitors","Oral factor Xa inhibitors","Vitamin K antagonists"],a:0,why:"'-parin' = low-molecular-weight heparins (activate antithrombin → mainly inhibit factor Xa). More predictable than unfractionated heparin; reversed partially by protamine.",p:"<b>-parin</b> = LMW heparins (antithrombin → mostly factor Xa). Partial reversal with protamine."},
+{m:"cv",q:"Drugs ending in '-osin' / '-zosin' (such as prazosin and tamsulosin) act as which class?",c:["Alpha-1 adrenergic blockers","Beta blockers","ACE inhibitors","Calcium channel blockers"],a:0,why:"'-zosin' = alpha-1 blockers (relax vascular and prostatic smooth muscle; used for hypertension and BPH; tamsulosin is uroselective). Side effect: first-dose orthostatic hypotension.",p:"<b>-zosin</b> = alpha-1 blockers. HTN + BPH. First-dose orthostatic hypotension."},
+
+/* ===== ANTIMICROBIALS ===== */
+{m:"abx",q:"Antibiotics ending in '-cillin' (such as amoxicillin and ampicillin) belong to which class?",c:["Penicillins","Cephalosporins","Macrolides","Tetracyclines"],a:0,why:"'-cillin' = penicillins (beta-lactams that inhibit cell wall synthesis). Watch for hypersensitivity reactions and resistance via beta-lactamases.",p:"<b>-cillin</b> = penicillins (β-lactam, cell wall synthesis). Hypersensitivity; β-lactamase resistance."},
+{m:"abx",q:"Antibiotics ending in '-cycline' (such as doxycycline and minocycline) belong to which class?",c:["Tetracyclines","Penicillins","Fluoroquinolones","Aminoglycosides"],a:0,why:"'-cycline' = tetracyclines (30S protein synthesis inhibitors). Avoid in pregnancy and young children (teeth staining, bone); don't take with milk/antacids (chelation).",p:"<b>-cycline</b> = tetracyclines (30S). Avoid in pregnancy/kids; no dairy/antacids (chelation)."},
+{m:"abx",q:"Antibiotics ending in '-floxacin' (such as ciprofloxacin and levofloxacin) belong to which class?",c:["Fluoroquinolones","Macrolides","Penicillins","Sulfonamides"],a:0,why:"'-floxacin' = fluoroquinolones (inhibit DNA gyrase/topoisomerase). Risks: tendon rupture, QT prolongation, avoid in children/pregnancy.",p:"<b>-floxacin</b> = fluoroquinolones (DNA gyrase). Tendon rupture, QT prolongation."},
+{m:"abx",q:"Antibiotics ending in '-thromycin' (such as azithromycin and erythromycin) belong to which class?",c:["Macrolides","Aminoglycosides","Tetracyclines","Cephalosporins"],a:0,why:"'-thromycin' = macrolides (50S protein synthesis inhibitors). Risks: QT prolongation, GI motility (erythromycin), and CYP450 inhibition.",p:"<b>-thromycin</b> = macrolides (50S). QT prolongation; CYP450 inhibition; GI upset."},
+{m:"abx",q:"Antiretroviral drugs ending in '-navir' (such as ritonavir and atazanavir) belong to which class?",c:["Protease inhibitors","Nucleoside reverse transcriptase inhibitors","Integrase inhibitors","Fusion inhibitors"],a:0,why:"'-navir' = HIV protease inhibitors (block cleavage of viral polyproteins). Cause lipodystrophy and hyperglycemia; ritonavir is a potent CYP450 inhibitor (pharmacologic 'booster').",p:"<b>-navir</b> = HIV protease inhibitors. Lipodystrophy/hyperglycemia; ritonavir = CYP booster."},
+{m:"abx",q:"Antiviral drugs ending in '-ciclovir' (such as acyclovir and ganciclovir) treat which family of viruses?",c:["Herpesviruses","Influenza","HIV","Hepatitis C"],a:0,why:"'-ciclovir' antivirals are guanosine analogs activated by viral thymidine kinase → treat herpesviruses (HSV, VZV; ganciclovir for CMV). (Oseltamivir treats influenza.)",p:"<b>-ciclovir</b> = herpesvirus antivirals (HSV/VZV; ganciclovir → CMV). Need viral thymidine kinase."},
+{m:"abx",q:"Antibiotics ending in '-penem' (such as imipenem and meropenem) belong to which broad-spectrum beta-lactam class?",c:["Carbapenems","Cephalosporins","Penicillins","Monobactams"],a:0,why:"'-penem' = carbapenems (very broad-spectrum beta-lactams, last-resort). Imipenem is given with cilastatin (blocks renal dehydropeptidase); risk of seizures.",p:"<b>-penem</b> = carbapenems (broad-spectrum, last-resort). Imipenem + cilastatin; seizure risk."},
+{m:"abx",q:"Antifungal drugs ending in '-conazole' (such as fluconazole and ketoconazole) inhibit ergosterol synthesis and belong to which class?",c:["Azoles","Polyenes","Echinocandins","Allylamines"],a:0,why:"'-conazole/-azole' antifungals inhibit ergosterol synthesis (block lanosterol 14-alpha-demethylase). Potent CYP450 inhibitors; hepatotoxic. (Amphotericin = polyene; -fungin = echinocandin.)",p:"<b>-azole</b> = azole antifungals (block ergosterol synthesis). CYP450 inhibitors; hepatotoxic."},
+
+/* ===== CNS & PSYCH ===== */
+{m:"cns",q:"Drugs ending in '-azepam' or '-azolam' (such as lorazepam and alprazolam) belong to which class?",c:["Benzodiazepines","Barbiturates","SSRIs","Antipsychotics"],a:0,why:"'-azepam/-azolam' = benzodiazepines (↑ FREQUENCY of GABA-A chloride channel opening). Risk of dependence and respiratory depression (worse with alcohol/opioids); reversed by flumazenil.",p:"<b>-azepam/-azolam</b> = benzodiazepines (↑GABA-A frequency). Dependence; reverse with flumazenil."},
+{m:"cns",q:"Drugs ending in '-barbital' (such as phenobarbital and pentobarbital) belong to which sedative class?",c:["Barbiturates","Benzodiazepines","Opioids","Tricyclic antidepressants"],a:0,why:"'-barbital' = barbiturates (↑ DURATION of GABA-A chloride channel opening). More dangerous in overdose (respiratory depression, no good antidote); CYP450 inducers.",p:"<b>-barbital</b> = barbiturates (↑GABA-A duration). Dangerous overdose; CYP450 inducers."},
+{m:"cns",q:"Drugs ending in '-triptan' (such as sumatriptan) are used to abort which condition?",c:["Migraine headaches","Seizures","Depression","Nausea"],a:0,why:"'-triptan' = 5-HT(1B/1D) agonists that cause vasoconstriction → abort migraines. Contraindicated in coronary artery disease/Prinzmetal angina (vasospasm).",p:"<b>-triptan</b> = migraine abortives (5-HT1B/1D agonists, vasoconstrict). Avoid in CAD."},
+{m:"cns",q:"Drugs ending in '-triptyline' or '-ipramine' (such as amitriptyline and imipramine) belong to which antidepressant class?",c:["Tricyclic antidepressants","SSRIs","MAO inhibitors","SNRIs"],a:0,why:"'-triptyline/-ipramine' = TCAs (block norepinephrine and serotonin reuptake). Overdose triad: cardiotoxicity (wide QRS), anticholinergic effects, seizures (the '3 C's'). Treat with sodium bicarbonate.",p:"<b>-triptyline/-ipramine</b> = TCAs. Overdose '3 C's': Cardiotoxicity, anti-Cholinergic, Convulsions → bicarb."},
+{m:"cns",q:"Drugs ending in '-stigmine' (such as neostigmine and physostigmine) inhibit which enzyme?",c:["Acetylcholinesterase","Monoamine oxidase","Phosphodiesterase","HMG-CoA reductase"],a:0,why:"'-stigmine' = acetylcholinesterase inhibitors (↑ acetylcholine). Used for myasthenia gravis (pyridostigmine), ileus/urinary retention (neostigmine), and anticholinergic toxicity (physostigmine crosses into the CNS).",p:"<b>-stigmine</b> = AChE inhibitors (↑ACh). Myasthenia gravis, ileus; physostigmine for anticholinergic tox."},
+{m:"cns",q:"Drugs ending in '-setron' (such as ondansetron) are used to treat what?",c:["Nausea and vomiting","Depression","Hypertension","Seizures"],a:0,why:"'-setron' = 5-HT3 receptor antagonists (antiemetics), especially for chemotherapy-induced nausea. Side effect: QT prolongation.",p:"<b>-setron</b> = 5-HT3 antagonists (antiemetics, chemo nausea). QT prolongation."},
+{m:"cns",q:"Drugs ending in '-peridone' or '-piprazole' (such as risperidone and aripiprazole) belong to which class?",c:["Atypical (second-generation) antipsychotics","Typical (first-generation) antipsychotics","Benzodiazepines","SSRIs"],a:0,why:"'-peridone/-piprazole' = atypical antipsychotics (block D2 and 5-HT2 receptors). Cause metabolic syndrome (weight gain, hyperglycemia, dyslipidemia); fewer extrapyramidal effects than typicals.",p:"<b>-peridone/-piprazole</b> = atypical antipsychotics. Metabolic syndrome; fewer EPS than typicals."},
+{m:"cns",q:"Anesthetic drugs ending in '-flurane' (such as isoflurane and sevoflurane) belong to which class?",c:["Inhaled (volatile) anesthetics","Local anesthetics","Barbiturates","Opioids"],a:0,why:"'-flurane' = inhaled volatile anesthetics. Rare but lethal complication: malignant hyperthermia (with succinylcholine) → treat with dantrolene.",p:"<b>-flurane</b> = inhaled anesthetics. Malignant hyperthermia (+ succinylcholine) → dantrolene."},
+
+/* ===== ENDOCRINE & GI ===== */
+{m:"endo",q:"Antidiabetic drugs ending in '-glitazone' (such as pioglitazone and rosiglitazone) belong to which class?",c:["Thiazolidinediones","Sulfonylureas","Biguanides","DPP-4 inhibitors"],a:0,why:"'-glitazone' = thiazolidinediones (activate PPAR-gamma → ↑ insulin sensitivity). Side effects: fluid retention/edema (worsen heart failure), weight gain, fracture risk.",p:"<b>-glitazone</b> = TZDs (PPAR-γ → insulin sensitivity). Edema/HF, weight gain, fractures."},
+{m:"endo",q:"Antidiabetic drugs ending in '-gliptin' (such as sitagliptin and linagliptin) inhibit which enzyme?",c:["Dipeptidyl peptidase-4 (DPP-4)","SGLT2","Alpha-glucosidase","HMG-CoA reductase"],a:0,why:"'-gliptin' = DPP-4 inhibitors (block incretin breakdown → ↑ GLP-1). Weight-neutral, low hypoglycemia risk.",p:"<b>-gliptin</b> = DPP-4 inhibitors (↑ incretins). Weight-neutral; low hypoglycemia risk."},
+{m:"endo",q:"Antidiabetic drugs ending in '-flozin' (such as empagliflozin and canagliflozin) block glucose reabsorption via which transporter?",c:["Sodium-glucose cotransporter 2 (SGLT2)","GLUT4","DPP-4","Na-K-2Cl cotransporter"],a:0,why:"'-flozin' = SGLT2 inhibitors (block proximal tubule glucose reabsorption → glucosuria). Benefits in heart failure and kidney disease; risks: genital infections, euglycemic DKA.",p:"<b>-flozin</b> = SGLT2 inhibitors (glucosuria). HF/CKD benefit; UTIs, euglycemic DKA."},
+{m:"endo",q:"Antidiabetic/weight-loss drugs ending in '-glutide' or '-tide' (such as semaglutide and liraglutide) mimic which incretin hormone?",c:["Glucagon-like peptide-1 (GLP-1)","Insulin","Amylin","Somatostatin"],a:0,why:"'-glutide/-tide' = GLP-1 receptor agonists (↑ glucose-dependent insulin, ↓ glucagon, slow gastric emptying → satiety/weight loss). Risk: pancreatitis; contraindicated with medullary thyroid cancer/MEN2.",p:"<b>-glutide/-tide</b> = GLP-1 agonists. Weight loss, satiety. Pancreatitis; avoid in MEN2/medullary thyroid CA."},
+{m:"endo",q:"Drugs ending in '-prazole' (such as omeprazole and pantoprazole) belong to which class?",c:["Proton pump inhibitors","H2 receptor blockers","Antacids","Prokinetics"],a:0,why:"'-prazole' = PPIs (irreversibly block the H/K ATPase). Long-term risks: low B12/magnesium, C. difficile, fractures.",p:"<b>-prazole</b> = PPIs (irreversible H/K ATPase block). Long-term: ↓B12/Mg, C. diff, fractures."},
+{m:"endo",q:"Drugs ending in '-tidine' (such as famotidine and cimetidine) belong to which class?",c:["Histamine H2 receptor blockers","Proton pump inhibitors","H1 antihistamines","Anticholinergics"],a:0,why:"'-tidine' = H2 blockers (reduce gastric acid). Cimetidine is a CYP450 inhibitor and antiandrogen (gynecomastia); newer agents lack these effects.",p:"<b>-tidine</b> = H2 blockers. Cimetidine = CYP450 inhibitor + antiandrogen (gynecomastia)."},
+{m:"endo",q:"Drugs ending in '-dronate' (such as alendronate and risedronate) treat osteoporosis as which class?",c:["Bisphosphonates","SERMs","Calcitonin analogs","RANKL inhibitors"],a:0,why:"'-dronate' = bisphosphonates (inhibit osteoclasts). Take upright with water and stay upright (esophagitis); rare osteonecrosis of the jaw and atypical femur fractures.",p:"<b>-dronate</b> = bisphosphonates (↓osteoclasts). Take upright (esophagitis); jaw osteonecrosis."},
+{m:"endo",q:"Antidiabetic drugs such as glipizide and glyburide (the 'gli-' stem) belong to which insulin-secreting class?",c:["Sulfonylureas","Biguanides","Thiazolidinediones","Meglitinides"],a:0,why:"Glipizide/glyburide/glimepiride = sulfonylureas (close beta-cell K-ATP channels → insulin release). Main risks: hypoglycemia and weight gain.",p:"gli-pizide/-yburide = <b>sulfonylureas</b> (close K-ATP → insulin). Hypoglycemia + weight gain."},
+
+/* ===== ONC / IMMUNE / COAGULATION ===== */
+{m:"misc",q:"Biologic drugs ending in '-mab' (such as rituximab and adalimumab) are what type of molecule?",c:["Monoclonal antibodies","Tyrosine kinase inhibitors","Small-molecule enzymes","Peptide hormones"],a:0,why:"'-mab' = monoclonal antibodies (-ximab = chimeric, -zumab = humanized, -umab = fully human). Used in cancer and autoimmune disease; risk of infusion reactions and infection.",p:"<b>-mab</b> = monoclonal antibodies (-ximab chimeric, -zumab humanized, -umab human). Infection risk."},
+{m:"misc",q:"Targeted cancer drugs ending in '-nib' (such as imatinib and erlotinib) inhibit which type of enzyme?",c:["Tyrosine kinases","Proteases","Topoisomerases","HMG-CoA reductase"],a:0,why:"'-nib' = tyrosine kinase inhibitors (e.g., imatinib targets BCR-ABL in CML). 'Nib ends kinase.' Targeted oral therapy.",p:"<b>-nib</b> = tyrosine kinase inhibitors ('NIB ends kinase'). Imatinib → BCR-ABL (CML)."},
+{m:"misc",q:"Oral anticoagulants ending in '-xaban' (such as apixaban and rivaroxaban) directly inhibit which clotting factor?",c:["Factor Xa","Thrombin (factor IIa)","Factor VII","Factor XIII"],a:0,why:"'-xaban' = direct factor Xa inhibitors (the 'xa' is the clue). No routine monitoring; reversed by andexanet alfa.",p:"<b>-xaban</b> = direct factor Xa inhibitors ('Xa-ban'). No monitoring; reverse with andexanet alfa."},
+{m:"misc",q:"The oral anticoagulant dabigatran (the '-gatran' stem) directly inhibits which clotting factor?",c:["Thrombin (factor IIa)","Factor Xa","Factor VII","Plasmin"],a:0,why:"'-gatran' = direct thrombin (IIa) inhibitor. No routine monitoring; reversed by idarucizumab.",p:"<b>-gatran</b> = direct thrombin (IIa) inhibitor. Reverse with idarucizumab."},
+{m:"misc",q:"Antiplatelet drugs ending in '-grel' (such as clopidogrel and prasugrel) block which platelet receptor?",c:["The P2Y12 (ADP) receptor","Glycoprotein IIb/IIIa","The thromboxane receptor","COX-1"],a:0,why:"'-grel' = P2Y12 (ADP receptor) inhibitors → block platelet aggregation. Used in acute coronary syndrome and after stenting (with aspirin = dual antiplatelet therapy).",p:"<b>-grel</b> = P2Y12 (ADP) inhibitors. ACS/post-stent (dual antiplatelet with aspirin)."},
+{m:"misc",q:"Drugs ending in '-teplase' (such as alteplase and tenecteplase) act as which class — converting plasminogen to plasmin?",c:["Thrombolytics (tissue plasminogen activators)","Anticoagulants","Antiplatelets","Procoagulants"],a:0,why:"'-teplase' = thrombolytics (tPA): they convert plasminogen to plasmin → dissolve clots in acute MI, ischemic stroke, and massive PE. Major risk: bleeding.",p:"<b>-teplase</b> = thrombolytics (tPA). Acute MI, ischemic stroke, massive PE. Bleeding risk."},
+{m:"misc",q:"Drugs ending in '-prost' (such as latanoprost and misoprostol) are analogs of what?",c:["Prostaglandins","Leukotrienes","Thromboxane","Histamine"],a:0,why:"'-prost' = prostaglandin analogs (latanoprost lowers intraocular pressure in glaucoma; misoprostol protects gastric mucosa and induces labor). Misoprostol is contraindicated in pregnancy (abortifacient) unless used for that purpose.",p:"<b>-prost</b> = prostaglandin analogs. Latanoprost (glaucoma); misoprostol (gastric/labor; teratogen)."},
+{m:"misc",q:"Drugs ending in '-caine' (such as lidocaine and bupivacaine) belong to which class?",c:["Local anesthetics","Inhaled anesthetics","Opioids","Muscle relaxants"],a:0,why:"'-caine' = local anesthetics (block sodium channels). Esters (one 'i', e.g., procaine) vs amides (two 'i's, e.g., lidocaine). Work poorly in infected/acidic tissue (ionized form).",p:"<b>-caine</b> = local anesthetics (block Na⁺ channels). Esters (1 'i') vs amides (2 'i's). Fail in acidic/infected tissue."}
 ];
 
-// ============================================================================
-// SYSTEMS / STATE
-// ============================================================================
-const SYSTEMS = ["Cardio","Antimicro","CNS","Endo","GI","Pulm","Pain","HemeOnc","Tricky","Misc"];
+const VAULT=[
+{t:"Cardiovascular Suffixes",b:"<b>-pril</b> ACE inhibitors · <b>-sartan</b> ARBs · <b>-olol</b> beta blockers · <b>-dipine</b> dihydropyridine CCBs · <b>-zosin</b> alpha-1 blockers · <b>-afil</b> PDE-5 inhibitors · <b>-statin</b> HMG-CoA reductase inhibitors · <b>-prost</b> prostaglandin analogs.",g:"Cardio"},
+{t:"Antibiotic Suffixes",b:"<b>-cillin</b> penicillins · <b>-cef-/cephalo-</b> cephalosporins · <b>-penem</b> carbapenems · <b>-cycline</b> tetracyclines · <b>-thromycin</b> macrolides · <b>-floxacin</b> fluoroquinolones · <b>-micin/-mycin</b> aminoglycosides · <b>-conazole</b> azole antifungals.",g:"Antimicrobials"},
+{t:"Antiviral / HIV Suffixes",b:"<b>-ciclovir</b> herpes antivirals (HSV/VZV; ganciclovir → CMV) · <b>-navir</b> protease inhibitors · <b>-tegravir</b> integrase inhibitors · <b>-tabine/-vudine</b> NRTIs · <b>oseltamivir</b> = influenza neuraminidase inhibitor.",g:"Antimicrobials"},
+{t:"Sedative / Anesthetic Suffixes",b:"<b>-azepam/-azolam</b> benzodiazepines (↑GABA-A frequency) · <b>-barbital</b> barbiturates (↑GABA-A duration) · <b>-flurane</b> inhaled anesthetics · <b>-caine</b> local anesthetics (Na⁺ channel block; esters 1 'i' vs amides 2 'i's).",g:"CNS"},
+{t:"Neuro / Psych Suffixes",b:"<b>-triptan</b> migraine abortives (5-HT1B/1D) · <b>-triptyline/-ipramine</b> TCAs · <b>-peridone/-piprazole/-apine</b> atypical antipsychotics · <b>-setron</b> 5-HT3 antiemetics · <b>-stigmine</b> AChE inhibitors.",g:"CNS"},
+{t:"Diabetes Suffixes",b:"<b>-glitazone</b> TZDs (PPAR-γ) · <b>-gliptin</b> DPP-4 inhibitors · <b>-flozin</b> SGLT2 inhibitors · <b>-glutide/-tide</b> GLP-1 agonists · <b>gli-/-ide</b> sulfonylureas (glipizide/glyburide) · <b>metformin</b> biguanide.",g:"Endocrine"},
+{t:"GI & Bone Suffixes",b:"<b>-prazole</b> PPIs (irreversible H/K ATPase) · <b>-tidine</b> H2 blockers · <b>-setron</b> antiemetics · <b>-prostol</b> misoprostol (prostaglandin) · <b>-dronate</b> bisphosphonates (osteoporosis).",g:"Endocrine/GI"},
+{t:"Onc / Biologic Suffixes",b:"<b>-mab</b> monoclonal antibodies (-ximab chimeric, -zumab humanized, -umab human) · <b>-nib</b> tyrosine kinase inhibitors ('NIB ends kinase') · <b>-ciclib</b> CDK4/6 inhibitors · <b>-parib</b> PARP inhibitors · <b>-tinib</b> kinase inhibitors.",g:"Onc/Immune"},
+{t:"Anticoagulant / Antiplatelet Suffixes",b:"<b>-parin</b> LMW heparins · <b>-xaban</b> direct factor Xa inhibitors ('Xa-ban') · <b>-gatran</b> direct thrombin inhibitors · <b>-grel</b> P2Y12/ADP inhibitors · <b>-teplase</b> thrombolytics (tPA).",g:"Coagulation"},
+{t:"Antidote Pairings (bonus)",b:"Benzodiazepines → flumazenil · Heparin → protamine · Warfarin → vitamin K/PCC · <b>-xaban</b> → andexanet alfa · <b>-gatran</b> (dabigatran) → idarucizumab · TCAs → sodium bicarbonate · inhaled anesthetic malignant hyperthermia → dantrolene.",g:"Reversal"}
+];
 
-const STATE = {
-  hp: 3, maxHp: 3, xp: 0, level: 1, streak: 0, bestStreak: 0,
-  mode: 'menu', currentQ: null, modeQs: [], modeIdx: 0,
-  modeStats: { correct: 0, total: 0 },
-  systemMastery: {}, achievements: {},
-  totalAnswered: 0, totalCorrect: 0
+const MODES={
+  daily:{name:"Daily Bout",ic:"🥊",desc:"15 random suffixes across all categories. Quick warm-up.",pick:()=>shuffle([...QBANK]).slice(0,15)},
+  endless:{name:"Endless Gauntlet",ic:"♾️",desc:"Survival mode — answer until you miss. Beat the streak.",endless:true,pick:()=>shuffle([...QBANK])},
+  cv:{name:"Cardiovascular & Renal",ic:"🦴",desc:"The must-know core — the CV/renal suffixes that show up most on Step 1.",pick:()=>shuffle(QBANK.filter(q=>q.m==="cv"))},
+  abx:{name:"Antimicrobials",ic:"🦠",desc:"Antibiotic, antifungal, and antiviral/HIV suffixes by class.",pick:()=>shuffle(QBANK.filter(q=>q.m==="abx"))},
+  cns:{name:"CNS & Psych",ic:"🧠",desc:"Sedatives, antidepressants, antipsychotics, antiemetics, and anesthetics.",pick:()=>shuffle(QBANK.filter(q=>q.m==="cns"))},
+  endo:{name:"Endocrine & GI",ic:"💊",desc:"Diabetes classes, PPIs/H2 blockers, and bisphosphonates.",pick:()=>shuffle(QBANK.filter(q=>q.m==="endo"))},
+  misc:{name:"Onc, Immune & Coagulation",ic:"🧪",desc:"Monoclonals, kinase inhibitors, and the anticoagulant/antiplatelet suffixes.",pick:()=>shuffle(QBANK.filter(q=>q.m==="misc"))}
 };
-SYSTEMS.forEach(s => { STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
+const MODE_TAGS={cv:"Cardiovascular / Renal",abx:"Antimicrobials",cns:"CNS / Psych",endo:"Endocrine / GI",misc:"Onc / Immune / Coagulation"};
 
-const ACHIEVEMENTS = [
-  { id: 'first_rx', name: 'First Rx', desc: 'Answer your first question', icon: '℞' },
-  { id: 'streak_5', name: 'Filling Fast', desc: '5-question streak', icon: '🔥' },
-  { id: 'streak_15', name: 'Pharmacy Pro', desc: '15-question streak', icon: '⚡' },
-  { id: 'level_5', name: 'Pharm Tech', desc: 'Reach Level 5', icon: '💊' },
-  { id: 'level_10', name: 'PharmD', desc: 'Reach Level 10', icon: '🧪' },
-  { id: 'master_cardio', name: 'Cardiac Cabinet', desc: 'Master Cardio (90%+, 5+ seen)', icon: '❤️' },
-  { id: 'master_anti', name: 'Antimicrobial Ace', desc: 'Master Antimicro (90%+, 5+ seen)', icon: '🦠' },
-  { id: 'master_tricky', name: 'Trick Buster', desc: 'Master Tricky (90%+, 4+ seen)', icon: '🎯' },
-  { id: 'perfect_round', name: 'Perfect Script', desc: 'Perfect 15/15 round', icon: '✦' },
-  { id: 'survivor', name: 'Marathon Filler', desc: 'Endless: 25 in a row', icon: '🏆' }
-];
+const SAVE_KEY="suffix_showdown_v2";
+let save=load();
+function load(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{best:{},endlessBest:0,played:0}}catch(e){return{best:{},endlessBest:0,played:0}}}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
-// ============================================================================
-// PERSISTENCE
-// ============================================================================
-function loadSave() {
-  try {
-    const v = localStorage.getItem('suffix_showdown_save');
-    if (v) {
-      const data = JSON.parse(v);
-      Object.assign(STATE, data);
-      SYSTEMS.forEach(s => { if (!STATE.systemMastery[s]) STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
-      toast('SAVE LOADED', 'xp');
-    }
-  } catch (e) {}
-}
-function save() {
-  try {
-    const data = {
-      hp: STATE.hp, maxHp: STATE.maxHp, xp: STATE.xp, level: STATE.level,
-      bestStreak: STATE.bestStreak, systemMastery: STATE.systemMastery,
-      achievements: STATE.achievements, totalAnswered: STATE.totalAnswered,
-      totalCorrect: STATE.totalCorrect
-    };
-    localStorage.setItem('suffix_showdown_save', JSON.stringify(data));
-  } catch (e) {}
-}
+let session=null;
+const app=document.getElementById("app");
 
-// ============================================================================
-// UTILS
-// ============================================================================
-function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-function pickRandom(arr, n) { return shuffle(arr).slice(0, n); }
-function toast(msg, cls='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + cls;
-  setTimeout(() => t.className = 'toast ' + cls, 1500);
-}
-function unlock(id) {
-  if (STATE.achievements[id]) return;
-  const ach = ACHIEVEMENTS.find(a => a.id === id);
-  if (!ach) return;
-  STATE.achievements[id] = true;
-  toast(`★ ${ach.name}!`, 'xp');
-  save();
-}
-function checkAchievements() {
-  if (STATE.totalAnswered >= 1) unlock('first_rx');
-  if (STATE.streak >= 5) unlock('streak_5');
-  if (STATE.streak >= 15) unlock('streak_15');
-  if (STATE.level >= 5) unlock('level_5');
-  if (STATE.level >= 10) unlock('level_10');
-  ['Cardio','Antimicro','Tricky'].forEach((sys, i) => {
-    const m = STATE.systemMastery[sys];
-    const threshold = i === 2 ? 4 : 5;
-    if (m.seen >= threshold && (m.correct/m.seen) >= 0.9) {
-      unlock(['master_cardio','master_anti','master_tricky'][i]);
-    }
-  });
-}
-
-// ============================================================================
-// HUD
-// ============================================================================
-function renderHUD() {
-  let hearts = '';
-  for (let i = 0; i < STATE.maxHp; i++) {
-    hearts += `<span class="heart ${i < STATE.hp ? '' : 'lost'}">♥</span>`;
-  }
-  document.getElementById('hearts').innerHTML = hearts;
-  document.getElementById('xp-display').textContent = STATE.xp;
-  document.getElementById('lvl-display').textContent = STATE.level;
-  document.getElementById('streak-display').textContent = STATE.streak + '🔥';
-}
-function gainXP(amt) {
-  STATE.xp += amt;
-  const needed = STATE.level * 50;
-  if (STATE.xp >= needed) {
-    STATE.xp -= needed;
-    STATE.level++;
-    STATE.maxHp = Math.min(5, 3 + Math.floor(STATE.level / 5));
-    STATE.hp = STATE.maxHp;
-    toast(`RANK UP! Lvl ${STATE.level}`, 'xp');
-  }
-  renderHUD();
-}
-
-// ============================================================================
-// SCREENS
-// ============================================================================
-const panel = document.getElementById('panel');
-
-function renderMenu() {
-  STATE.mode = 'menu';
-  renderHUD();
-  panel.innerHTML = `
-    <h2 style="font-family:'Bebas Neue',sans-serif; font-size:28px; color:var(--rx-amber); margin-bottom:4px; text-align:center; letter-spacing:5px;">SELECT YOUR PRESCRIPTION</h2>
-    <p style="text-align:center; color:var(--text-dim); margin-bottom:18px; font-size:14px; letter-spacing:1px;">Quick recognition drills. Faster questions, more reps.</p>
-    <div class="menu-grid">
-      <div class="menu-card" onclick="startMode('daily')">
-        <span class="menu-icon">💊</span>
-        <div class="menu-title">Daily Dose</div>
-        <div class="menu-desc">15 random Qs.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('endless')">
-        <span class="menu-icon">∞</span>
-        <div class="menu-title">Endless Rx</div>
-        <div class="menu-desc">Survival mode.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('tricky')" style="border-color:var(--caution-red); background:linear-gradient(135deg, rgba(232,72,88,0.12), rgba(244,168,44,0.06));">
-        <span class="menu-icon">⚠</span>
-        <div class="menu-title" style="color:var(--caution-red);">★ CONFUSION CLEANUP ★</div>
-        <div class="menu-desc">The deceptive suffixes.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('cardio')">
-        <span class="menu-icon">❤</span>
-        <div class="menu-title">Cardio Pills</div>
-        <div class="menu-desc">-pril, -sartan, -olol, etc.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('antimicro')">
-        <span class="menu-icon">🦠</span>
-        <div class="menu-title">Antibiotic Alley</div>
-        <div class="menu-desc">-cillin, -floxacin, -mycin.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('cns')">
-        <span class="menu-icon">🧠</span>
-        <div class="menu-title">CNS Capsules</div>
-        <div class="menu-desc">-zepam, -oxetine, -caine.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('endo')">
-        <span class="menu-icon">⚙</span>
-        <div class="menu-title">Endo Cabinet</div>
-        <div class="menu-desc">-glitazone, -flozin, etc.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('s2c')">
-        <span class="menu-icon">→</span>
-        <div class="menu-title">Suffix → Class</div>
-        <div class="menu-desc">Pure stem recognition.</div>
-      </div>
-      <div class="menu-card" onclick="startMode('d2c')">
-        <span class="menu-icon">⇄</span>
-        <div class="menu-title">Drug → Class</div>
-        <div class="menu-desc">Full drug name → class.</div>
-      </div>
+function menu(){
+  session=null;const m=MODES;
+  app.innerHTML=`
+  <div class="hdr">
+    <div class="badge">VS</div>
+    <h1>SUFFIX SHOWDOWN</h1>
+    <div class="sub">Drug Name → Class — ${QBANK.length} questions</div>
+  </div>
+  <div class="section-label">Quick Play</div>
+  <div class="grid">${tile("daily",m.daily,"")}${tile("endless",m.endless,"amber")}</div>
+  <div class="section-label">Topic Drills</div>
+  <div class="grid">
+    ${tile("cv",m.cv,"special")}${tile("abx",m.abx,"")}${tile("cns",m.cns,"")}${tile("endo",m.endo,"")}${tile("misc",m.misc,"")}
+  </div>
+  <div class="section-label">Reinforce</div>
+  <div class="grid">
+    <div class="tile amber" onclick="vault()">
+      <div class="ic">💎</div><h3>Dirty Medicine Vault</h3>
+      <p>The full suffix → class cheat sheet by category, plus the bonus antidote pairings.</p>
+      <div class="meta">${VAULT.length} memory tools</div>
     </div>
-    <div class="system-progress">
-      <h3 style="font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--rx-green-bright); margin:20px 0 10px; letter-spacing:3px;">— FORMULARY MASTERY —</h3>
-      ${SYSTEMS.map(sys => {
-        const m = STATE.systemMastery[sys];
-        const pct = m.seen ? Math.round(m.correct / m.seen * 100) : 0;
-        return `
-          <div class="system-bar">
-            <div class="system-name">${sys}</div>
-            <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-            <div class="system-pct">${pct}% (${m.correct}/${m.seen})</div>
-          </div>`;
-      }).join('')}
-    </div>
-    <div class="controls">
-      <button class="btn btn-secondary" onclick="showAchievements()">★ Achievements</button>
-      <button class="btn btn-secondary" onclick="showStats()">⌬ Stats</button>
-      <button class="btn btn-secondary" onclick="showSyncModal()">🔄 Sync</button>
-      <button class="btn btn-danger" onclick="resetSave()">✗ Reset</button>
-    </div>
-  `;
+  </div>
+  <footer>Saves to this browser via localStorage · ${save.played||0} rounds · Endless best: ${save.endlessBest||0}</footer>`;
 }
-
-function startMode(mode) {
-  STATE.mode = mode;
-  STATE.modeStats = { correct: 0, total: 0 };
-  STATE.modeIdx = 0;
-  STATE.hp = STATE.maxHp;
-
-  let pool = QBANK;
-  let limit = 15;
-  if (mode === 'cardio') pool = QBANK.filter(q => q.topic === 'Cardio');
-  else if (mode === 'antimicro') pool = QBANK.filter(q => q.topic === 'Antimicro');
-  else if (mode === 'cns') pool = QBANK.filter(q => q.topic === 'CNS');
-  else if (mode === 'endo') pool = QBANK.filter(q => q.topic === 'Endo');
-  else if (mode === 'tricky') pool = QBANK.filter(q => q.topic === 'Tricky' || q.type === 'tricky');
-  else if (mode === 's2c') pool = QBANK.filter(q => q.type === 's2c');
-  else if (mode === 'd2c') pool = QBANK.filter(q => q.type === 'd2c');
-  else if (mode === 'endless') { pool = QBANK; limit = 999; }
-
-  STATE.modeQs = mode === 'endless' ? shuffle(pool) : pickRandom(pool, Math.min(limit, pool.length));
-  STATE.modeStats.total = STATE.modeQs.length;
-  renderHUD();
-  nextQuestion();
+function tile(key,mode,cls){
+  const best=key==="endless"?(save.endlessBest||0):(save.best[key]!=null?save.best[key]+"%":"—");
+  const bestLbl=key==="endless"?`Best streak: ${best}`:`Best: ${best}`;
+  return `<div class="tile ${cls}" onclick="start('${key}')"><div class="ic">${mode.ic}</div><h3>${mode.name}</h3><p>${mode.desc}</p><div class="meta">${bestLbl}</div></div>`;
 }
-
-function nextQuestion() {
-  if (STATE.hp <= 0) return endRound('LIFE LOST');
-  if (STATE.modeIdx >= STATE.modeQs.length) {
-    if (STATE.mode === 'endless') {
-      STATE.modeQs = shuffle(QBANK); STATE.modeIdx = 0;
-    } else return endRound('COMPLETE');
-  }
-  STATE.currentQ = STATE.modeQs[STATE.modeIdx];
-  renderQuestion();
+function start(key){const mode=MODES[key];const qs=mode.pick();session={key,mode,qs,i:0,correct:0,streak:0,answered:false};renderQ();}
+function renderQ(){
+  const s=session;
+  if(!s.mode.endless&&s.i>=s.qs.length)return results();
+  if(s.mode.endless&&s.i>=s.qs.length){s.qs=shuffle([...QBANK]);s.i=0;}
+  const q=s.qs[s.i];
+  const order=shuffle(q.c.map((t,idx)=>({t,idx})));
+  s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);
+  const total=s.mode.endless?"∞":s.qs.length;const num=s.i+1;
+  const pct=s.mode.endless?Math.min(100,(s.streak%15)/15*100):(num-1)/s.qs.length*100;
+  const tag=MODE_TAGS[q.m]||"Mixed";
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="quiz-top"><span class="qcount">Q ${num} / ${total}</span><span class="streak">🔥 Streak ${s.streak}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+    <span class="modtag">${tag}</span>
+    <div class="stem">${q.q}</div>
+    <div class="choices" id="ch">${order.map((o,i)=>`<div class="choice" data-i="${i}" onclick="answer(${i})"><span class="k">${String.fromCharCode(65+i)}</span><span>${o.t}</span></div>`).join("")}</div>
+    <div id="post"></div>`;
 }
-
-function renderDrugDisplay(q) {
-  if (q.type === 's2c' || (q.type === 'tricky' && q.stem && !q.drug)) {
-    // Suffix-only display
-    return `<div class="drug-display suffix-only">
-      <div class="label">Suffix Recognition</div>
-      <div class="drug-name">${q.stem}</div>
+function answer(pos){
+  const s=session;if(s.answered)return;s.answered=true;
+  const q=s.qs[s.i];const correct=pos===s.correctPos;
+  document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong");});
+  if(correct){s.correct++;s.streak++;}else{s.streak=0;}
+  const post=document.getElementById("post");
+  const pearl=q.p?`<div class="pearl"><b>💎 Pearl:</b> ${q.p}</div>`:"";
+  post.innerHTML=`<div class="explain ${correct?"":"miss"}"><div class="lab">${correct?"✔ Correct":"✕ Review"}</div><div class="why">${q.why}</div>${pearl}</div>`;
+  if(s.mode.endless&&!correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}post.innerHTML+=`<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;return;}
+  if(s.mode.endless&&correct){if(s.correct>(save.endlessBest||0)){save.endlessBest=s.correct;persist();}}
+  post.innerHTML+=`<button class="btn btn-next" onclick="nextQ()">${(!s.mode.endless&&s.i+1>=s.qs.length)?"SEE RESULTS":"NEXT ›"}</button>`;
+}
+function nextQ(){session.i++;session.answered=false;renderQ();}
+function results(){
+  const s=session;const got=s.correct;
+  const pctNum=s.mode.endless?null:Math.round(got/s.qs.length*100);
+  if(!s.mode.endless){save.best[s.key]=Math.max(save.best[s.key]||0,pctNum);}
+  save.played=(save.played||0)+1;persist();
+  let rank,col;const p=s.mode.endless?Math.min(100,got*5):pctNum;
+  if(p>=90){rank="ATTENDING — DOMINATED";col="var(--green)"}
+  else if(p>=75){rank="RESIDENT — SOLID";col="var(--cyan)"}
+  else if(p>=55){rank="INTERN — GETTING THERE";col="var(--amber-hi)"}
+  else{rank="MS1 — DRILL AGAIN";col="var(--red)"}
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="result">
+      <div class="score-big" style="color:${col}">${s.mode.endless?got:pctNum+"%"}</div>
+      <div class="rank" style="color:${col}">${s.mode.endless?"STREAK: "+got:rank}</div>
+      <div class="statrow">
+        <div><b>${got}</b>${s.mode.endless?"in a row":"correct"}</div>
+        ${s.mode.endless?"":`<div><b>${s.qs.length-got}</b>missed</div>`}
+        <div><b>${s.mode.endless?(save.endlessBest||0):(save.best[s.key]+"%")}</b>best</div>
+      </div>
+      <button class="btn btn-next" style="max-width:300px;margin:0 auto" onclick="start('${s.key}')">RUN IT AGAIN</button>
+      <button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="menu()">BACK TO MENU</button>
     </div>`;
-  } else if (q.drug && q.stem) {
-    // Highlight the stem within the drug name
-    const drug = q.drug;
-    const stem = q.stem.replace(/^-/, '').replace(/\s.*$/, '').toLowerCase();
-    const drugLower = drug.toLowerCase();
-    const stemIdx = drugLower.lastIndexOf(stem);
-    let html;
-    if (stemIdx > 0) {
-      html = drug.substring(0, stemIdx) + '<span class="stem">' + drug.substring(stemIdx) + '</span>';
-    } else {
-      html = drug;
-    }
-    return `<div class="drug-display">
-      <div class="label">Drug Name</div>
-      <div class="drug-name">${html}</div>
-    </div>`;
-  } else if (q.drug) {
-    return `<div class="drug-display">
-      <div class="label">Drug Name</div>
-      <div class="drug-name">${q.drug}</div>
-    </div>`;
-  }
-  return '';
 }
-
-function renderQuestion() {
-  const q = STATE.currentQ;
-  const progressTxt = STATE.mode === 'endless'
-    ? `Q${STATE.modeStats.correct + 1} • ENDLESS`
-    : `Q${STATE.modeIdx + 1} / ${STATE.modeQs.length}`;
-  const typeLabels = {
-    's2c': 'STEM → CLASS',
-    'd2c': 'DRUG → CLASS',
-    'c2s': 'CLASS → STEM',
-    'tricky': 'TRICKY PAIR'
-  };
-  panel.innerHTML = `
-    <div class="question-area">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-        <span class="q-tag">${typeLabels[q.type] || q.type} • ${q.topic}</span>
-        <span style="font-family:'IBM Plex Mono',monospace; color:var(--text-dim); font-size:13px;">${progressTxt}</span>
-      </div>
-      ${renderDrugDisplay(q)}
-      <div class="q-text">${q.q}</div>
-      <div class="choices" id="choices">
-        ${q.c.map((c, i) => `
-          <button class="choice" data-idx="${i}" onclick="answer(${i})">
-            <span class="key">${String.fromCharCode(65 + i)}</span>
-            <span>${c}</span>
-          </button>`).join('')}
-      </div>
-      <div id="feedback"></div>
+function vault(){
+  app.innerHTML=`
+    <div class="back" onclick="menu()">‹ MENU</div>
+    <div class="hdr" style="padding-top:6px">
+      <h1 style="color:var(--amber-hi);font-size:24px">💎 Dirty Medicine Vault</h1>
+      <div class="sub">Suffix → class cheat sheet</div>
     </div>
-  `;
+    ${VAULT.map(v=>`<div class="vault-card"><h4>${v.t}</h4><p>${v.b}</p><span class="tag">▸ ${v.g}</span></div>`).join("")}
+    <button class="btn btn-ghost" style="width:100%" onclick="menu()">BACK TO MENU</button>`;
 }
-
-function answer(idx) {
-  const q = STATE.currentQ;
-  const isCorrect = idx === q.a;
-  document.querySelectorAll('.choice').forEach((el, i) => {
-    el.classList.add('disabled');
-    el.onclick = null;
-    if (i === q.a) el.classList.add('correct');
-    else if (i === idx) el.classList.add('wrong');
-  });
-
-  STATE.totalAnswered++;
-  STATE.systemMastery[q.topic].seen++;
-  if (isCorrect) {
-    STATE.totalCorrect++;
-    STATE.systemMastery[q.topic].correct++;
-    STATE.modeStats.correct++;
-    STATE.streak++;
-    if (STATE.streak > STATE.bestStreak) STATE.bestStreak = STATE.streak;
-    const xpGain = 8 + Math.min(STATE.streak, 15);
-    gainXP(xpGain);
-    toast(`+${xpGain} XP`, 'xp');
-    if (STATE.mode === 'endless' && STATE.streak >= 25) unlock('survivor');
-  } else {
-    STATE.streak = 0;
-    STATE.hp--;
-    toast('✗ -1 HP', 'error');
-  }
-  renderHUD();
-  checkAchievements();
-  save();
-
-  document.getElementById('feedback').innerHTML = `
-    <div class="pearl-box">
-      <div class="pearl-label">★ KEY ★</div>
-      <div class="pearl-text">${q.p}</div>
-    </div>
-    <div class="controls">
-      <button class="btn btn-secondary" onclick="renderMenu()">◄ MENU</button>
-      <button class="btn" onclick="advance()">${STATE.modeIdx + 1 >= STATE.modeQs.length && STATE.mode !== 'endless' ? 'FINISH ►' : 'NEXT ►'}</button>
-    </div>
-  `;
-}
-
-function advance() {
-  STATE.modeIdx++;
-  nextQuestion();
-}
-
-function endRound(reason) {
-  const correct = STATE.modeStats.correct;
-  const total = STATE.modeStats.total;
-  const livePct = total > 0 ? Math.round(correct/total*100) : 0;
-
-  let rank, rankColor;
-  if (livePct === 100 && total >= 15) { rank = 'S'; rankColor = 'var(--rx-amber)'; unlock('perfect_round'); }
-  else if (livePct >= 90) { rank = 'A'; rankColor = 'var(--rx-green-bright)'; }
-  else if (livePct >= 75) { rank = 'B'; rankColor = 'var(--paper)'; }
-  else if (livePct >= 60) { rank = 'C'; rankColor = 'var(--muted-blue)'; }
-  else { rank = 'D'; rankColor = 'var(--caution-red)'; }
-
-  const reasonMsg = reason === 'LIFE LOST' ? 'Out of Refills' : 'Prescription Filled';
-  panel.innerHTML = `
-    <div class="results-screen">
-      <div class="results-title">${reasonMsg}</div>
-      <div class="rank-badge" style="color:${rankColor}; border-color:${rankColor}; box-shadow: 0 0 25px ${rankColor};">RANK ${rank}</div>
-      <div class="results-stats">
-        <div class="stat-block"><span class="stat-num">${correct}</span><span class="stat-label">Correct</span></div>
-        <div class="stat-block"><span class="stat-num">${livePct}%</span><span class="stat-label">Accuracy</span></div>
-        <div class="stat-block"><span class="stat-num">${STATE.bestStreak}</span><span class="stat-label">Best Streak</span></div>
-      </div>
-      <div class="controls" style="justify-content:center;">
-        <button class="btn btn-secondary" onclick="renderMenu()">◄ MENU</button>
-        <button class="btn" onclick="startMode('${STATE.mode}')">↻ AGAIN</button>
-      </div>
-    </div>
-  `;
-  STATE.streak = 0;
-  renderHUD();
-  save();
-}
-
-
-// ============================================================================
-// SYNC — Export / Import save codes across devices
-// ============================================================================
-function showSyncModal() {
-  const data = {
-    hp: STATE.hp, maxHp: STATE.maxHp, xp: STATE.xp, level: STATE.level,
-    bestStreak: STATE.bestStreak, systemMastery: STATE.systemMastery,
-    achievements: STATE.achievements, totalAnswered: STATE.totalAnswered,
-    totalCorrect: STATE.totalCorrect
-  };
-  const code = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-
-  const html = `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <h2>🔄 SYNC SAVE</h2>
-        <p style="font-size:14px; opacity:0.75; margin-bottom:18px;">Transfer your progress between devices. Copy code from one, paste on the other.</p>
-
-        <div style="margin-bottom:20px; padding:14px; background:rgba(0,0,0,0.25); border-radius:4px; border:1px solid rgba(128,128,128,0.25);">
-          <h3 style="font-size:15px; margin-bottom:8px; opacity:0.9;">📤 EXPORT &mdash; from this device</h3>
-          <p style="font-size:13px; opacity:0.65; margin-bottom:8px;">Copy this code, then paste it on your other device:</p>
-          <textarea id="sync-export-code" readonly style="width:100%; height:90px; font-family:monospace; font-size:11px; padding:8px; background:rgba(0,0,0,0.45); color:inherit; border:1px solid rgba(128,128,128,0.4); border-radius:3px; resize:none; word-break:break-all;">${code}</textarea>
-          <button class="btn btn-secondary" style="margin-top:10px; width:100%;" onclick="copyExportCode()">📋 Copy to Clipboard</button>
-        </div>
-
-        <div style="margin-bottom:20px; padding:14px; background:rgba(0,0,0,0.25); border-radius:4px; border:1px solid rgba(128,128,128,0.25);">
-          <h3 style="font-size:15px; margin-bottom:8px; opacity:0.9;">📥 IMPORT &mdash; from another device</h3>
-          <p style="font-size:13px; opacity:0.65; margin-bottom:8px;">Paste a save code from your other device:</p>
-          <textarea id="sync-import-code" placeholder="Paste save code here..." style="width:100%; height:90px; font-family:monospace; font-size:11px; padding:8px; background:rgba(0,0,0,0.45); color:inherit; border:1px solid rgba(128,128,128,0.4); border-radius:3px; resize:none;"></textarea>
-          <button class="btn" style="margin-top:10px; width:100%;" onclick="applyImport()">✓ Apply Import</button>
-        </div>
-
-        <div style="text-align:center;">
-          <button class="btn btn-secondary" onclick="closeModal()">CLOSE</button>
-        </div>
-      </div>
-    </div>`;
-  document.body.insertAdjacentHTML('beforeend', html);
-}
-
-function copyExportCode() {
-  const ta = document.getElementById('sync-export-code');
-  if (!ta) return;
-  ta.select();
-  ta.setSelectionRange(0, 99999);
-  let ok = false;
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(ta.value).then(
-      () => toast('COPIED!', 'xp'),
-      () => {
-        try { ok = document.execCommand('copy'); } catch (e) {}
-        if (ok) toast('COPIED!', 'xp');
-        else toast('Select & copy manually', 'error');
-      }
-    );
-  } else {
-    try { ok = document.execCommand('copy'); } catch (e) {}
-    if (ok) toast('COPIED!', 'xp');
-    else toast('Select & copy manually', 'error');
-  }
-}
-
-function applyImport() {
-  const ta = document.getElementById('sync-import-code');
-  if (!ta) return;
-  const code = ta.value.trim();
-  if (!code) { toast('Paste a code first', 'error'); return; }
-  try {
-    let json;
-    try { json = decodeURIComponent(escape(atob(code))); }
-    catch (e) { json = atob(code); }
-    const data = JSON.parse(json);
-    if (typeof data.xp !== 'number' || !data.systemMastery) {
-      throw new Error('Invalid save format');
-    }
-    if (!confirm('This will REPLACE your current progress on this device. Continue?')) return;
-    Object.assign(STATE, data);
-    SYSTEMS.forEach(s => { if (!STATE.systemMastery[s]) STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
-    if (!STATE.achievements) STATE.achievements = {};
-    save();
-    closeModal();
-    toast('SAVE IMPORTED!', 'xp');
-    renderMenu();
-  } catch (e) {
-    toast('Invalid code — try again', 'error');
-  }
-}
-
-function showAchievements() {
-  const html = `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <h2>★ ACHIEVEMENTS</h2>
-        <div class="achievement-list">
-          ${ACHIEVEMENTS.map(a => `
-            <div class="achievement ${STATE.achievements[a.id] ? 'unlocked' : 'locked'}">
-              <span class="ach-icon">${STATE.achievements[a.id] ? a.icon : '🔒'}</span>
-              <div>
-                <strong>${a.name}</strong><br>
-                <span style="font-size:12px; color:var(--text-dim);">${a.desc}</span>
-              </div>
-            </div>`).join('')}
-        </div>
-        <button class="btn" onclick="closeModal()">CLOSE</button>
-      </div>
-    </div>`;
-  document.body.insertAdjacentHTML('beforeend', html);
-}
-
-function showStats() {
-  const totalPct = STATE.totalAnswered ? Math.round(STATE.totalCorrect/STATE.totalAnswered*100) : 0;
-  const html = `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <h2>⌬ LIFETIME STATS</h2>
-        <p><strong style="color:var(--rx-amber)">Total Answered:</strong> ${STATE.totalAnswered}</p>
-        <p><strong style="color:var(--rx-green-bright)">Total Correct:</strong> ${STATE.totalCorrect}</p>
-        <p><strong style="color:var(--paper)">Lifetime Accuracy:</strong> ${totalPct}%</p>
-        <p><strong style="color:var(--caution-red)">Best Streak:</strong> ${STATE.bestStreak}🔥</p>
-        <p><strong style="color:var(--muted-blue)">Current Rank:</strong> ${STATE.level}</p>
-        <p><strong>Achievements:</strong> ${Object.keys(STATE.achievements).length} / ${ACHIEVEMENTS.length}</p>
-        <button class="btn" onclick="closeModal()">CLOSE</button>
-      </div>
-    </div>`;
-  document.body.insertAdjacentHTML('beforeend', html);
-}
-
-function closeModal() { document.querySelector('.modal-overlay')?.remove(); }
-
-function resetSave() {
-  if (!confirm('Reset ALL Suffix Showdown progress?')) return;
-  try { localStorage.removeItem('suffix_showdown_save'); } catch (e) {}
-  STATE.hp = 3; STATE.maxHp = 3; STATE.xp = 0; STATE.level = 1;
-  STATE.streak = 0; STATE.bestStreak = 0; STATE.totalAnswered = 0; STATE.totalCorrect = 0;
-  STATE.achievements = {};
-  SYSTEMS.forEach(s => { STATE.systemMastery[s] = { seen: 0, correct: 0 }; });
-  toast('SAVE RESET');
-  renderMenu();
-}
-
-document.addEventListener('keydown', (e) => {
-  if (STATE.mode === 'menu' || !STATE.currentQ) return;
-  const choices = document.querySelectorAll('.choice:not(.disabled)');
-  if (choices.length === 0) {
-    if (e.key === 'Enter') {
-      const nextBtn = document.querySelector('.controls .btn:not(.btn-secondary):not(.btn-danger)');
-      nextBtn?.click();
-    }
-    return;
-  }
-  const keyIdx = ['a','b','c','d','1','2','3','4'].indexOf(e.key.toLowerCase());
-  if (keyIdx >= 0) {
-    const idx = keyIdx >= 4 ? keyIdx - 4 : keyIdx;
-    if (choices[idx]) answer(idx);
-  }
+document.addEventListener("keydown",e=>{
+  if(!session||session.answered)return;
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
 });
-
-loadSave();
-renderMenu();
+menu();
 </script>
 </body>
 </html>

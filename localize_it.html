@@ -171,6 +171,7 @@ const QBANK=[
 {m:"dz",q:"Chorea, behavioral change, and dementia with caudate atrophy and a CAG trinucleotide repeat define which disease?",c:["Huntington disease","Parkinson disease","Wilson disease","ALS"],a:0,why:"Huntington = autosomal dominant CAG expansion (chromosome 4) → caudate atrophy, ↓GABA and ACh.",p:"Huntington = <b>CAG</b>, caudate atrophy, anticipation. \"Caudate loses ACh and GABA.\""},
 {m:"dz",q:"Fatigable weakness and ptosis that WORSEN through the day and improve with rest, caused by antibodies to the ACh receptor, describe which disease?",c:["Myasthenia gravis","Lambert-Eaton syndrome","Multiple sclerosis","Botulism"],a:0,why:"MG = anti-AChR antibodies; postsynaptic; worse with use; associated with thymoma; improves with edrophonium.",p:"MG = <b>worse with use</b>, anti-AChR, thymoma. (Ocular symptoms first.)"},
 {m:"dz",q:"Proximal weakness that IMPROVES with repeated use, linked to small cell lung cancer and antibodies to voltage-gated calcium channels, describes which disease?",c:["Lambert-Eaton myasthenic syndrome","Myasthenia gravis","Guillain-Barré syndrome","Polymyositis"],a:0,why:"LEMS = presynaptic anti-Ca-channel antibodies → less ACh release; repeated use builds up Ca → improves; paraneoplastic (SCLC).",p:"LEMS = <b>better with use</b>, anti-Ca-channel, small cell lung cancer."},
+{m:"stroke",q:"Ipsilateral facial pain/temperature loss, contralateral body pain/temperature loss, dysphagia, hoarseness, and vertigo localize to which vascular territory?",c:["Posterior inferior cerebellar artery","Anterior inferior cerebellar artery","Anterior cerebral artery","Middle cerebral artery"],a:0,why:"Lateral medullary (Wallenberg) syndrome is classically due to PICA occlusion and hits nucleus ambiguus, vestibular nuclei, spinal trigeminal tract, spinothalamic tract, and sympathetic fibers.",p:"PICA = lateral medulla = <b>can't eat</b> (dysphagia/hoarseness). AICA = facial droop + deafness."},
 {m:"dz",q:"Gait apraxia ('magnetic' gait), urinary incontinence, and dementia — 'wet, wacky, and wobbly' — describe which condition?",c:["Normal pressure hydrocephalus","Alzheimer disease","Parkinson disease","Huntington disease"],a:0,why:"NPH = ventricular enlargement with normal opening pressure; LP/shunt can reverse it. The triad is the buzz.",p:"NPH = <b>Wet, Wacky, Wobbly</b>. Reversible — tap the CSF."}
 ];
 
@@ -332,6 +333,9 @@ document.addEventListener("keydown",e=>{
   const k=e.key.toLowerCase();
   if(map[k]!=null&&session.order&&map[k]<session.order.length)answer(map[k]);
 });
+</script>
+<script src="arcade_upgrade.js"></script>
+<script>
 menu();
 </script>
 </body>

@@ -53,8 +53,11 @@ To enable accounts and cross-device progress:
 
 1. Create a Supabase project.
 2. In Supabase Auth, enable email/password sign-ins.
-3. Open Supabase SQL Editor and run `supabase_schema.sql`.
-4. Open `supabase_config.js` and paste your public project URL and anon key:
+3. In Supabase Auth URL Configuration, set:
+   - Site URL: `https://ejrobinson5044-web.github.io/step1-games/`
+   - Redirect URL: `https://ejrobinson5044-web.github.io/step1-games/**`
+4. Open Supabase SQL Editor and run `supabase_schema.sql`.
+5. Open `supabase_config.js` and paste your public project URL and anon key:
 
 ```js
 window.STEP1_SUPABASE_CONFIG = {
@@ -68,6 +71,8 @@ The anon key is safe to publish for this static site when Row Level Security is 
 Each signed-in student gets one private `step1_progress` row. The app stays local-first and syncs missed items, flashcards, scores, and attempts after login.
 
 The latest schema also supports deleting cloud progress and deleting an account from inside the app. If you added cloud sync before those controls existed, rerun the current `supabase_schema.sql` in Supabase SQL Editor.
+
+If an email confirmation link goes to a GitHub Pages 404, update the Auth URL Configuration above, then use `Resend confirmation` in the sign-in drawer to send a fresh link.
 
 ## Sign-in Visibility
 

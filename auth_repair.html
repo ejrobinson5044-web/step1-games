@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fix Sign-in - Step 1 Arcade</title>
+<style>
+:root{--bg:#08080c;--panel:#15151f;--text:#eef0f7;--dim:#94a3b8;--line:rgba(255,255,255,.12);--cyan:#22d3ee;--green:#34d399;--red:#f87171}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:linear-gradient(180deg,#08080c,#10101a);color:var(--text);font-family:Arial,Helvetica,sans-serif;padding:24px}
+.panel{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+h1{margin:0 0 10px;font-size:28px}
+p{color:var(--dim);line-height:1.5}
+.status{margin:16px 0;padding:12px;border-left:3px solid var(--cyan);background:rgba(255,255,255,.04);border-radius:10px;color:var(--text)}
+.ok{border-left-color:var(--green)}
+.bad{border-left-color:var(--red)}
+a,button{display:inline-flex;margin-top:10px;border:1px solid var(--line);background:#202030;color:var(--text);border-radius:10px;padding:11px 14px;text-decoration:none;font:inherit;cursor:pointer}
+a.primary,button.primary{background:linear-gradient(135deg,#22d3ee,#a78bfa);color:#08080c;border:0;font-weight:800}
+</style>
+</head>
+<body>
+<main class="panel">
+  <h1>Fix sign-in</h1>
+  <p>This clears the Step 1 Arcade offline/auth cache and keeps your study progress.</p>
+  <div id="status" class="status">Repairing sign-in...</div>
+  <a id="go" class="primary" href="index.html?fresh=auth-repair" hidden>Return to arcade</a>
+  <button id="again" type="button" hidden>Run repair again</button>
+</main>
+<script>
+(function(){
+  const status = document.getElementById("status");
+  const go = document.getElementById("go");
+  const again = document.getElementById("again");
+  const params = new URLSearchParams(location.search);
+  const next = (params.get("next") || "index.html").replace(/[^a-z0-9_.-]/gi,"") || "index.html";
+  const freshUrl = `${next}?fresh=auth-repair-${Date.now()}`;
+  go.href = freshUrl;
+
+  function clearAuthStorage(storage){
+    if (!storage) return 0;
+    let removed = 0;
+    for (let i=storage.length-1;i>=0;i--) {
+      const key = storage.key(i);
+      if (/^sb-.+-auth-token$/.test(key) || key === "supabase.auth.token") {
+        storage.removeItem(key);
+        removed += 1;
+      }
+    }
+    return removed;
+  }
+
+  async function repair(){
+    status.className = "status";
+    status.textContent = "Repairing sign-in...";
+    go.hidden = true;
+    again.hidden = true;
+    try {
+      const removedAuth = clearAuthStorage(localStorage) + clearAuthStorage(sessionStorage);
+      const cacheNames = self.caches ? await caches.keys() : [];
+      await Promise.all(cacheNames.filter(name=>name.indexOf("step1-arcade") === 0).map(name=>caches.delete(name)));
+      if (navigator.serviceWorker) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(reg=>reg.unregister()));
+      }
+      status.className = "status ok";
+      status.textContent = `Repair complete. Cleared ${removedAuth} auth session item(s) and refreshed the app cache.`;
+      go.hidden = false;
+      again.hidden = false;
+      setTimeout(()=>location.replace(freshUrl), 1400);
+    } catch(error) {
+      status.className = "status bad";
+      status.textContent = error && error.message ? error.message : "Repair failed. Try refreshing this page.";
+      go.hidden = false;
+      again.hidden = false;
+    }
+  }
+
+  again.addEventListener("click", repair);
+  repair();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Review Hub - Step 1 Arcade</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#08080c;--panel:#15151f;--panel-hi:#202030;--text:#eef0f7;--dim:#8b8aa3;--line:rgba(255,255,255,.09);--green:#34d399;--red:#f87171;--amber:#fbbf24;--cyan:#22d3ee}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:radial-gradient(ellipse at 20% 0%,rgba(34,211,238,.10),transparent 48%),radial-gradient(ellipse at 90% 15%,rgba(251,146,60,.08),transparent 48%),linear-gradient(180deg,#08080c,#10101a);color:var(--text);font-family:'Hanken Grotesk',sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:24px 18px 56px}
+.topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:22px}
+a{color:inherit}
+.back{font-family:'JetBrains Mono';font-size:12px;color:var(--dim);text-decoration:none}
+.back:hover{color:var(--cyan)}
+.hero{padding:18px 0 22px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.kicker{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:4px;text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Unbounded';font-size:clamp(30px,6vw,56px);line-height:1;letter-spacing:-1px}
+.sub{color:var(--dim);font-size:16px;margin-top:10px;max-width:720px;line-height:1.45}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+button,.btn{border:1px solid var(--line);background:var(--panel-hi);color:var(--text);font:inherit;border-radius:10px;padding:11px 14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+button:hover,.btn:hover{border-color:var(--cyan)}
+button.primary{background:linear-gradient(135deg,#22d3ee,#a78bfa);color:#08080c;border:0;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:18px 0}
+.metric,.panel,.question{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.metric b{display:block;font-family:'Unbounded';font-size:28px;line-height:1.1}
+.metric span,.mini{font-size:12px;color:var(--dim);line-height:1.4}
+.section-title{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:3px;text-transform:uppercase;margin:26px 0 10px;display:flex;gap:10px;align-items:center}
+.section-title:after{content:"";height:1px;background:var(--line);flex:1}
+.weak-list,.card-list{display:grid;gap:10px}
+.weak-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(255,255,255,.03)}
+.bar{height:7px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin-top:8px}
+.bar span{display:block;height:100%;background:var(--cyan)}
+.quiz-head{display:flex;justify-content:space-between;gap:12px;color:var(--dim);font-family:'JetBrains Mono';font-size:12px;margin-bottom:14px}
+.tag{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:4px 9px;color:var(--cyan);font-family:'JetBrains Mono';font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.stem{font-size:20px;line-height:1.45;margin-bottom:16px}
+.choices{display:grid;gap:10px}
+.choice{width:100%;text-align:left;justify-content:flex-start;background:rgba(255,255,255,.035)}
+.choice.correct{border-color:var(--green);background:rgba(52,211,153,.12)}
+.choice.wrong{border-color:var(--red);background:rgba(248,113,113,.12)}
+.explain{margin-top:14px;border-left:3px solid var(--cyan);background:rgba(255,255,255,.04);border-radius:12px;padding:13px;line-height:1.5}
+.reason-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+.reason-row button{font-size:12px;padding:8px 10px}
+.hide{display:none!important}
+.flash-front{font-size:20px;line-height:1.45;margin-bottom:14px}
+.flash-back{border-top:1px solid var(--line);padding-top:14px;margin-top:14px;line-height:1.5}
+footer{margin-top:28px;color:var(--dim);font-family:'JetBrains Mono';font-size:11px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="index.html">&lt; Arcade</a>
+  </div>
+  <section class="hero">
+    <div class="kicker">Adaptive Review</div>
+    <h1>Review Hub</h1>
+    <p class="sub">One place for due cards, weak systems, and a daily mixed block across the whole Step 1 arcade.</p>
+    <div class="actions">
+      <button class="primary" id="dailyBtn">Start Today's 20</button>
+      <button id="cardsBtn">Review Due Cards</button>
+      <button id="refreshBtn">Refresh</button>
+      <a class="btn" href="author.html">Author Mode</a>
+    </div>
+  </section>
+
+  <div id="summary" class="grid"></div>
+  <div class="section-title">Weak Areas</div>
+  <div id="weak" class="panel"></div>
+  <div class="section-title">Daily / Review</div>
+  <div id="workspace" class="panel">Loading review data...</div>
+  <footer>Review Hub uses local progress first, then syncs when you sign in.</footer>
+</div>
+
+<script src="games_manifest.js"></script>
+<script src="supabase_config.js"></script>
+<script src="cloud_sync.js"></script>
+<script src="review_hub.js"></script>
+</body>
+</html>

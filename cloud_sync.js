@@ -10,6 +10,7 @@
     ready:false,
     busy:false,
     open:false,
+    recovery:false,
     message:"",
     timer:null
   };
@@ -59,6 +60,11 @@
     });
     return out;
   }
+  function mergeNestedCounts(a,b){
+    const out = clone(a);
+    Object.keys(b || {}).forEach(k=>{ out[k] = maxMap(out[k], b[k]); });
+    return out;
+  }
   function mergeSave(local, remote){
     const l = clone(local);
     const r = clone(remote);
@@ -69,6 +75,7 @@
     out.stats = mergeStats(r.stats,l.stats);
     out.cards = mergeObjectByFreshness(r.cards,l.cards);
     out.missed = mergeObjectByFreshness(r.missed,l.missed);
+    out.missReasons = mergeNestedCounts(r.missReasons,l.missReasons);
     out.cloudUpdatedAt = newerDate(l.cloudUpdatedAt,r.cloudUpdatedAt) || new Date().toISOString();
     return out;
   }
@@ -116,14 +123,26 @@
       <div class="cloud-actions">
         <button type="submit">Sign in</button>
         <button type="button" onclick="Step1CloudAuth.submit(event,'signup')">Create account</button>
+        <button type="button" onclick="Step1CloudAuth.forgotPassword(event)">Reset password</button>
       </div>
-    </form>`;
+    </form>
+    <div class="cloud-privacy">Cloud sync stores study progress only: scores, attempts, missed items, and flashcard schedule. No medical or school data is needed.</div>`;
   }
   function signedInMarkup(){
+    if (state.recovery) {
+      return `<form class="cloud-form" onsubmit="Step1CloudAuth.updatePassword(event)">
+        <input name="password" type="password" autocomplete="new-password" placeholder="New password" minlength="6" required>
+        <div class="cloud-actions"><button type="submit">Update password</button></div>
+      </form>`;
+    }
     return `<div class="cloud-actions signed">
       <button type="button" onclick="Step1CloudAuth.syncNow()">Sync now</button>
+      <button type="button" onclick="Step1CloudAuth.exportProgress()">Export</button>
+      <button type="button" onclick="Step1CloudAuth.deleteCloudProgress()">Delete progress</button>
+      <button type="button" class="danger" onclick="Step1CloudAuth.deleteAccount()">Delete account</button>
       <button type="button" onclick="Step1CloudAuth.signOut()">Sign out</button>
-    </div>`;
+    </div>
+    <div class="cloud-privacy">Signed in as ${escapeHTML(userLabel())}. Progress sync is private to this account.</div>`;
   }
   function installStyles(){
     if (document.getElementById("step1CloudStyles")) return;
@@ -143,10 +162,29 @@
 .cloud-actions button{border:1px solid var(--line,rgba(255,255,255,.14));border-radius:9px;background:var(--panel-hi,rgba(255,255,255,.08));color:var(--text,#fff);padding:10px 12px;font:inherit;font-size:12px;cursor:pointer}
 .cloud-actions button:hover,.cloud-chip:hover{border-color:var(--amber-hi,#fbbf24)}
 .cloud-actions.signed{justify-content:flex-end}
+.cloud-actions .danger{border-color:rgba(248,113,113,.4);color:var(--red,#f87171)}
 .cloud-msg{font-size:12px;color:var(--amber-hi,#fbbf24);margin-top:9px}
+.cloud-privacy{font-size:11px;color:var(--dim,#94a3b8);line-height:1.45;margin-top:9px}
 @media (max-width:700px){.cloud-form{grid-template-columns:1fr}.cloud-actions button{flex:1}.cloud-line{align-items:flex-start}.cloud-user{width:100%}}
 `;
     document.head.appendChild(style);
+  }
+  function installPwa(){
+    if (!document.querySelector('link[rel="manifest"]')) {
+      const link = document.createElement("link");
+      link.rel = "manifest";
+      link.href = "manifest.webmanifest";
+      document.head.appendChild(link);
+    }
+    if (!document.querySelector('meta[name="theme-color"]')) {
+      const meta = document.createElement("meta");
+      meta.name = "theme-color";
+      meta.content = "#22d3ee";
+      document.head.appendChild(meta);
+    }
+    if ("serviceWorker" in navigator && location.protocol === "https:") {
+      navigator.serviceWorker.register("service_worker.js").catch(()=>{});
+    }
   }
   function wrapMenu(){
     if (typeof menu !== "function" || window.__STEP1_CLOUD_MENU_WRAPPED__) return;
@@ -181,9 +219,9 @@
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(next)); } catch(e){}
   }
   function queueSave(){
-    if (!configured || !state.user || !state.ready || !isGame) return;
+    if (!configured || !state.user || !state.ready) return;
     clearTimeout(state.timer);
-    state.progress[SAVE_KEY] = stamp(currentSave());
+    if (isGame) state.progress[SAVE_KEY] = stamp(currentSave());
     state.timer = setTimeout(pushProgress, 900);
   }
   async function pullProgress(){
@@ -203,6 +241,12 @@
       applyCurrentSave(merged);
       await pushProgress();
       if (!window.session && typeof menu === "function") menu();
+    } else {
+      const local = collectLocalProgress();
+      Object.keys(local).forEach(key=>{
+        state.progress[key] = stamp(mergeSave(local[key], state.progress[key]));
+      });
+      if (Object.keys(local).length) await pushProgress();
     }
     state.ready = true;
     state.busy = false;
@@ -224,6 +268,25 @@
     if (error) throw error;
     setMessage("Saved to cloud.");
   }
+  function looksLikeProgress(value){
+    return value && typeof value === "object" && (
+      value.best || value.cards || value.missed || value.stats || value.played != null || value.endlessBest != null
+    );
+  }
+  function collectLocalProgress(){
+    const out = {};
+    for (let i=0;i<localStorage.length;i++) {
+      const key = localStorage.key(i);
+      try {
+        const value = JSON.parse(localStorage.getItem(key));
+        if (looksLikeProgress(value)) out[key] = value;
+      } catch(e){}
+    }
+    return out;
+  }
+  function clearLocalProgress(){
+    Object.keys(collectLocalProgress()).forEach(key=>localStorage.removeItem(key));
+  }
   async function initCloud(){
     if (!configured) return;
     installStyles();
@@ -238,6 +301,10 @@
       const { data } = await state.client.auth.getSession();
       state.user = data && data.session ? data.session.user : null;
       state.client.auth.onAuthStateChange(async (_event, session)=>{
+        if (_event === "PASSWORD_RECOVERY") {
+          state.recovery = true;
+          state.open = true;
+        }
         state.user = session ? session.user : null;
         if (state.user) {
           try { await pullProgress(); }
@@ -245,6 +312,7 @@
         } else {
           state.ready = false;
           state.progress = {};
+          state.recovery = false;
           setMessage("");
         }
       });
@@ -289,9 +357,90 @@
         setMessage(error.message || "Sign in failed.");
       }
     },
+    async forgotPassword(event){
+      if (event && event.preventDefault) event.preventDefault();
+      if (!state.client) return setMessage("Cloud sync is not configured.");
+      const form = event && event.target && event.target.closest ? event.target.closest("form") : document.querySelector("#step1CloudBar form");
+      const email = form && form.email ? form.email.value.trim() : "";
+      if (!email) return setMessage("Enter your email first.");
+      state.busy = true;
+      renderCloudBar();
+      const { error } = await state.client.auth.resetPasswordForEmail(email, { redirectTo: location.href.split("#")[0] });
+      state.busy = false;
+      if (error) return setMessage(error.message || "Reset email failed.");
+      setMessage("Password reset email sent.");
+    },
+    async updatePassword(event){
+      if (event && event.preventDefault) event.preventDefault();
+      if (!state.client) return;
+      const form = event.target.closest("form");
+      const password = form && form.password ? form.password.value : "";
+      if (!password) return;
+      state.busy = true;
+      renderCloudBar();
+      const { error } = await state.client.auth.updateUser({ password });
+      state.busy = false;
+      if (error) return setMessage(error.message || "Password update failed.");
+      state.recovery = false;
+      state.open = false;
+      setMessage("Password updated.");
+    },
     async syncNow(){
       try { await pullProgress(); }
       catch(error){ state.busy = false; setMessage(error.message || "Sync failed."); }
+    },
+    progress(){
+      return clone(state.progress || {});
+    },
+    saveProgress(key, value){
+      if (!key) return;
+      state.progress[key] = stamp(clone(value));
+      queueSave();
+    },
+    exportProgress(){
+      const payload = {
+        exportedAt:new Date().toISOString(),
+        signedInAs:userLabel() || null,
+        cloud:state.progress || {},
+        local:collectLocalProgress()
+      };
+      const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `step1-arcade-progress-${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setMessage("Progress export downloaded.");
+    },
+    async deleteCloudProgress(){
+      if (!state.client || !state.user) return;
+      if (!confirm("Delete cloud study progress for this account? Your login remains active.")) return;
+      state.busy = true;
+      renderCloudBar();
+      const { error } = await state.client.from("step1_progress").delete().eq("user_id", state.user.id);
+      state.busy = false;
+      if (error) return setMessage(error.message || "Could not delete cloud progress.");
+      state.progress = {};
+      clearLocalProgress();
+      setMessage("Study progress deleted.");
+    },
+    async deleteAccount(){
+      if (!state.client || !state.user) return;
+      if (!confirm("Delete this account and all Step 1 Arcade progress? This cannot be undone.")) return;
+      state.busy = true;
+      renderCloudBar();
+      const { error } = await state.client.rpc("delete_current_user");
+      state.busy = false;
+      if (error) return setMessage("Account deletion needs the latest SQL setup. " + (error.message || ""));
+      clearLocalProgress();
+      state.user = null;
+      state.progress = {};
+      await state.client.auth.signOut();
+      setMessage("Account deleted.");
+      setTimeout(()=>location.reload(),700);
     },
     async signOut(){
       if (!state.client) return;
@@ -299,12 +448,14 @@
       state.user = null;
       state.ready = false;
       state.progress = {};
+      state.recovery = false;
       state.open = false;
       setMessage("");
     }
   };
 
   installStyles();
+  installPwa();
   wrapMenu();
   wrapPersist();
   initCloud();

@@ -35,6 +35,8 @@ button.back{background:transparent;border:0;padding:0}
 .study-visual th,.study-visual td{border:1px solid var(--line);padding:7px 8px;text-align:left}
 .study-visual th{color:var(--amber-hi);font-weight:700}
 .confidence-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.reason-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.reason-row .btn{font-size:12px;padding:8px 10px;letter-spacing:.8px}
 .flashcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:14px}
 .flashcard .front{font-size:18px;line-height:1.5}
 .flashcard .answer{margin-top:14px;border-top:1px solid var(--line);padding-top:14px;font-size:14.5px;line-height:1.55}
@@ -168,6 +170,16 @@ button.back{background:transparent;border:0;padding:0}
     stat.last = new Date().toISOString();
     save.stats[q._arcadeId] = stat;
     persist();
+  }
+  function reasonButtons(q){
+    const id = q && q._arcadeId ? q._arcadeId : "";
+    const opts = [
+      ["knowledge","Didn't know fact"],
+      ["confused","Confused answers"],
+      ["stem","Misread stem"],
+      ["mechanism","Forgot mechanism"]
+    ];
+    return `<div class="reason-row">${opts.map(o=>`<button class="btn btn-ghost" onclick="tagMissReason('${id}','${o[0]}',this)">${o[1]}</button>`).join("")}</div>`;
   }
   function formatTime(ms){
     const total = Math.max(0, Math.ceil(ms/1000));
@@ -446,7 +458,7 @@ button.back{background:transparent;border:0;padding:0}
     }
     const pearl = q.p ? `<div class="pearl"><b>Pearl:</b> ${q.p}</div>` : "";
     const selected = correct ? "" : `<div class="mini"><b>Selected:</b> ${selectedText}<br><b>Correct:</b> ${correctText}</div>`;
-    const confidence = correct ? `<div class="confidence-row"><button class="btn btn-ghost" onclick="markUnsureCurrent(this)">MARK UNSURE</button></div>` : "";
+    const confidence = correct ? `<div class="confidence-row"><button class="btn btn-ghost" onclick="markUnsureCurrent(this)">MARK UNSURE</button></div>` : reasonButtons(q);
     post.innerHTML = `<div class="explain ${correct ? "" : "miss"}">
         <div class="lab">${correct ? "Correct" : "Review"}</div>
         <div class="why">${q.why}</div>${selected}${pearl}${confidence}
@@ -473,6 +485,18 @@ button.back{background:transparent;border:0;padding:0}
     }
   };
 
+  window.tagMissReason = function(id, reason, btn){
+    ensureSave();
+    save.missReasons = save.missReasons || {};
+    save.missReasons[id] = save.missReasons[id] || {};
+    save.missReasons[id][reason] = (save.missReasons[id][reason] || 0) + 1;
+    persist();
+    if (btn) {
+      btn.textContent = "SAVED";
+      btn.disabled = true;
+    }
+  };
+
   nextQ = function(){
     if (!session) return menu();
     if (session.mode.flashcards) {
@@ -493,6 +517,7 @@ button.back{background:transparent;border:0;padding:0}
       <div class="mini"><b>Your answer:</b> ${r.selectedText || "—"}<br><b>Best answer:</b> ${r.correctText}</div>
       <div class="mini">${r.q.why}</div>
       ${r.q.p ? `<div class="pearl"><b>Pearl:</b> ${r.q.p}</div>` : ""}
+      ${r.correct ? "" : reasonButtons(r.q)}
     </div>`).join("");
   }
 

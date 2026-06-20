@@ -74,6 +74,8 @@ The latest schema also supports deleting cloud progress and deleting an account 
 
 If an email confirmation link goes to a GitHub Pages 404, update the Auth URL Configuration above, then use `Resend confirmation` in the sign-in drawer to send a fresh link.
 
+For the simplest setup, keep `Confirm email` off in Supabase Email provider settings. If login still fails, delete the old unconfirmed user in Supabase Auth > Users, open `auth_repair.html`, and create the account again.
+
 ## Sign-in Visibility
 
 When `supabase_config.js` has a valid project URL and anon key, a `Sign in` chip appears at the top of the home page, the Review Hub, and each game. If the chip does not show after a deployment, hard refresh the page once so the browser gets the newest `cloud_sync.js`.

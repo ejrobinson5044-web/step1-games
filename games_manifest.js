@@ -1,0 +1,22 @@
+window.STEP1_GAMES = [
+  {section:"Foundations", file:"pathway_panic.html", title:"Pathway Panic", deck:"Biochem / Metabolism", color:"#3b82f6", saveKey:"pathway_panic_v1"},
+  {section:"Foundations", file:"cellular_chaos.html", title:"Cellular Chaos", deck:"General Pathology", color:"#ec4899", saveKey:"cellular_chaos_v1"},
+  {section:"Foundations", file:"cytokine_city.html", title:"Cytokine City", deck:"Immunology", color:"#fbbf24", saveKey:"cytokine_city_v1"},
+  {section:"Foundations", file:"inheritance_island.html", title:"Inheritance Island", deck:"Genetics", color:"#22d3ee", saveKey:"inheritance_island_v1"},
+  {section:"Organ Systems", file:"cardio_quest.html", title:"Cardio Quest", deck:"Cardiovascular", color:"#ef4444", saveKey:"cardio_quest_v2"},
+  {section:"Organ Systems", file:"nephron_ninja.html", title:"Nephron Ninja", deck:"Renal", color:"#2dd4bf", saveKey:"nephron_ninja_v1"},
+  {section:"Organ Systems", file:"breath_of_death.html", title:"Breath of Death", deck:"Pulmonary", color:"#fb923c", saveKey:"breath_of_death_v1"},
+  {section:"Organ Systems", file:"gut_check.html", title:"Gut Check", deck:"Gastrointestinal", color:"#d946ef", saveKey:"gut_check_v1"},
+  {section:"Organ Systems", file:"heme_hustle.html", title:"Heme Hustle", deck:"Heme / Onc", color:"#dc2626", saveKey:"heme_hustle_v1"},
+  {section:"Organ Systems", file:"hormone_hunter.html", title:"Hormone Hunter", deck:"Endocrine", color:"#f59e0b", saveKey:"hormone_hunter_v1"},
+  {section:"Organ Systems", file:"localize_it.html", title:"Localize It", deck:"Neurology", color:"#a78bfa", saveKey:"localize_it_v1"},
+  {section:"Anatomy", file:"dissection_dojo.html", title:"Dissection Dojo", deck:"Abdomen / Hernias / Peds GI", color:"#be123c", saveKey:"dissection_dojo_v2"},
+  {section:"Anatomy", file:"anatomy_atlas.html", title:"Anatomy Atlas", deck:"Limbs / Thorax / Head & Neck", color:"#9a3412", saveKey:"anatomy_atlas_v2"},
+  {section:"Microbiology & Pharmacology", file:"microbe_mayhem.html", title:"Microbe Mayhem", deck:"Microbiology", color:"#a855f7", saveKey:"microbe_mayhem_v2"},
+  {section:"Microbiology & Pharmacology", file:"pharm_arsenal.html", title:"Pharm Arsenal", deck:"Pharmacology", color:"#7c3aed", saveKey:"pharm_arsenal_v1"},
+  {section:"Microbiology & Pharmacology", file:"suffix_showdown.html", title:"Suffix Showdown", deck:"Drug Name to Class", color:"#f97316", saveKey:"suffix_showdown_v2"},
+  {section:"Behavioral & Clinical", file:"psych_ward.html", title:"Psych Ward", deck:"Psychiatry", color:"#0d9488", saveKey:"psych_ward_v1"},
+  {section:"Behavioral & Clinical", file:"pvalue_panic.html", title:"P-Value Panic", deck:"Biostatistics", color:"#818cf8", saveKey:"pvalue_panic_v1"},
+  {section:"Behavioral & Clinical", file:"the_right_call.html", title:"The Right Call", deck:"Ethics / Communication", color:"#3b6ea5", saveKey:"the_right_call_v1"},
+  {section:"Behavioral & Clinical", file:"name_that_risk.html", title:"Name That Risk", deck:"HY Risk Factors", color:"#94a3b8", saveKey:"name_that_risk_v1"}
+];

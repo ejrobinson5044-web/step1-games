@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Author Mode - Step 1 Arcade</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#08080c;--panel:#15151f;--panel-hi:#202030;--text:#eef0f7;--dim:#8b8aa3;--line:rgba(255,255,255,.09);--red:#f87171;--green:#34d399;--cyan:#22d3ee;--amber:#fbbf24}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:linear-gradient(180deg,#08080c,#10101a);color:var(--text);font-family:'Hanken Grotesk',sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 18px 56px}
+a{color:inherit}.back{font-family:'JetBrains Mono';font-size:12px;color:var(--dim);text-decoration:none}
+.hero{padding:18px 0 20px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.kicker{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:4px;text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Unbounded';font-size:clamp(30px,6vw,54px);line-height:1}
+.sub{color:var(--dim);font-size:16px;margin-top:10px;line-height:1.45;max-width:720px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.85fr);gap:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+label{display:block;font-weight:800;font-size:13px;margin:12px 0 6px}
+input,textarea,select{width:100%;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.04);color:var(--text);font:inherit;padding:11px}
+textarea{min-height:86px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{border:1px solid var(--line);background:var(--panel-hi);color:var(--text);font:inherit;border-radius:10px;padding:11px 14px;cursor:pointer;margin-top:12px}
+button:hover{border-color:var(--cyan)}.primary{background:linear-gradient(135deg,#22d3ee,#a78bfa);color:#08080c;border:0;font-weight:800}
+pre{white-space:pre-wrap;word-break:break-word;background:#050508;border:1px solid var(--line);border-radius:12px;padding:12px;font-family:'JetBrains Mono';font-size:12px;line-height:1.5;max-height:520px;overflow:auto}
+.check{border-left:3px solid var(--green);background:rgba(52,211,153,.08);padding:11px;border-radius:10px;margin-top:12px}
+.check.bad{border-left-color:var(--red);background:rgba(248,113,113,.08)}
+.mini{font-size:12px;color:var(--dim);line-height:1.45}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">&lt; Arcade</a>
+  <section class="hero">
+    <div class="kicker">Content Tools</div>
+    <h1>Author Mode</h1>
+    <p class="sub">Draft a new Step-style item, check for obvious answer leaks, then copy the object into the appropriate game bank.</p>
+  </section>
+  <div class="layout">
+    <form id="form" class="panel">
+      <div class="row">
+        <div><label>Game</label><select name="game"></select></div>
+        <div><label>Mode tag</label><input name="mode" placeholder="renal, bugs, ethics"></div>
+      </div>
+      <label>Question stem</label><textarea name="question" required placeholder="A 24-year-old..."></textarea>
+      <div class="row">
+        <div><label>Correct answer</label><input name="correct" required></div>
+        <div><label>Distractor 1</label><input name="d1" required></div>
+      </div>
+      <div class="row">
+        <div><label>Distractor 2</label><input name="d2" required></div>
+        <div><label>Distractor 3</label><input name="d3" required></div>
+      </div>
+      <label>Explanation</label><textarea name="why" required></textarea>
+      <label>Pearl / mnemonic</label><textarea name="pearl"></textarea>
+      <label>Optional vignette variant</label><textarea name="vignette"></textarea>
+      <button class="primary" type="submit">Build Question Object</button>
+    </form>
+    <aside class="panel">
+      <div id="checks" class="mini">Fill out the form to generate checks.</div>
+      <h3 style="margin:16px 0 8px">Question Object</h3>
+      <pre id="output"></pre>
+      <button id="copyBtn" type="button">Copy Object</button>
+    </aside>
+  </div>
+</div>
+<script src="games_manifest.js"></script>
+<script src="author.js"></script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login Debug - Step 1 Arcade</title>
+<style>
+:root{--bg:#08080c;--panel:#15151f;--panel2:#1d1d2a;--text:#eef0f7;--dim:#94a3b8;--line:rgba(255,255,255,.12);--cyan:#22d3ee;--green:#34d399;--amber:#fbbf24;--red:#f87171}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:linear-gradient(180deg,#08080c,#11111b);color:var(--text);font-family:Arial,Helvetica,sans-serif;padding:24px}
+main{width:min(840px,100%);margin:0 auto}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+h1{margin:0 0 8px;font-size:28px}
+p{color:var(--dim);line-height:1.5;margin:8px 0 0}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:16px}
+label{display:grid;gap:6px;color:var(--dim);font-size:12px}
+input{width:100%;border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.24);color:var(--text);padding:12px;font:inherit}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+button,a{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:10px;padding:11px 14px;text-decoration:none;font:inherit;font-weight:700;cursor:pointer}
+button.primary{background:linear-gradient(135deg,#22d3ee,#a78bfa);color:#08080c;border:0}
+button.warn{border-color:rgba(251,191,36,.38);color:var(--amber)}
+button.danger{border-color:rgba(248,113,113,.42);color:var(--red)}
+button:disabled{opacity:.55;cursor:not-allowed}
+.status{margin-top:16px;border-left:3px solid var(--cyan);background:rgba(255,255,255,.04);border-radius:10px;padding:12px;color:var(--text);line-height:1.45}
+.ok{border-left-color:var(--green)}
+.bad{border-left-color:var(--red)}
+.warnbox{border-left-color:var(--amber)}
+pre{margin-top:12px;min-height:210px;white-space:pre-wrap;word-break:break-word;background:#090911;border:1px solid var(--line);border-radius:12px;padding:14px;color:#dbeafe;font-size:12px;line-height:1.45}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:14px}
+.pill{border:1px solid var(--line);border-radius:10px;padding:10px;background:rgba(255,255,255,.035);color:var(--dim);font-size:12px}
+.pill b{display:block;color:var(--text);font-size:13px;margin-bottom:4px}
+@media(max-width:680px){body{padding:14px}.grid{grid-template-columns:1fr}.actions button,.actions a{flex:1}}
+</style>
+</head>
+<body>
+<main>
+  <section class="panel">
+    <h1>Login debug</h1>
+    <p>This tests the Supabase Auth endpoint directly from this browser. Tokens are redacted before results are shown.</p>
+    <div class="meta">
+      <div class="pill"><b>Project</b><span id="project">Checking...</span></div>
+      <div class="pill"><b>Return page</b><span id="returnPage">index.html</span></div>
+    </div>
+    <form id="authForm">
+      <div class="grid">
+        <label>Email<input id="email" name="email" type="email" autocomplete="email" required></label>
+        <label>Password<input id="password" name="password" type="password" autocomplete="current-password" minlength="6" required></label>
+      </div>
+      <div class="actions">
+        <button id="signin" class="primary" type="button">Test sign in</button>
+        <button id="signup" class="warn" type="button">Test create account</button>
+        <button id="clear" class="danger" type="button">Clear auth cache</button>
+        <a id="back" href="index.html">Return to arcade</a>
+      </div>
+    </form>
+    <div id="status" class="status">Ready.</div>
+    <pre id="output">No test has run yet.</pre>
+  </section>
+</main>
+<script src="supabase_config.js"></script>
+<script>
+(function(){
+  const cfg = window.STEP1_SUPABASE_CONFIG || {};
+  const configured = Boolean(cfg.url && cfg.anonKey && /^https:\/\/.+\.supabase\.co$/i.test(cfg.url));
+  const params = new URLSearchParams(location.search);
+  const from = (params.get("from") || "index.html").replace(/[^a-z0-9_.-]/gi,"") || "index.html";
+  const form = document.getElementById("authForm");
+  const email = document.getElementById("email");
+  const password = document.getElementById("password");
+  const status = document.getElementById("status");
+  const output = document.getElementById("output");
+  const project = document.getElementById("project");
+  const returnPage = document.getElementById("returnPage");
+  const back = document.getElementById("back");
+  const buttons = Array.from(document.querySelectorAll("button"));
+
+  email.value = params.get("email") || "";
+  returnPage.textContent = from;
+  back.href = `${from}?fresh=auth-debug-${Date.now()}`;
+  project.textContent = configured ? cfg.url.replace(/^https:\/\//,"") : "Not configured";
+
+  function setBusy(isBusy){
+    buttons.forEach(button=>button.disabled = isBusy);
+  }
+  function write(summary, detail, kind){
+    status.className = `status ${kind || ""}`.trim();
+    status.textContent = summary;
+    output.textContent = typeof detail === "string" ? detail : JSON.stringify(detail, null, 2);
+  }
+  function authUrl(path, query){
+    const url = new URL(`/auth/v1/${path}`, cfg.url);
+    Object.keys(query || {}).forEach(key=>url.searchParams.set(key, query[key]));
+    return url.href;
+  }
+  function redact(value){
+    if (Array.isArray(value)) return value.map(redact);
+    if (!value || typeof value !== "object") return value;
+    const out = {};
+    Object.keys(value).forEach(key=>{
+      if (/(^|_)(access|refresh|id)?_?token$|password|secret/i.test(key)) out[key] = "<redacted>";
+      else out[key] = redact(value[key]);
+    });
+    return out;
+  }
+  async function request(path, body, query){
+    if (!configured) throw new Error("Supabase is not configured in supabase_config.js.");
+    const controller = new AbortController();
+    const timer = setTimeout(()=>controller.abort(), 12000);
+    try {
+      const response = await fetch(authUrl(path, query), {
+        method:"POST",
+        headers:{
+          apikey:cfg.anonKey,
+          Authorization:`Bearer ${cfg.anonKey}`,
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(body),
+        signal:controller.signal
+      });
+      const text = await response.text();
+      let parsed = text;
+      try { parsed = text ? JSON.parse(text) : {}; }
+      catch(error){}
+      return {
+        ok:response.ok,
+        status:response.status,
+        statusText:response.statusText,
+        body:redact(parsed)
+      };
+    } catch(error) {
+      if (error && error.name === "AbortError") throw new Error("Timed out after 12 seconds. The browser did not get a Supabase Auth response.");
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  function summarize(result, mode){
+    const body = result.body || {};
+    const text = JSON.stringify(body).toLowerCase();
+    if (result.ok && (body.session || body.access_token)) {
+      return {kind:"ok", text:"Supabase returned a signed-in session. Run Fix sign-in on the arcade page, then sign in again."};
+    }
+    if (result.ok && mode === "signup") {
+      return {kind:"warnbox", text:"Supabase accepted the account request but did not return a session. Email confirmation is probably still on, or this email already exists as an unconfirmed user."};
+    }
+    if (text.includes("invalid_credentials")) {
+      return {kind:"warnbox", text:"Supabase is reachable, but this email/password is not a confirmed account. Try create account, or delete the old user in Supabase Auth > Users."};
+    }
+    if (text.includes("already") || text.includes("registered")) {
+      return {kind:"warnbox", text:"Supabase says this email already exists. Try sign in, or delete the old unconfirmed user in Supabase Auth > Users."};
+    }
+    if (text.includes("smtp") || text.includes("email")) {
+      return {kind:"warnbox", text:"Supabase reached email handling. Keep Confirm email and custom SMTP off while testing this app."};
+    }
+    return {kind:result.ok ? "ok" : "bad", text:`Supabase responded with HTTP ${result.status}. See the raw response below.`};
+  }
+  async function run(mode){
+    if (!form.reportValidity()) return;
+    const body = {email:email.value.trim(), password:password.value};
+    setBusy(true);
+    write(mode === "signup" ? "Testing account creation..." : "Testing sign in...", "Waiting for Supabase Auth...", "");
+    try {
+      const result = mode === "signup"
+        ? await request("signup", body, {redirect_to:new URL(from, location.href).href})
+        : await request("token", body, {grant_type:"password"});
+      const summary = summarize(result, mode);
+      write(summary.text, result, summary.kind);
+    } catch(error) {
+      write(error && error.message ? error.message : "Auth test failed.", {
+        browserError:error && error.message ? error.message : String(error),
+        likelyNextStep:"Try a private window. If it still fails, check Supabase Auth provider settings and custom SMTP."
+      }, "bad");
+    } finally {
+      setBusy(false);
+    }
+  }
+  function clearAuthStorage(storage){
+    if (!storage) return 0;
+    let removed = 0;
+    for (let i=storage.length-1;i>=0;i--) {
+      const key = storage.key(i);
+      if (/^sb-.+-auth-token$/.test(key) || key === "supabase.auth.token") {
+        storage.removeItem(key);
+        removed += 1;
+      }
+    }
+    return removed;
+  }
+  async function clearAuthCache(){
+    setBusy(true);
+    write("Clearing auth cache...", "Removing Supabase session keys and old Step 1 Arcade caches.", "");
+    try {
+      const removedAuth = clearAuthStorage(localStorage) + clearAuthStorage(sessionStorage);
+      const cacheNames = self.caches ? await caches.keys() : [];
+      const arcadeCaches = cacheNames.filter(name=>name.indexOf("step1-arcade") === 0);
+      await Promise.all(arcadeCaches.map(name=>caches.delete(name)));
+      if (navigator.serviceWorker) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(reg=>reg.unregister()));
+      }
+      write("Auth cache cleared.", {
+        authSessionItemsRemoved:removedAuth,
+        arcadeCachesRemoved:arcadeCaches.length,
+        next:"Return to the arcade and try sign in again."
+      }, "ok");
+    } catch(error) {
+      write(error && error.message ? error.message : "Could not clear auth cache.", {}, "bad");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  document.getElementById("signin").addEventListener("click", ()=>run("signin"));
+  document.getElementById("signup").addEventListener("click", ()=>run("signup"));
+  document.getElementById("clear").addEventListener("click", clearAuthCache);
+  if (!configured) write("Supabase config is missing or invalid.", "Check supabase_config.js.", "bad");
+})();
+</script>
+</body>
+</html>

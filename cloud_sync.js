@@ -13,6 +13,9 @@
     recovery:false,
     message:"",
     timer:null,
+    authTimer:null,
+    authRun:0,
+    emailDraft:"",
     syncTimer:null,
     syncing:false
   };
@@ -20,6 +23,18 @@
   function clone(value){
     try { return JSON.parse(JSON.stringify(value || {})); }
     catch(e){ return {}; }
+  }
+  function escapeHTML(value){
+    return String(value == null ? "" : value).replace(/[&<>"']/g, ch => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      "\"":"&quot;",
+      "'":"&#39;"
+    }[ch]));
+  }
+  function escapeAttr(value){
+    return escapeHTML(value);
   }
   function stamp(obj){
     if (obj && typeof obj === "object") obj.cloudUpdatedAt = new Date().toISOString();
@@ -84,6 +99,28 @@
   function setMessage(msg){
     state.message = msg || "";
     renderCloudBar();
+  }
+  function beginAuthAction(label, timeoutLabel){
+    const run = ++state.authRun;
+    clearTimeout(state.authTimer);
+    state.busy = true;
+    state.open = true;
+    setMessage(label);
+    state.authTimer = setTimeout(()=>{
+      if (state.authRun !== run || !state.busy) return;
+      state.busy = false;
+      state.open = true;
+      setMessage(timeoutLabel || "Still waiting for Supabase after 12 seconds. Open Debug login for the raw response, or use local-only mode and keep studying.");
+    }, 12000);
+    return run;
+  }
+  function clearAuthWatchdog(run){
+    if (run && state.authRun !== run) return;
+    clearTimeout(state.authTimer);
+    state.authTimer = null;
+  }
+  function authRunActive(run){
+    return state.authRun === run;
   }
   function explainAuthError(error, fallback){
     const msg = error && error.message ? error.message : (fallback || "Auth failed.");
@@ -195,17 +232,21 @@
       </div>`;
   }
   function signedOutMarkup(){
+    const disabled = state.busy ? "disabled" : "";
+    const email = escapeAttr(state.emailDraft || "");
     return `<form class="cloud-form" onsubmit="Step1CloudAuth.submit(event,'signin')">
-      <input name="email" type="email" autocomplete="email" placeholder="Email" required>
-      <input name="password" type="password" autocomplete="current-password" placeholder="Password" minlength="6" required>
+      <input name="email" type="email" autocomplete="email" placeholder="Email" value="${email}" required ${disabled}>
+      <input name="password" type="password" autocomplete="current-password" placeholder="Password" minlength="6" required ${disabled}>
       <div class="cloud-actions">
-        <button type="submit">Sign in</button>
-        <button type="button" onclick="Step1CloudAuth.submit(event,'signup')">Create account</button>
-        <button type="button" onclick="Step1CloudAuth.forgotPassword(event)">Reset password</button>
+        <button type="submit" ${disabled}>Sign in</button>
+        <button type="button" onclick="Step1CloudAuth.submit(event,'signup')" ${disabled}>Create account</button>
+        <button type="button" onclick="Step1CloudAuth.forgotPassword(event)" ${disabled}>Reset password</button>
+        <button type="button" onclick="Step1CloudAuth.openAuthDebug()">Debug login</button>
         <button type="button" onclick="Step1CloudAuth.repairSignIn()">Fix sign-in</button>
+        <button type="button" onclick="Step1CloudAuth.useLocal()">Use local only</button>
       </div>
     </form>
-    <div class="cloud-privacy">For now, keep Supabase email confirmation off. If login gets stuck, use Fix sign-in, then create the account again.</div>`;
+    <div class="cloud-privacy">For now, keep Supabase email confirmation and custom SMTP off while testing. If login gets stuck, open Debug login.</div>`;
   }
   function signedInMarkup(){
     if (state.recovery) {
@@ -240,6 +281,7 @@
 .cloud-actions{display:flex;gap:8px;flex-wrap:wrap}
 .cloud-actions button{border:1px solid var(--line,rgba(255,255,255,.14));border-radius:9px;background:var(--panel-hi,rgba(255,255,255,.08));color:var(--text,#fff);padding:10px 12px;font:inherit;font-size:12px;cursor:pointer}
 .cloud-actions button:hover,.cloud-chip:hover{border-color:var(--amber-hi,#fbbf24)}
+.cloud-actions button:disabled,.cloud-form input:disabled{opacity:.58;cursor:not-allowed}
 .cloud-actions.signed{justify-content:flex-end}
 .cloud-actions .danger{border-color:rgba(248,113,113,.4);color:var(--red,#f87171)}
 .cloud-msg{font-size:12px;color:var(--amber-hi,#fbbf24);margin-top:9px}
@@ -433,15 +475,21 @@
       const email = form && form.email ? form.email.value.trim() : "";
       const password = form && form.password ? form.password.value : "";
       if (!email || !password) return;
-      state.busy = true;
-      state.open = true;
-      setMessage(mode === "signup" ? "Creating account..." : "Signing in...");
-      renderCloudBar();
+      state.emailDraft = email;
+      const run = beginAuthAction(
+        mode === "signup" ? "Creating account..." : "Signing in...",
+        mode === "signup"
+          ? "Account creation is still waiting on Supabase. Open Debug login to see whether the browser is timing out, email confirmation is still on, or custom SMTP is blocking mail."
+          : "Sign-in is still waiting on Supabase. Open Debug login to see the raw response, or use local-only mode and keep studying."
+      );
       try {
         const authData = mode === "signup"
           ? await directAuth("signup", {email, password}, {redirect_to:authRedirectUrl()})
           : await directAuth("token", {email, password}, {grant_type:"password"});
+        if (!authRunActive(run)) return;
         const sessionData = await startSessionFromAuth(authData);
+        if (!authRunActive(run)) return;
+        clearAuthWatchdog(run);
         if (sessionData.session) {
           state.user = sessionData.user;
           state.open = false;
@@ -453,6 +501,8 @@
           setMessage("Supabase did not return a signed-in session. Confirm email is probably still on, or this email is already an old unconfirmed user. Turn Confirm email off, delete the user in Supabase Auth > Users, run Fix sign-in, then Create account again.");
         }
       } catch(error) {
+        if (!authRunActive(run)) return;
+        clearAuthWatchdog(run);
         state.busy = false;
         state.open = true;
         setMessage(explainAuthError(error, mode === "signup" ? "Account creation failed." : "Sign in failed."));
@@ -464,6 +514,7 @@
       const form = event && event.target && event.target.closest ? event.target.closest("form") : document.querySelector("#step1CloudBar form");
       const email = form && form.email ? form.email.value.trim() : "";
       if (!email) return setMessage("Enter your email first.");
+      state.emailDraft = email;
       state.busy = true;
       renderCloudBar();
       try {
@@ -587,6 +638,20 @@
     repairSignIn(){
       const target = encodeURIComponent(location.pathname.split("/").pop() || "index.html");
       location.href = `auth_repair.html?next=${target}`;
+    },
+    openAuthDebug(){
+      const target = new URL("auth_debug.html", location.href);
+      const from = (location.pathname.split("/").pop() || "index.html").replace(/[^a-z0-9_.-]/gi,"") || "index.html";
+      if (state.emailDraft) target.searchParams.set("email", state.emailDraft);
+      target.searchParams.set("from", from);
+      location.href = target.href;
+    },
+    useLocal(){
+      state.authRun += 1;
+      clearAuthWatchdog();
+      state.busy = false;
+      state.open = false;
+      setMessage("Using local progress only. Your study data still saves on this device.");
     }
   };
 

@@ -72,9 +72,9 @@ Each signed-in student gets one private `step1_progress` row. The app stays loca
 
 The latest schema also supports deleting cloud progress and deleting an account from inside the app. If you added cloud sync before those controls existed, rerun the current `supabase_schema.sql` in Supabase SQL Editor.
 
-If an email confirmation link goes to a GitHub Pages 404, update the Auth URL Configuration above, then use `Resend confirmation` in the sign-in drawer to send a fresh link.
+If an email confirmation link goes to a GitHub Pages 404, update the Auth URL Configuration above. For the simplest setup, keep `Confirm email` off in Supabase Email provider settings.
 
-For the simplest setup, keep `Confirm email` off in Supabase Email provider settings. If login still fails, delete the old unconfirmed user in Supabase Auth > Users, open `auth_repair.html`, and create the account again.
+If login still fails, use `auth_debug.html` from the sign-in drawer. It tests Supabase Auth directly from the browser and shows the raw response with tokens redacted. If account creation returns no signed-in session, delete the old unconfirmed user in Supabase Auth > Users, open `auth_repair.html`, and create the account again with `Confirm email` and custom SMTP off.
 
 ## Sign-in Visibility
 

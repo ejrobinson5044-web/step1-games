@@ -202,7 +202,9 @@
       document.head.appendChild(meta);
     }
     if ("serviceWorker" in navigator && location.protocol === "https:") {
-      navigator.serviceWorker.register("service_worker.js").catch(()=>{});
+      navigator.serviceWorker.register("service_worker.js")
+        .then(registration=>registration.update().catch(()=>{}))
+        .catch(()=>{});
     }
   }
   function wrapMenu(){

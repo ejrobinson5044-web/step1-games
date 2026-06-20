@@ -1,4 +1,4 @@
-const CACHE_NAME = "step1-arcade-v4";
+const CACHE_NAME = "step1-arcade-v5";
 const CORE_ASSETS = [
   "./",
   "index.html",
@@ -34,6 +34,14 @@ const CORE_ASSETS = [
   "the_right_call.html"
 ];
 
+function offlineFallback(request) {
+  return caches.match(request).then(cached => {
+    if (cached) return cached;
+    if (request.mode === "navigate") return caches.match("index.html");
+    return new Response("", {status:504, statusText:"Offline"});
+  });
+}
+
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(CORE_ASSETS)).then(()=>self.skipWaiting()));
 });
@@ -51,16 +59,19 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== location.origin) return;
+  const networkFirst = request.mode === "navigate" || /\.(?:html|js|css|json|webmanifest)$/i.test(url.pathname);
   event.respondWith(
-    caches.match(request).then(cached => {
+    caches.open(CACHE_NAME).then(cache => {
       const network = fetch(request).then(response => {
         if (response && response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+          cache.put(request, response.clone());
         }
         return response;
-      }).catch(()=>cached);
-      return cached || network;
+      });
+
+      if (networkFirst) return network.catch(()=>offlineFallback(request));
+
+      return caches.match(request).then(cached => cached || network.catch(()=>offlineFallback(request)));
     })
   );
 });

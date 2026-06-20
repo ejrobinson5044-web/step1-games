@@ -53,8 +53,11 @@ To enable accounts and cross-device progress:
 
 1. Create a Supabase project.
 2. In Supabase Auth, enable email/password sign-ins.
-3. Open Supabase SQL Editor and run `supabase_schema.sql`.
-4. Open `supabase_config.js` and paste your public project URL and anon key:
+3. In Supabase Auth URL Configuration, set:
+   - Site URL: `https://ejrobinson5044-web.github.io/step1-games/`
+   - Redirect URL: `https://ejrobinson5044-web.github.io/step1-games/**`
+4. Open Supabase SQL Editor and run `supabase_schema.sql`.
+5. Open `supabase_config.js` and paste your public project URL and anon key:
 
 ```js
 window.STEP1_SUPABASE_CONFIG = {

@@ -92,6 +92,12 @@
   function userLabel(){
     return state.user && state.user.email ? state.user.email : "";
   }
+  function authRedirectUrl(){
+    const url = new URL(location.href);
+    url.hash = "";
+    url.search = "";
+    return url.href;
+  }
   function renderCloudBar(){
     if (!configured) return;
     const host = document.getElementById("app") || document.querySelector(".wrap") || document.body;
@@ -340,7 +346,7 @@
       renderCloudBar();
       try {
         const result = mode === "signup"
-          ? await state.client.auth.signUp({ email, password })
+          ? await state.client.auth.signUp({ email, password, options:{ emailRedirectTo:authRedirectUrl() } })
           : await state.client.auth.signInWithPassword({ email, password });
         if (result.error) throw result.error;
         if (result.data && result.data.session) {
@@ -365,7 +371,7 @@
       if (!email) return setMessage("Enter your email first.");
       state.busy = true;
       renderCloudBar();
-      const { error } = await state.client.auth.resetPasswordForEmail(email, { redirectTo: location.href.split("#")[0] });
+      const { error } = await state.client.auth.resetPasswordForEmail(email, { redirectTo:authRedirectUrl() });
       state.busy = false;
       if (error) return setMessage(error.message || "Reset email failed.");
       setMessage("Password reset email sent.");

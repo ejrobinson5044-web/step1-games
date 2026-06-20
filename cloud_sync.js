@@ -108,6 +108,53 @@
   function authCall(promise, label){
     return withTimeout(promise, label || "Auth request timed out. Refresh and try again.", 15000);
   }
+  function authUrl(path, query){
+    const url = new URL(`/auth/v1/${path}`, cfg.url);
+    Object.keys(query || {}).forEach(key=>url.searchParams.set(key, query[key]));
+    return url.href;
+  }
+  async function directAuth(path, body, query){
+    const controller = new AbortController();
+    const timer = setTimeout(()=>controller.abort(), 15000);
+    try {
+      const response = await fetch(authUrl(path, query), {
+        method:"POST",
+        headers:{
+          apikey:cfg.anonKey,
+          Authorization:`Bearer ${cfg.anonKey}`,
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(body),
+        signal:controller.signal
+      });
+      const text = await response.text();
+      let data = {};
+      try { data = text ? JSON.parse(text) : {}; }
+      catch(error){ data = {message:text}; }
+      if (!response.ok || data.error || data.error_description) {
+        throw new Error(data.error_description || data.message || data.msg || data.error || `Supabase auth failed (${response.status}).`);
+      }
+      return data;
+    } catch(error) {
+      if (error && error.name === "AbortError") throw new Error("Supabase auth timed out. This is usually a network/auth-provider issue, not your password. Run Fix sign-in, refresh, and try again.");
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  async function startSessionFromAuth(data){
+    const session = data && (data.session || (data.access_token ? data : null));
+    const user = data && (data.user || (session && session.user));
+    if (!session || !session.access_token || !session.refresh_token) return {user, session:null};
+    if (state.client) {
+      const result = await authCall(
+        state.client.auth.setSession({access_token:session.access_token, refresh_token:session.refresh_token}),
+        "Signed in, but saving the session timed out. Run Fix sign-in and try again."
+      );
+      if (result && result.error) throw result.error;
+    }
+    return {user:user || session.user, session};
+  }
   function syncLabel(){
     if (!configured) return "Local save";
     if (state.busy) return "Syncing";
@@ -391,12 +438,12 @@
       setMessage(mode === "signup" ? "Creating account..." : "Signing in...");
       renderCloudBar();
       try {
-        const result = mode === "signup"
-          ? await authCall(state.client.auth.signUp({ email, password, options:{ emailRedirectTo:authRedirectUrl() } }))
-          : await authCall(state.client.auth.signInWithPassword({ email, password }));
-        if (result.error) throw result.error;
-        if (result.data && result.data.session) {
-          state.user = result.data.user;
+        const authData = mode === "signup"
+          ? await directAuth("signup", {email, password}, {redirect_to:authRedirectUrl()})
+          : await directAuth("token", {email, password}, {grant_type:"password"});
+        const sessionData = await startSessionFromAuth(authData);
+        if (sessionData.session) {
+          state.user = sessionData.user;
           state.open = false;
           setMessage(mode === "signup" ? "Account created. Syncing progress..." : "Signed in. Syncing progress...");
           scheduleProgressSync();

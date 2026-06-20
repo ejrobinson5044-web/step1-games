@@ -85,6 +85,19 @@
     state.message = msg || "";
     renderCloudBar();
   }
+  function explainAuthError(error, fallback){
+    const msg = error && error.message ? error.message : (fallback || "Auth failed.");
+    if (/confirm|verified|verification/i.test(msg)) {
+      return "Supabase is still requiring email confirmation for this user. Turn Confirm email off, delete the old unconfirmed user in Supabase Auth > Users, run Fix sign-in, then create the account again.";
+    }
+    if (/invalid login credentials/i.test(msg)) {
+      return "No matching confirmed account/password was found. If this is your first time, click Create account. If the user already exists but is unconfirmed, delete it in Supabase Auth > Users and create it again with Confirm email off.";
+    }
+    if (/user already registered|already registered|already exists/i.test(msg)) {
+      return "That email already exists in Supabase. Try Sign in, or delete the old user in Supabase Auth > Users and create it again.";
+    }
+    return msg;
+  }
   function withTimeout(promise, label, ms){
     let timer;
     const timeout = new Promise((_, reject)=>{
@@ -141,12 +154,11 @@
       <div class="cloud-actions">
         <button type="submit">Sign in</button>
         <button type="button" onclick="Step1CloudAuth.submit(event,'signup')">Create account</button>
-        <button type="button" onclick="Step1CloudAuth.resendConfirmation(event)">Resend confirmation</button>
         <button type="button" onclick="Step1CloudAuth.forgotPassword(event)">Reset password</button>
         <button type="button" onclick="Step1CloudAuth.repairSignIn()">Fix sign-in</button>
       </div>
     </form>
-    <div class="cloud-privacy">Cloud sync stores study progress only: scores, attempts, missed items, and flashcard schedule. No medical or school data is needed.</div>`;
+    <div class="cloud-privacy">For now, keep Supabase email confirmation off. If login gets stuck, use Fix sign-in, then create the account again.</div>`;
   }
   function signedInMarkup(){
     if (state.recovery) {
@@ -375,6 +387,8 @@
       const password = form && form.password ? form.password.value : "";
       if (!email || !password) return;
       state.busy = true;
+      state.open = true;
+      setMessage(mode === "signup" ? "Creating account..." : "Signing in...");
       renderCloudBar();
       try {
         const result = mode === "signup"
@@ -384,15 +398,17 @@
         if (result.data && result.data.session) {
           state.user = result.data.user;
           state.open = false;
+          setMessage(mode === "signup" ? "Account created. Syncing progress..." : "Signed in. Syncing progress...");
           scheduleProgressSync();
         } else {
           state.busy = false;
-          state.open = false;
-          setMessage("Check your email to confirm the account.");
+          state.open = true;
+          setMessage("Supabase did not return a signed-in session. Confirm email is probably still on, or this email is already an old unconfirmed user. Turn Confirm email off, delete the user in Supabase Auth > Users, run Fix sign-in, then Create account again.");
         }
       } catch(error) {
         state.busy = false;
-        setMessage(error.message || "Sign in failed.");
+        state.open = true;
+        setMessage(explainAuthError(error, mode === "signup" ? "Account creation failed." : "Sign in failed."));
       }
     },
     async forgotPassword(event){

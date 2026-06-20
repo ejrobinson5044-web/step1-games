@@ -143,6 +143,7 @@
         <button type="button" onclick="Step1CloudAuth.submit(event,'signup')">Create account</button>
         <button type="button" onclick="Step1CloudAuth.resendConfirmation(event)">Resend confirmation</button>
         <button type="button" onclick="Step1CloudAuth.forgotPassword(event)">Reset password</button>
+        <button type="button" onclick="Step1CloudAuth.repairSignIn()">Fix sign-in</button>
       </div>
     </form>
     <div class="cloud-privacy">Cloud sync stores study progress only: scores, attempts, missed items, and flashcard schedule. No medical or school data is needed.</div>`;
@@ -519,6 +520,10 @@
       state.recovery = false;
       state.open = false;
       setMessage("");
+    },
+    repairSignIn(){
+      const target = encodeURIComponent(location.pathname.split("/").pop() || "index.html");
+      location.href = `auth_repair.html?next=${target}`;
     }
   };
 

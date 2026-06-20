@@ -12,7 +12,9 @@
     open:false,
     recovery:false,
     message:"",
-    timer:null
+    timer:null,
+    syncTimer:null,
+    syncing:false
   };
 
   function clone(value){
@@ -82,6 +84,16 @@
   function setMessage(msg){
     state.message = msg || "";
     renderCloudBar();
+  }
+  function withTimeout(promise, label, ms){
+    let timer;
+    const timeout = new Promise((_, reject)=>{
+      timer = setTimeout(()=>reject(new Error(label || "Request timed out.")), ms || 15000);
+    });
+    return Promise.race([promise, timeout]).finally(()=>clearTimeout(timer));
+  }
+  function authCall(promise, label){
+    return withTimeout(promise, label || "Auth request timed out. Refresh and try again.", 15000);
   }
   function syncLabel(){
     if (!configured) return "Local save";
@@ -235,11 +247,11 @@
     if (!state.client || !state.user) return;
     state.busy = true;
     renderCloudBar();
-    const { data, error } = await state.client
+    const { data, error } = await withTimeout(state.client
       .from("step1_progress")
       .select("progress")
       .eq("user_id", state.user.id)
-      .maybeSingle();
+      .maybeSingle(), "Progress sync timed out. Refresh and try again.", 15000);
     if (error) throw error;
     state.progress = data && data.progress ? data.progress : {};
     if (isGame) {
@@ -264,13 +276,13 @@
     state.busy = true;
     renderCloudBar();
     if (isGame) state.progress[SAVE_KEY] = stamp(currentSave());
-    const { error } = await state.client
+    const { error } = await withTimeout(state.client
       .from("step1_progress")
       .upsert({
         user_id:state.user.id,
         progress:state.progress,
         updated_at:new Date().toISOString()
-      }, { onConflict:"user_id" });
+      }, { onConflict:"user_id" }), "Progress save timed out. Refresh and try again.", 15000);
     state.busy = false;
     if (error) throw error;
     setMessage("Saved to cloud.");
@@ -294,6 +306,22 @@
   function clearLocalProgress(){
     Object.keys(collectLocalProgress()).forEach(key=>localStorage.removeItem(key));
   }
+  function scheduleProgressSync(){
+    clearTimeout(state.syncTimer);
+    state.syncTimer = setTimeout(syncProgress, 0);
+  }
+  async function syncProgress(){
+    if (!state.client || !state.user || state.syncing) return;
+    state.syncing = true;
+    try {
+      await pullProgress();
+    } catch(error) {
+      state.busy = false;
+      setMessage(error.message || "Sync failed.");
+    } finally {
+      state.syncing = false;
+    }
+  }
   async function initCloud(){
     if (!configured) return;
     installStyles();
@@ -307,15 +335,15 @@
       });
       const { data } = await state.client.auth.getSession();
       state.user = data && data.session ? data.session.user : null;
-      state.client.auth.onAuthStateChange(async (_event, session)=>{
+      state.client.auth.onAuthStateChange((_event, session)=>{
         if (_event === "PASSWORD_RECOVERY") {
           state.recovery = true;
           state.open = true;
         }
         state.user = session ? session.user : null;
         if (state.user) {
-          try { await pullProgress(); }
-          catch(error){ state.busy = false; setMessage(error.message || "Sync failed."); }
+          if (["INITIAL_SESSION","SIGNED_IN","USER_UPDATED","PASSWORD_RECOVERY"].includes(_event)) scheduleProgressSync();
+          else renderCloudBar();
         } else {
           state.ready = false;
           state.progress = {};
@@ -323,7 +351,7 @@
           setMessage("");
         }
       });
-      if (state.user) await pullProgress();
+      if (state.user) scheduleProgressSync();
       else renderCloudBar();
     } catch(error) {
       state.busy = false;
@@ -347,13 +375,13 @@
       renderCloudBar();
       try {
         const result = mode === "signup"
-          ? await state.client.auth.signUp({ email, password, options:{ emailRedirectTo:authRedirectUrl() } })
-          : await state.client.auth.signInWithPassword({ email, password });
+          ? await authCall(state.client.auth.signUp({ email, password, options:{ emailRedirectTo:authRedirectUrl() } }))
+          : await authCall(state.client.auth.signInWithPassword({ email, password }));
         if (result.error) throw result.error;
         if (result.data && result.data.session) {
           state.user = result.data.user;
           state.open = false;
-          await pullProgress();
+          scheduleProgressSync();
         } else {
           state.busy = false;
           state.open = false;
@@ -372,10 +400,15 @@
       if (!email) return setMessage("Enter your email first.");
       state.busy = true;
       renderCloudBar();
-      const { error } = await state.client.auth.resetPasswordForEmail(email, { redirectTo:authRedirectUrl() });
-      state.busy = false;
-      if (error) return setMessage(error.message || "Reset email failed.");
-      setMessage("Password reset email sent.");
+      try {
+        const { error } = await authCall(state.client.auth.resetPasswordForEmail(email, { redirectTo:authRedirectUrl() }));
+        state.busy = false;
+        if (error) return setMessage(error.message || "Reset email failed.");
+        setMessage("Password reset email sent.");
+      } catch(error) {
+        state.busy = false;
+        setMessage(error.message || "Reset email failed.");
+      }
     },
     async resendConfirmation(event){
       if (event && event.preventDefault) event.preventDefault();
@@ -385,14 +418,19 @@
       if (!email) return setMessage("Enter your email first.");
       state.busy = true;
       renderCloudBar();
-      const { error } = await state.client.auth.resend({
-        type:"signup",
-        email,
-        options:{ emailRedirectTo:authRedirectUrl() }
-      });
-      state.busy = false;
-      if (error) return setMessage(error.message || "Confirmation email failed.");
-      setMessage("Confirmation email sent.");
+      try {
+        const { error } = await authCall(state.client.auth.resend({
+          type:"signup",
+          email,
+          options:{ emailRedirectTo:authRedirectUrl() }
+        }));
+        state.busy = false;
+        if (error) return setMessage(error.message || "Confirmation email failed.");
+        setMessage("Confirmation email sent.");
+      } catch(error) {
+        state.busy = false;
+        setMessage(error.message || "Confirmation email failed.");
+      }
     },
     async updatePassword(event){
       if (event && event.preventDefault) event.preventDefault();
@@ -402,16 +440,20 @@
       if (!password) return;
       state.busy = true;
       renderCloudBar();
-      const { error } = await state.client.auth.updateUser({ password });
-      state.busy = false;
-      if (error) return setMessage(error.message || "Password update failed.");
-      state.recovery = false;
-      state.open = false;
-      setMessage("Password updated.");
+      try {
+        const { error } = await authCall(state.client.auth.updateUser({ password }));
+        state.busy = false;
+        if (error) return setMessage(error.message || "Password update failed.");
+        state.recovery = false;
+        state.open = false;
+        setMessage("Password updated.");
+      } catch(error) {
+        state.busy = false;
+        setMessage(error.message || "Password update failed.");
+      }
     },
     async syncNow(){
-      try { await pullProgress(); }
-      catch(error){ state.busy = false; setMessage(error.message || "Sync failed."); }
+      await syncProgress();
     },
     progress(){
       return clone(state.progress || {});

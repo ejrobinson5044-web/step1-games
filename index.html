@@ -101,7 +101,7 @@ footer .hl{color:var(--text)}
     <div class="chips">
       <div class="chip"><b>20</b> games</div>
       <div class="chip b"><b>800</b> questions</div>
-      <div class="chip c"><b>Smart</b> review</div>
+      <div class="chip c"><b>Cloud</b> sync-ready</div>
     </div>
   </div>
   <div id="lib"></div>
@@ -112,12 +112,12 @@ footer .hl{color:var(--text)}
       <div class="it"><div class="e">⚡</div><div><b>Daily &amp; Timed</b><p>Warm-ups, clinical transfer, survival streaks, and 20-question timed blocks.</p></div></div>
       <div class="it"><div class="e">🦴</div><div><b>Flagship drill</b><p>A dedicated module for each system's must-know core.</p></div></div>
       <div class="it"><div class="e">💎</div><div><b>Dirty Medicine Vault</b><p>The catchy mnemonics, all in one place per game.</p></div></div>
-      <div class="it"><div class="e">💾</div><div><b>Smart review</b><p>Missed and shaky items become lightweight flashcards with simple due dates.</p></div></div>
+      <div class="it"><div class="e">💾</div><div><b>Smart review</b><p>Missed and shaky items become lightweight flashcards with simple due dates and optional account sync.</p></div></div>
     </div>
   </div>
 
   <footer>
-    <div class="hl">Shuffled answers · keyboard 1&ndash;4 or A&ndash;D · clinical transfer · timed blocks · flashcards</div>
+    <div class="hl">Shuffled answers · keyboard 1&ndash;4 or A&ndash;D · clinical transfer · timed blocks · flashcards · optional sync</div>
     <div>Built for one exam. Pick a card and start drilling.</div>
   </footer>
 </div>
@@ -176,5 +176,7 @@ GAMES.forEach(group=>{
   sec.appendChild(grid);lib.appendChild(sec);
 });
 </script>
+<script src="supabase_config.js"></script>
+<script src="cloud_sync.js"></script>
 </body>
 </html>

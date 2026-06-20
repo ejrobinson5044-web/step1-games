@@ -129,6 +129,7 @@
       <div class="cloud-actions">
         <button type="submit">Sign in</button>
         <button type="button" onclick="Step1CloudAuth.submit(event,'signup')">Create account</button>
+        <button type="button" onclick="Step1CloudAuth.resendConfirmation(event)">Resend confirmation</button>
         <button type="button" onclick="Step1CloudAuth.forgotPassword(event)">Reset password</button>
       </div>
     </form>
@@ -375,6 +376,23 @@
       state.busy = false;
       if (error) return setMessage(error.message || "Reset email failed.");
       setMessage("Password reset email sent.");
+    },
+    async resendConfirmation(event){
+      if (event && event.preventDefault) event.preventDefault();
+      if (!state.client) return setMessage("Cloud sync is not configured.");
+      const form = event && event.target && event.target.closest ? event.target.closest("form") : document.querySelector("#step1CloudBar form");
+      const email = form && form.email ? form.email.value.trim() : "";
+      if (!email) return setMessage("Enter your email first.");
+      state.busy = true;
+      renderCloudBar();
+      const { error } = await state.client.auth.resend({
+        type:"signup",
+        email,
+        options:{ emailRedirectTo:authRedirectUrl() }
+      });
+      state.busy = false;
+      if (error) return setMessage(error.message || "Confirmation email failed.");
+      setMessage("Confirmation email sent.");
     },
     async updatePassword(event){
       if (event && event.preventDefault) event.preventDefault();

@@ -72,6 +72,8 @@ Each signed-in student gets one private `step1_progress` row. The app stays loca
 
 The latest schema also supports deleting cloud progress and deleting an account from inside the app. If you added cloud sync before those controls existed, rerun the current `supabase_schema.sql` in Supabase SQL Editor.
 
+If an email confirmation link goes to a GitHub Pages 404, update the Auth URL Configuration above, then use `Resend confirmation` in the sign-in drawer to send a fresh link.
+
 ## Sign-in Visibility
 
 When `supabase_config.js` has a valid project URL and anon key, a `Sign in` chip appears at the top of the home page, the Review Hub, and each game. If the chip does not show after a deployment, hard refresh the page once so the browser gets the newest `cloud_sync.js`.

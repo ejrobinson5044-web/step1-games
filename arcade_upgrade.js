@@ -17,10 +17,15 @@
   function upgradeStyles(){
     const style = document.createElement("style");
     style.textContent = `
-button.tile,button.choice,button.back{font:inherit;color:inherit;text-align:left}
+button.tile,button.choice,button.back,a.back{font:inherit;color:inherit;text-align:left}
 button.tile,button.choice{width:100%}
 button.tile{display:block}
-button.back{background:transparent;border:0;padding:0}
+button.back,a.back{background:transparent;border:0;padding:0}
+a.back{text-decoration:none}
+.game-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.game-nav .back{margin-bottom:0}
+.game-nav .home{margin-left:auto;color:var(--cyan)}
+.game-nav .home:hover{color:var(--amber-hi)}
 .tile:focus-visible,.choice:focus-visible,.back:focus-visible,.btn:focus-visible{outline:3px solid var(--amber-hi);outline-offset:3px}
 .tile:disabled{opacity:.48;cursor:not-allowed;transform:none!important;box-shadow:none!important}
 .choice.chosen{border-color:var(--amber);background:rgba(251,191,36,.12)}
@@ -49,6 +54,25 @@ button.back{background:transparent;border:0;padding:0}
     document.head.appendChild(style);
   }
   upgradeStyles();
+
+  function arcadeHomeHref(){
+    return "index.html";
+  }
+  function renderHomeNav(){
+    return `<div class="game-nav"><a class="back home" href="${arcadeHomeHref()}">&lsaquo; ALL GAMES</a></div>`;
+  }
+  function renderGameNav(){
+    return `<div class="game-nav">
+      <button type="button" class="back" onclick="menu()">&lsaquo; GAME MENU</button>
+      <a class="back home" href="${arcadeHomeHref()}">ALL GAMES</a>
+    </div>`;
+  }
+  function buildGameNavNode(){
+    const nav = document.createElement("div");
+    nav.className = "game-nav";
+    nav.innerHTML = `<button type="button" class="back" onclick="menu()">&lsaquo; GAME MENU</button><a class="back home" href="${arcadeHomeHref()}">ALL GAMES</a>`;
+    return nav;
+  }
 
   function ensureSave(){
     save.best = save.best || {};
@@ -230,7 +254,7 @@ button.back{background:transparent;border:0;padding:0}
     const next = nextScheduledCard();
     const when = next ? new Date(cardState(next).due).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "";
     app.innerHTML = `
-      <button type="button" class="back" onclick="menu()">&lsaquo; MENU</button>
+      ${renderGameNav()}
       <div class="result">
         <div class="score-big" style="color:var(--cyan)">0</div>
         <div class="rank" style="color:var(--cyan)">NO CARDS DUE</div>
@@ -294,6 +318,7 @@ button.back{background:transparent;border:0;padding:0}
     session = null;
     const keys = topicKeys();
     app.innerHTML = `
+      ${renderHomeNav()}
       <div class="hdr">
         <div class="badge">${MODES.daily && MODES.daily.ic ? MODES.daily.ic : "+"}</div>
         <h1>${GAME_TITLE}</h1>
@@ -348,7 +373,7 @@ button.back{background:transparent;border:0;padding:0}
       ? "missed item"
       : (state && state.due > Date.now() ? `scheduled ${new Date(state.due).toLocaleDateString()}` : "due now");
     app.innerHTML = `
-      <button type="button" class="back" onclick="menu()">‹ MENU</button>
+      ${renderGameNav()}
       <div class="quiz-tools">
         <div class="quiz-top" style="margin-bottom:0"><span class="qcount">Card ${s.i+1} / ${s.qs.length}</span><span class="due-pill">${dueText}</span></div>
       </div>
@@ -404,7 +429,7 @@ button.back{background:transparent;border:0;padding:0}
     const pct = s.mode.endless ? Math.min(100,(s.streak%15)/15*100) : (num-1)/s.qs.length*100;
     const tag = MODE_TAGS[q.m] || "Mixed";
     app.innerHTML = `
-      <button type="button" class="back" onclick="menu()">‹ MENU</button>
+      ${renderGameNav()}
       <div class="quiz-tools">
         <div class="quiz-top" style="margin-bottom:0"><span class="qcount">Q ${num} / ${total}</span><span class="streak"> Streak ${s.streak}</span></div>
         ${s.mode.timed ? `<div class="timer" id="timer">Time ${formatTime(s.timeLimitMs - (Date.now() - s.startedAt))}</div>` : ""}
@@ -541,7 +566,7 @@ button.back{background:transparent;border:0;padding:0}
     const cardsButton = cardPool().length ? `<button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="start('cards')">FLASHCARDS (${cardMeta()})</button>` : "";
     const review = s.mode.deferReview ? `<div class="section-label">Block Review</div><div class="review-list">${renderReviewCards(s.responses,false)}</div>` : "";
     app.innerHTML = `
-      <button type="button" class="back" onclick="menu()">‹ MENU</button>
+      ${renderGameNav()}
       <div class="result">
         <div class="score-big" style="color:${col}">${s.mode.endless ? got : pctNum+"%"}</div>
         <div class="rank" style="color:${col}">${s.mode.endless ? "STREAK: "+got : rank}</div>
@@ -564,12 +589,7 @@ button.back{background:transparent;border:0;padding:0}
     oldVault();
     const oldBacks = app.querySelectorAll(".back");
     oldBacks.forEach(node=>{
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = node.className;
-      btn.setAttribute("onclick","menu()");
-      btn.innerHTML = node.innerHTML;
-      node.replaceWith(btn);
+      node.replaceWith(buildGameNavNode());
     });
   };
 

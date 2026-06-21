@@ -1,7 +1,7 @@
 /* --- Step 1 Arcade upgrade layer: adaptive review, timed blocks, accessibility --- */
 (function(){
   if (window.__STEP1_ARCADE_UPGRADE__) return;
-  window.__STEP1_ARCADE_UPGRADE__ = "2026-06-19";
+  window.__STEP1_ARCADE_UPGRADE__ = "2026-06-21-game-feel";
 
   const QUICK_KEYS = new Set(["daily","block","clinical","endless","missed","cards"]);
   const rawTitle = (document.title || "Step 1 Game").replace(/\s+/g, " ").trim();
@@ -49,6 +49,32 @@ a.back{text-decoration:none}
 .card-grades{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
 .card-grades .btn{width:100%;padding:11px 10px;font-size:13px}
 .due-pill{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--amber-hi);font-size:11px;margin-left:8px}
+.game-pulse{position:relative;margin:0 0 22px;border:1px solid var(--line);border-radius:15px;padding:15px;background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.025));overflow:hidden}
+.game-pulse::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent,rgba(255,255,255,.08),transparent);transform:translateX(-120%);animation:pulse-sheen 4.5s ease-in-out infinite;pointer-events:none}
+.pulse-top{position:relative;display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.pulse-kicker{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+.pulse-rank{font-family:inherit;font-weight:800;color:var(--amber-hi);font-size:19px;margin-top:4px}
+.pulse-grid{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:13px}
+.pulse-stat{border:1px solid var(--line);border-radius:11px;padding:10px;background:rgba(0,0,0,.14)}
+.pulse-stat b{display:block;font-size:18px;color:var(--text)}
+.pulse-stat span{display:block;font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.xp-track{position:relative;margin-top:12px;height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.xp-track span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--amber-hi));box-shadow:0 0 18px var(--glow,rgba(34,211,238,.35))}
+.mission-strip{position:relative;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-top:13px;border-top:1px solid var(--line);padding-top:13px}
+.mission-strip b{display:block;font-size:14px;color:var(--text)}
+.mission-strip span{display:block;font-size:12px;color:var(--dim);line-height:1.35;margin-top:3px}
+.mission-strip .btn{margin-top:0;padding:10px 13px;font-size:12px;white-space:nowrap}
+.combo-badge{border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--amber-hi);background:rgba(251,191,36,.08);font-size:12px}
+.reward-toast{margin:14px 0 0;border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:rgba(255,255,255,.055);color:var(--text);animation:reward-pop .28s ease both}
+.reward-toast.good{border-color:rgba(52,211,153,.36);box-shadow:0 0 24px rgba(52,211,153,.14)}
+.reward-toast.miss{border-color:rgba(248,113,113,.34)}
+.reward-toast b{color:var(--amber-hi)}
+.xp-summary{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.045);padding:13px;margin:0 auto 18px;max-width:360px}
+.xp-summary b{display:block;font-size:24px;color:var(--amber-hi)}
+.xp-summary span{display:block;font-size:12px;color:var(--dim);margin-top:3px}
+@keyframes pulse-sheen{0%,55%{transform:translateX(-120%)}78%,100%{transform:translateX(120%)}}
+@keyframes reward-pop{from{opacity:0;transform:translateY(7px) scale(.98)}to{opacity:1;transform:none}}
+@media (max-width:640px){.pulse-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mission-strip{grid-template-columns:1fr}.mission-strip .btn{width:100%}}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 `;
     document.head.appendChild(style);
@@ -73,6 +99,98 @@ a.back{text-decoration:none}
     nav.innerHTML = `<button type="button" class="back" onclick="menu()">&lsaquo; GAME MENU</button><a class="back home" href="${arcadeHomeHref()}">ALL GAMES</a>`;
     return nav;
   }
+  function todayKey(){
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+  }
+  function plural(n, one, many){
+    return `${n} ${n === 1 ? one : many}`;
+  }
+  function statTotals(){
+    ensureSave();
+    return Object.values(save.stats || {}).reduce((acc, stat)=>{
+      acc.attempts += Number(stat.attempts || 0);
+      acc.correct += Number(stat.correct || 0);
+      acc.wrong += Number(stat.wrong || 0);
+      acc.longest = Math.max(acc.longest, Number(stat.streak || 0));
+      return acc;
+    }, {attempts:0, correct:0, wrong:0, longest:0});
+  }
+  function computedXP(){
+    const totals = statTotals();
+    const cardCount = Object.keys(save.cards || {}).length;
+    return totals.correct * 12 + totals.attempts * 2 + Number(save.played || 0) * 8 + Number(save.endlessBest || 0) * 6 + cardCount * 5;
+  }
+  function profileXP(){
+    ensureSave();
+    return Math.max(Number(save.xp || 0), computedXP());
+  }
+  function levelInfo(){
+    const xp = profileXP();
+    const size = 260;
+    const level = Math.floor(xp / size) + 1;
+    const floor = (level - 1) * size;
+    const next = level * size;
+    return {xp, level, floor, next, pct:Math.min(100, Math.round((xp - floor) / (next - floor) * 100))};
+  }
+  function rankTitle(level){
+    if (level >= 18) return "Attending Mode";
+    if (level >= 12) return "Chief Rounds";
+    if (level >= 8) return "Resident Energy";
+    if (level >= 4) return "Intern Mode";
+    return "MS1 Spark";
+  }
+  function addXP(amount){
+    ensureSave();
+    save.xp = profileXP() + amount;
+    if (session) session.xpEarned = (session.xpEarned || 0) + amount;
+    persist();
+    return amount;
+  }
+  function missionForGame(){
+    const due = dueCards(false).length;
+    const misses = missedQuestions().length;
+    if (due) return {key:"cards", title:`Clear ${plural(due,"due card","due cards")}`, detail:"Flip, grade, and move shaky facts forward."};
+    if (save.lastPlayedDate !== todayKey() && MODES.daily) return {key:"daily", title:"Start today's warm-up", detail:"A short run keeps this system active."};
+    if (misses) return {key:"missed", title:`Rescue ${plural(misses,"miss","misses")}`, detail:"Turn misses into future points."};
+    if (MODES.block) return {key:"block", title:"Run a timed rep", detail:"Pressure-test recall without changing the content."};
+    return {key:"daily", title:"Quick recall run", detail:"Keep the streak alive."};
+  }
+  function renderGamePulse(){
+    const totals = statTotals();
+    const info = levelInfo();
+    const accuracy = totals.attempts ? `${Math.round(totals.correct / totals.attempts * 100)}%` : "New";
+    const mission = missionForGame();
+    const due = dueCards(false).length;
+    const misses = missedQuestions().length;
+    return `<section class="game-pulse">
+      <div class="pulse-top">
+        <div>
+          <div class="pulse-kicker">Arcade Pulse</div>
+          <div class="pulse-rank">Level ${info.level} · ${rankTitle(info.level)}</div>
+        </div>
+        <div class="combo-badge">${info.xp} XP</div>
+      </div>
+      <div class="xp-track" aria-label="Level progress"><span style="width:${info.pct}%"></span></div>
+      <div class="pulse-grid">
+        <div class="pulse-stat"><b>${accuracy}</b><span>Accuracy</span></div>
+        <div class="pulse-stat"><b>${save.played || 0}</b><span>Runs</span></div>
+        <div class="pulse-stat"><b>${due}</b><span>Due</span></div>
+        <div class="pulse-stat"><b>${misses}</b><span>Misses</span></div>
+      </div>
+      <div class="mission-strip">
+        <div><b>${mission.title}</b><span>${mission.detail}</span></div>
+        <button type="button" class="btn btn-next" onclick="start('${mission.key}')">START MISSION</button>
+      </div>
+    </section>`;
+  }
+  function rewardMarkup(correct, amount, streak){
+    if (correct) {
+      const combo = streak > 1 ? `Combo x${streak}` : "Clean hit";
+      return `<div class="reward-toast good"><b>+${amount} XP</b> · ${combo}</div>`;
+    }
+    return `<div class="reward-toast miss"><b>+${amount} XP</b> · Saved to review</div>`;
+  }
 
   function ensureSave(){
     save.best = save.best || {};
@@ -80,6 +198,8 @@ a.back{text-decoration:none}
     save.cards = save.cards || {};
     save.stats = save.stats || {};
     save.played = save.played || 0;
+    save.xp = Number(save.xp || 0) || 0;
+    save.badges = save.badges || {};
   }
   ensureSave();
 
@@ -324,6 +444,7 @@ a.back{text-decoration:none}
         <h1>${GAME_TITLE}</h1>
         <div class="sub">${GAME_SUBTITLE} — ${QBANK.length} questions</div>
       </div>
+      ${renderGamePulse()}
       <div class="section-label">Quick Play</div>
       <div class="grid">
         ${MODES.daily ? tile("daily",MODES.daily,"") : ""}
@@ -356,7 +477,7 @@ a.back{text-decoration:none}
     session = {
       key, mode, qs, i:0, correct:0, streak:0, answered:false,
       responses:[], startedAt:Date.now(), timeLimitMs:(mode.timeLimit || 0) * 1000,
-      timerId:null, revealed:false
+      timerId:null, revealed:false, xpEarned:0
     };
     if (mode.flashcards) renderCard();
     else renderQ();
@@ -407,6 +528,7 @@ a.back{text-decoration:none}
     const q = session.qs[session.i];
     addCard(q,grade);
     if (grade === "good") clearMissed(q);
+    addXP(grade === "good" ? 12 : (grade === "hard" ? 6 : 3));
     session.responses.push({q, selectedText:grade, correctText:q.c[q.a], correct:grade === "good"});
     session.correct += grade === "good" ? 1 : 0;
     session.i++;
@@ -432,6 +554,7 @@ a.back{text-decoration:none}
       ${renderGameNav()}
       <div class="quiz-tools">
         <div class="quiz-top" style="margin-bottom:0"><span class="qcount">Q ${num} / ${total}</span><span class="streak"> Streak ${s.streak}</span></div>
+        ${s.streak ? `<div class="combo-badge">Combo x${s.streak}</div>` : ""}
         ${s.mode.timed ? `<div class="timer" id="timer">Time ${formatTime(s.timeLimitMs - (Date.now() - s.startedAt))}</div>` : ""}
       </div>
       <div class="bar"><span style="width:${pct}%"></span></div>
@@ -474,17 +597,18 @@ a.back{text-decoration:none}
       addMissed(q);
     }
     recordAttempt(q, correct);
+    const xpGain = addXP(correct ? 12 + Math.min(s.streak, 8) : 3);
     s.responses.push({q, selectedText, correctText, correct});
     const post = document.getElementById("post");
     if (s.mode.deferReview) {
-      post.innerHTML = `<div class="explain"><div class="lab">Answer saved</div><div class="why">Review is held until the end of this timed block.</div></div>
+      post.innerHTML = `${rewardMarkup(correct, xpGain, s.streak)}<div class="explain"><div class="lab">Answer saved</div><div class="why">Review is held until the end of this timed block.</div></div>
         <button class="btn btn-next" onclick="nextQ()">${s.i+1>=s.qs.length ? "FINISH BLOCK" : "NEXT ›"}</button>`;
       return;
     }
     const pearl = q.p ? `<div class="pearl"><b>Pearl:</b> ${q.p}</div>` : "";
     const selected = correct ? "" : `<div class="mini"><b>Selected:</b> ${selectedText}<br><b>Correct:</b> ${correctText}</div>`;
     const confidence = correct ? `<div class="confidence-row"><button class="btn btn-ghost" onclick="markUnsureCurrent(this)">MARK UNSURE</button></div>` : reasonButtons(q);
-    post.innerHTML = `<div class="explain ${correct ? "" : "miss"}">
+    post.innerHTML = `${rewardMarkup(correct, xpGain, s.streak)}<div class="explain ${correct ? "" : "miss"}">
         <div class="lab">${correct ? "Correct" : "Review"}</div>
         <div class="why">${q.why}</div>${selected}${pearl}${confidence}
       </div>`;
@@ -554,6 +678,7 @@ a.back{text-decoration:none}
     const pctNum = s.mode.endless ? null : Math.round(got/s.qs.length*100);
     if (!s.mode.endless) save.best[s.key] = Math.max(save.best[s.key] || 0, pctNum);
     save.played = (save.played || 0) + 1;
+    save.lastPlayedDate = todayKey();
     persist();
     const p = s.mode.endless ? Math.min(100,got*5) : pctNum;
     let rank, col;
@@ -565,9 +690,11 @@ a.back{text-decoration:none}
     const missedButton = missedQuestions().length ? `<button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="start('missed')">REVIEW MISSED (${missedQuestions().length})</button>` : "";
     const cardsButton = cardPool().length ? `<button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="start('cards')">FLASHCARDS (${cardMeta()})</button>` : "";
     const review = s.mode.deferReview ? `<div class="section-label">Block Review</div><div class="review-list">${renderReviewCards(s.responses,false)}</div>` : "";
+    const info = levelInfo();
     app.innerHTML = `
       ${renderGameNav()}
       <div class="result">
+        <div class="xp-summary"><b>+${s.xpEarned || 0} XP</b><span>Level ${info.level} · ${info.xp} total XP</span></div>
         <div class="score-big" style="color:${col}">${s.mode.endless ? got : pctNum+"%"}</div>
         <div class="rank" style="color:${col}">${s.mode.endless ? "STREAK: "+got : rank}</div>
         <div class="statrow">

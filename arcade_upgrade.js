@@ -1,9 +1,9 @@
 /* --- Step 1 Arcade upgrade layer: adaptive review, timed blocks, accessibility --- */
 (function(){
   if (window.__STEP1_ARCADE_UPGRADE__) return;
-  window.__STEP1_ARCADE_UPGRADE__ = "2026-06-22-thinking";
+  window.__STEP1_ARCADE_UPGRADE__ = "2026-06-22-insights";
 
-  const QUICK_KEYS = new Set(["daily","block","clinical","endless","missed","cards"]);
+  const QUICK_KEYS = new Set(["daily","block","clinical","interpret","endless","missed","cards"]);
   const rawTitle = (document.title || "Step 1 Game").replace(/\s+/g, " ").trim();
   const titleParts = rawTitle.split(/\s+[—-]\s+/);
   const GAME_TITLE = (titleParts[0] || "Step 1 Game").trim();
@@ -64,6 +64,9 @@ a.back{text-decoration:none}
 .mission-strip b{display:block;font-size:14px;color:var(--text)}
 .mission-strip span{display:block;font-size:12px;color:var(--dim);line-height:1.35;margin-top:3px}
 .mission-strip .btn{margin-top:0;padding:10px 13px;font-size:12px;white-space:nowrap}
+.coach-strip{position:relative;margin-top:12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.035);padding:11px 12px}
+.coach-strip b{display:block;color:var(--amber-hi);font-size:12px;letter-spacing:1.1px;text-transform:uppercase;margin-bottom:4px}
+.coach-strip span{display:block;color:var(--text);font-size:12.5px;line-height:1.42}
 .combo-badge{border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--amber-hi);background:rgba(251,191,36,.08);font-size:12px}
 .reward-toast{margin:14px 0 0;border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:rgba(255,255,255,.055);color:var(--text);animation:reward-pop .28s ease both}
 .reward-toast.good{border-color:rgba(52,211,153,.36);box-shadow:0 0 24px rgba(52,211,153,.14)}
@@ -88,9 +91,14 @@ a.back{text-decoration:none}
 .think-practice div{border:1px dashed rgba(251,191,36,.32);border-radius:11px;padding:10px;background:rgba(251,191,36,.045)}
 .think-practice b{display:block;color:var(--amber-hi);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
 .think-practice span{display:block;color:var(--text);font-size:12.5px;line-height:1.42}
+.interpret-lab{border-left:3px solid var(--cyan);background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.025))}
+.interpret-kicker{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);font-weight:800;margin-bottom:5px}
+.interpret-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:7px;align-items:center;margin:11px 0}
+.interpret-flow span{border:1px solid var(--line);border-radius:10px;padding:8px;color:var(--text);font-size:12.5px;min-width:0}
+.interpret-flow i{color:var(--amber-hi);font-style:normal;text-align:center}
 @keyframes pulse-sheen{0%,55%{transform:translateX(-120%)}78%,100%{transform:translateX(120%)}}
 @keyframes reward-pop{from{opacity:0;transform:translateY(7px) scale(.98)}to{opacity:1;transform:none}}
-@media (max-width:680px){.think-map,.think-practice{grid-template-columns:1fr}.think-chip{white-space:normal}}
+@media (max-width:680px){.think-map,.think-practice,.interpret-flow{grid-template-columns:1fr}.think-chip{white-space:normal}.interpret-flow i{display:none}}
 @media (max-width:640px){.pulse-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mission-strip{grid-template-columns:1fr}.mission-strip .btn{width:100%}}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 `;
@@ -199,7 +207,58 @@ a.back{text-decoration:none}
         <div><b>${mission.title}</b><span>${mission.detail}</span></div>
         <button type="button" class="btn btn-next" onclick="start('${mission.key}')">START MISSION</button>
       </div>
+      ${renderCoachStrip(totals)}
     </section>`;
+  }
+  function reasonLabel(reason){
+    const labels = {
+      knowledge:"Knowledge gap",
+      confused:"Distractor confusion",
+      stem:"Stem misread",
+      mechanism:"Mechanism gap"
+    };
+    return labels[reason] || "Review pattern";
+  }
+  function topMissReason(){
+    ensureSave();
+    const totals = {};
+    Object.values(save.missReasons || {}).forEach(reasons=>{
+      Object.entries(reasons || {}).forEach(([reason,count])=>{
+        totals[reason] = (totals[reason] || 0) + Number(count || 0);
+      });
+    });
+    return Object.entries(totals).sort((a,b)=>b[1]-a[1])[0] || null;
+  }
+  function renderCoachStrip(totals){
+    const due = dueCards(false).length;
+    const misses = missedQuestions().length;
+    const top = topMissReason();
+    const accuracy = totals.attempts ? totals.correct / totals.attempts : null;
+    let title = "Coach readout";
+    let detail = "Start with a short interpretation or timed run so the app can learn your miss pattern.";
+    if (top && top[1] >= 2) {
+      title = reasonLabel(top[0]);
+      const advice = {
+        knowledge:"Do one Memory Vault pass, then answer without looking until the clue feels automatic.",
+        confused:"Use the How to Think section to name why the closest distractor is wrong.",
+        stem:"Slow the first 8 seconds: age, timing, lab direction, and negating words first.",
+        mechanism:"Force a cue -> anchor -> mechanism sentence before moving on."
+      };
+      detail = advice[top[0]] || "Review the repeated miss pattern before adding more questions.";
+    } else if (due) {
+      title = "Spaced review due";
+      detail = `${due} card${due === 1 ? "" : "s"} ready. Clear cards before adding new misses.`;
+    } else if (misses) {
+      title = "Miss bank building";
+      detail = `${misses} miss${misses === 1 ? "" : "es"} saved. Run Missed Items to convert them into durable cards.`;
+    } else if (accuracy != null && accuracy < .7) {
+      title = "Accuracy under 70%";
+      detail = "Use topic drills before timed blocks; aim for clean clue recognition first.";
+    } else if (totals.attempts >= 8) {
+      title = "Ready for pressure";
+      detail = "You have enough signal here for a timed block or Interpretation Lab rep.";
+    }
+    return `<div class="coach-strip"><b>${escapeHTML(title)}</b><span>${escapeHTML(detail)}</span></div>`;
   }
   function rewardMarkup(correct, amount, streak){
     if (correct) {
@@ -291,6 +350,66 @@ a.back{text-decoration:none}
         _clinical:true
       }) : Object.assign({}, q, {_clinical:true}));
   }
+  function stemCueTerms(q){
+    const source = stripHTML(`${q.q || ""} ${q.v || ""}`).toLowerCase();
+    const seen = new Set();
+    return source
+      .replace(/[^a-z0-9\s-]/g," ")
+      .split(/\s+/)
+      .filter(word=>word.length > 3 && !STOP_WORDS.has(word))
+      .filter(word=>{
+        if (seen.has(word)) return false;
+        seen.add(word);
+        return true;
+      })
+      .slice(0,4);
+  }
+  function interpretTask(theme){
+    const tasks = {
+      biochem:"Pick the pathway, location, enzyme, accumulation, or deficiency that explains the pattern.",
+      path:"Identify the injury pattern, mediator, morphology, or tumor clue.",
+      immune:"Connect the immune component to the infection, hypersensitivity, or deficiency pattern.",
+      genetics:"Read the inheritance or phenotype pattern before choosing the diagnosis.",
+      cardio:"Translate the clue into pressure, flow, valve, vessel, or oxygen-demand logic.",
+      renal:"Classify the lab/nephron pattern before naming the syndrome or drug site.",
+      pulm:"Decide whether the artifact is about airflow, diffusion, perfusion, or mechanics.",
+      gi:"Map the clue to region, layer, epithelial change, inflammation pattern, or liver handling.",
+      heme:"Track the cell line, coagulation step, smear/lab pattern, or malignancy anchor.",
+      endocrine:"Decide whether the signal is hormone, gland, receptor, or feedback loop.",
+      neuro:"Localize by tract, nerve, artery, side, or modality before naming the lesion.",
+      anatomy:"Use spatial relationships: over, under, through, lateral, medial, anterior, posterior.",
+      micro:"Match exposure, host risk, organism trait, and clinical syndrome.",
+      pharm:"Map drug or suffix to target, effect, and toxicity.",
+      psych:"Use duration, impairment, exclusions, and symptom cluster.",
+      stats:"Turn words into numerator, denominator, comparison group, or study direction.",
+      ethics:"Choose the safest next step using autonomy, capacity, confidentiality, and harm."
+    };
+    return tasks[theme] || "Read the artifact, identify the tested clue, then choose the answer that explains it.";
+  }
+  function interpretationQuestions(){
+    return QBANK.map(q=>{
+      const theme = learningTheme(q);
+      const profile = THEME_PROFILES[theme] || THEME_PROFILES.general;
+      const terms = stemCueTerms(q);
+      const cue = terms.slice(0,3).join(" + ") || MODE_TAGS[q.m] || "core clue";
+      return Object.assign({}, q, {
+        _interpret:true,
+        interpret:{
+          title:`${profile.label} Lab`,
+          cue,
+          task:interpretTask(theme),
+          rows:[
+            ["Artifact clue", cue],
+            ["Your job", interpretTask(theme)],
+            ["Trap check", "Do not pick a familiar answer unless it explains the clue pattern."]
+          ]
+        }
+      });
+    });
+  }
+  function interpretMeta(){
+    return `${Math.min(12,QBANK.length)} reps`;
+  }
   function clinicalMeta(){
     const n = QBANK.filter(q=>q.v).length;
     return n ? `${n} vignettes` : "Add vignettes";
@@ -369,12 +488,24 @@ a.back{text-decoration:none}
   }
   function renderSupport(q){
     let out = "";
+    if (q.interpret) out += renderInterpretPrompt(q.interpret);
     if (q.figure) out += `<div class="study-visual"><b>Figure prompt:</b> ${q.figure}</div>`;
     if (q.table && Array.isArray(q.table.rows)) {
       const headers = q.table.headers || [];
       out += `<div class="study-visual"><b>${q.table.title || "Data"}</b><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${q.table.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
     }
     return out;
+  }
+  function renderInterpretPrompt(data){
+    const rows = Array.isArray(data.rows) ? data.rows : [];
+    return `<div class="study-visual interpret-lab">
+      <div class="interpret-kicker">Interpretation Lab</div>
+      <b>${escapeHTML(data.title || "Question Artifact")}</b>
+      <div class="interpret-flow" aria-label="Interpretation sequence">
+        <span>Clue pattern</span><i>&rarr;</i><span>Answer choice</span><i>&rarr;</i><span>Mechanism</span>
+      </div>
+      <table><tbody>${rows.map(row=>`<tr><th>${escapeHTML(row[0])}</th><td>${escapeHTML(row[1])}</td></tr>`).join("")}</tbody></table>
+    </div>`;
   }
   const THEME_BY_TAG = {
     loc:"biochem", rle:"biochem", inborn:"biochem", storage:"biochem", vit:"biochem", nutr:"biochem",
@@ -574,6 +705,13 @@ a.back{text-decoration:none}
     clinical:true,
     pick:()=>shuffle(clinicalQuestions()).slice(0,Math.min(15,clinicalQuestions().length))
   };
+  MODES.interpret = {
+    name:"Interpretation Lab",
+    ic:"IMG",
+    desc:"Mini table/diagram reps: read the artifact first, then choose the answer.",
+    interpret:true,
+    pick:()=>shuffle(interpretationQuestions()).slice(0,Math.min(12,QBANK.length))
+  };
   MODES.missed = {
     name:"Missed Items",
     ic:"!",
@@ -599,6 +737,7 @@ a.back{text-decoration:none}
     const bestLbl = key === "missed" ? missedMeta() :
       key === "cards" ? cardMeta() :
       key === "clinical" ? clinicalMeta() :
+      key === "interpret" ? interpretMeta() :
       (key === "endless" ? `Best streak: ${best}` : `Best: ${best}`);
     return `<button type="button" class="tile ${cls || ""}" onclick="start('${key}')" ${disabled ? "disabled" : ""}>
       <div class="ic">${mode.ic}</div>
@@ -625,6 +764,7 @@ a.back{text-decoration:none}
         ${MODES.daily ? tile("daily",MODES.daily,"") : ""}
         ${tile("block",MODES.block,"special")}
         ${tile("clinical",MODES.clinical,"")}
+        ${tile("interpret",MODES.interpret,"")}
         ${MODES.endless ? tile("endless",MODES.endless,"amber") : ""}
         ${tile("missed",MODES.missed,"amber")}
         ${tile("cards",MODES.cards,"amber")}

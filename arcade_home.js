@@ -28,6 +28,15 @@
     const values = Object.values(save.best || {}).map(Number).filter(Number.isFinite);
     return values.length ? Math.max(...values) : null;
   }
+  function reasonTotals(save){
+    const totals = {};
+    Object.values(save.missReasons || {}).forEach(reasons=>{
+      Object.entries(reasons || {}).forEach(([reason,count])=>{
+        totals[reason] = (totals[reason] || 0) + Number(count || 0);
+      });
+    });
+    return totals;
+  }
   function gamePulse(game){
     const save = readSave(game.saveKey);
     const stats = statTotals(save);
@@ -40,7 +49,7 @@
     const xpBase = stats.correct * 12 + stats.attempts * 2 + Number(save.played || 0) * 8 + Number(save.endlessBest || 0) * 6 + cardCount * 5;
     const xp = Math.max(Number(save.xp || 0), xpBase);
     const accuracy = stats.attempts ? Math.round(stats.correct / stats.attempts * 100) : null;
-    return {game, save, stats, due, missed, cardCount, best, xp, accuracy, played:Number(save.played || 0)};
+    return {game, save, stats, due, missed, cardCount, best, xp, accuracy, played:Number(save.played || 0), reasons:reasonTotals(save)};
   }
   function levelInfo(xp){
     const size = 450;
@@ -83,8 +92,25 @@
 .card-meter .meter{height:6px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:8px}
 .card-meter .meter span{display:block;height:100%;background:var(--ac)}
 .card.hot{box-shadow:0 0 0 1px color-mix(in srgb,var(--ac) 28%,transparent),0 10px 28px rgba(0,0,0,.34)}
+.coverage-band,.coach-panel{margin:14px -20px 6px;padding:18px 20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(255,255,255,.025)}
+.coverage-head,.coach-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.coverage-head h2,.coach-head h2{font-family:'Unbounded';font-size:18px;line-height:1.15}
+.coverage-head span,.coach-head span{color:var(--dim);font-size:12px;line-height:1.4}
+.coverage-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.coverage-cell{border:1px solid var(--line);border-radius:12px;background:rgba(8,8,12,.42);padding:12px;min-width:0}
+.coverage-cell strong{display:block;font-size:13px;color:var(--text);line-height:1.25}
+.coverage-cell .coverage-meta{color:var(--dim);font-size:11px;margin-top:7px;line-height:1.35}
+.coverage-bar{height:7px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:10px}
+.coverage-bar span{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#a78bfa,#fb923c)}
+.coverage-cell.hot{border-color:rgba(251,191,36,.36);box-shadow:0 0 0 1px rgba(251,191,36,.12)}
+.coach-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.coach-card{border:1px solid var(--line);border-radius:12px;background:rgba(8,8,12,.46);padding:13px}
+.coach-card b{display:block;color:var(--amber-hi);font-size:12px;letter-spacing:1.1px;text-transform:uppercase;margin-bottom:5px}
+.coach-card span{display:block;color:var(--text);font-size:13px;line-height:1.45}
+.coach-card a{display:inline-flex;margin-top:10px;color:#08080c;background:linear-gradient(135deg,#22d3ee,#a78bfa);border-radius:9px;padding:8px 10px;text-decoration:none;font-weight:800;font-size:12px}
 @media (max-width:820px){.command-grid{grid-template-columns:1fr 1fr}.command-main{grid-column:1/-1}}
-@media (max-width:560px){.arcade-command{margin-left:-14px;margin-right:-14px}.command-grid{grid-template-columns:1fr}.command-rank{font-size:19px}}
+@media (max-width:820px){.coverage-grid{grid-template-columns:1fr 1fr}.coach-grid{grid-template-columns:1fr}}
+@media (max-width:560px){.arcade-command,.coverage-band,.coach-panel{margin-left:-14px;margin-right:-14px}.command-grid,.coverage-grid{grid-template-columns:1fr}.command-rank{font-size:19px}}
 `;
     document.head.appendChild(style);
   }
@@ -119,6 +145,100 @@
       </div>`;
     hero.insertAdjacentElement("afterend", command);
   }
+  function reasonLabel(reason){
+    const labels = {
+      knowledge:"Knowledge gap",
+      confused:"Distractor confusion",
+      stem:"Stem misread",
+      mechanism:"Mechanism gap"
+    };
+    return labels[reason] || "Miss pattern";
+  }
+  function sectionSummaries(pulses){
+    const map = new Map();
+    pulses.forEach(pulse=>{
+      const key = pulse.game.section || "Other";
+      if (!map.has(key)) map.set(key, {section:key,games:0,played:0,attempts:0,correct:0,missed:0,due:0,weak:null});
+      const item = map.get(key);
+      item.games += 1;
+      item.played += pulse.played;
+      item.attempts += pulse.stats.attempts;
+      item.correct += pulse.stats.correct;
+      item.missed += pulse.missed;
+      item.due += pulse.due;
+      if (!item.weak || weakScore(pulse) > weakScore(item.weak)) item.weak = pulse;
+    });
+    return [...map.values()];
+  }
+  function renderCoverageHeatmap(pulses){
+    const summaries = sectionSummaries(pulses);
+    const band = document.createElement("section");
+    band.className = "coverage-band";
+    band.innerHTML = `
+      <div class="coverage-head">
+        <div><h2>Coverage Heatmap</h2><span>Shows where you have reps, misses, and due review across the arcade.</span></div>
+      </div>
+      <div class="coverage-grid">
+        ${summaries.map(item=>{
+          const accuracy = item.attempts ? Math.round(item.correct / item.attempts * 100) : 0;
+          const pct = Math.min(100, Math.round((item.played / Math.max(1,item.games * 3)) * 100));
+          const weak = item.weak && weakScore(item.weak) ? item.weak.game.title : "No weak spot yet";
+          return `<div class="coverage-cell ${item.missed || item.due ? "hot" : ""}">
+            <strong>${escapeHTML(item.section)}</strong>
+            <div class="coverage-meta">${item.games} games | ${item.played} runs | ${item.attempts ? accuracy + "% accuracy" : "new"}</div>
+            <div class="coverage-meta">${item.due} due | ${item.missed} misses | weak: ${escapeHTML(weak)}</div>
+            <div class="coverage-bar"><span style="width:${pct}%"></span></div>
+          </div>`;
+        }).join("")}
+      </div>`;
+    const command = document.querySelector(".arcade-command");
+    (command || hero).insertAdjacentElement("afterend", band);
+    return band;
+  }
+  function topReason(pulses){
+    const totals = {};
+    pulses.forEach(pulse=>{
+      Object.entries(pulse.reasons || {}).forEach(([reason,count])=>{
+        totals[reason] = (totals[reason] || 0) + Number(count || 0);
+      });
+    });
+    return Object.entries(totals).sort((a,b)=>b[1]-a[1])[0] || null;
+  }
+  function reasonAdvice(reason){
+    const advice = {
+      knowledge:"Run the Memory Vault for the weak game, then do 8 untimed reps before adding pressure.",
+      confused:"Use the post-answer contrast prompt: write why the closest distractor is wrong.",
+      stem:"Before answering, underline age/time course/lab direction/negating words in your head.",
+      mechanism:"Say cue -> anchor -> mechanism before clicking next."
+    };
+    return advice[reason] || "Do a short mixed run, then review the misses immediately.";
+  }
+  function renderCoachPanel(pulses, afterNode){
+    const weak = pulses.slice().sort((a,b)=>weakScore(b) - weakScore(a))[0];
+    const reason = topReason(pulses);
+    const totalMisses = pulses.reduce((sum,pulse)=>sum + pulse.missed, 0);
+    const totalDue = pulses.reduce((sum,pulse)=>sum + pulse.due, 0);
+    const weakHref = weak && weakScore(weak) ? weak.game.file : "review_hub.html";
+    const panel = document.createElement("section");
+    panel.className = "coach-panel";
+    panel.innerHTML = `
+      <div class="coach-head">
+        <div><h2>Coach Readout</h2><span>A small nudge from your saved misses, due cards, and accuracy patterns.</span></div>
+      </div>
+      <div class="coach-grid">
+        <div class="coach-card">
+          <b>${reason ? reasonLabel(reason[0]) : "No miss pattern yet"}</b>
+          <span>${reason ? reasonAdvice(reason[0]) : "Get a few reps in, then the app will start naming your most common miss type."}</span>
+          <a href="${weakHref}">${weak && weakScore(weak) ? "Attack " + escapeHTML(weak.game.title) : "Start Review"}</a>
+        </div>
+        <div class="coach-card">
+          <b>${totalDue ? "Spaced review first" : (totalMisses ? "Clean the miss bank" : "Next best rep")}</b>
+          <span>${totalDue ? `${totalDue} due card${totalDue === 1 ? "" : "s"} are ready before you add new material.` : (totalMisses ? `${totalMisses} missed item${totalMisses === 1 ? "" : "s"} are waiting to become durable recall.` : "Run Interpretation Lab in one weak game to practice reading tables and diagrams.")}</span>
+          <a href="review_hub.html">${totalDue || totalMisses ? "Open Review Hub" : "Review Hub"}</a>
+        </div>
+      </div>`;
+    afterNode.insertAdjacentElement("afterend", panel);
+  }
   function enhanceCards(pulses){
     pulses.forEach(pulse=>{
       const card = document.querySelector(`.card[href="${pulse.game.file}"]`);
@@ -135,5 +255,7 @@
   installStyles();
   const pulses = games.map(gamePulse);
   renderCommandCenter(pulses);
+  const coverage = renderCoverageHeatmap(pulses);
+  renderCoachPanel(pulses, coverage);
   enhanceCards(pulses);
 })();

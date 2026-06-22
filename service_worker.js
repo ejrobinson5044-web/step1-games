@@ -1,4 +1,4 @@
-const CACHE_NAME = "step1-arcade-v12";
+const CACHE_NAME = "step1-arcade-v13";
 const CORE_ASSETS = [
   "./",
   "auth_debug.html",

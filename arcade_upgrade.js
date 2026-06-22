@@ -1,7 +1,7 @@
 /* --- Step 1 Arcade upgrade layer: adaptive review, timed blocks, accessibility --- */
 (function(){
   if (window.__STEP1_ARCADE_UPGRADE__) return;
-  window.__STEP1_ARCADE_UPGRADE__ = "2026-06-22-multimodal";
+  window.__STEP1_ARCADE_UPGRADE__ = "2026-06-22-thinking";
 
   const QUICK_KEYS = new Set(["daily","block","clinical","endless","missed","cards"]);
   const rawTitle = (document.title || "Step 1 Game").replace(/\s+/g, " ").trim();
@@ -72,28 +72,25 @@ a.back{text-decoration:none}
 .xp-summary{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.045);padding:13px;margin:0 auto 18px;max-width:360px}
 .xp-summary b{display:block;font-size:24px;color:var(--amber-hi)}
 .xp-summary span{display:block;font-size:12px;color:var(--dim);margin-top:3px}
-.learning-stack{display:grid;gap:12px;margin-top:14px}
-.visual-card,.lightbulb-card,.stick-card{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.042);padding:13px}
-.visual-card{display:grid;grid-template-columns:168px 1fr;gap:13px;align-items:center;overflow:hidden}
-.visual-frame{border-radius:12px;background:radial-gradient(circle at 35% 20%,rgba(255,255,255,.11),transparent 44%),rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.08);padding:8px}
-.visual-frame svg{display:block;width:100%;height:auto}
-.visual-title{font-weight:800;color:var(--text);font-size:14px}
-.visual-caption{color:var(--dim);font-size:12.5px;line-height:1.45;margin-top:5px}
-.visual-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
-.visual-tags span{border:1px solid var(--line);border-radius:999px;padding:4px 8px;color:var(--amber-hi);font-size:11px;background:rgba(251,191,36,.07)}
-.lightbulb-card{border-left:3px solid var(--amber)}
-.learning-label{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);font-weight:800;margin-bottom:7px}
-.bulb-dot{width:12px;height:12px;border-radius:50%;background:var(--amber-hi);box-shadow:0 0 18px rgba(251,191,36,.45);display:inline-block}
-.lightbulb-card p,.stick-card p{font-size:13.5px;line-height:1.5;color:var(--text);margin:0}
-.stick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.stick-step{border:1px solid var(--line);border-radius:11px;padding:10px;background:rgba(0,0,0,.14)}
-.stick-step b{display:block;color:var(--amber-hi);font-size:11px;text-transform:uppercase;letter-spacing:1.1px;margin-bottom:4px}
-.stick-step span{display:block;color:var(--text);font-size:12.5px;line-height:1.42}
-.memory-chain{margin-top:9px;border:1px dashed rgba(251,191,36,.34);border-radius:11px;padding:10px;color:var(--text);font-size:12.5px;line-height:1.45;background:rgba(251,191,36,.055)}
-.memory-chain b{color:var(--amber-hi)}
+.think-card{margin-top:14px;border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:14px;background:rgba(255,255,255,.045);padding:14px}
+.think-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.think-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);font-weight:800;margin-bottom:4px}
+.think-title{font-weight:800;color:var(--text);font-size:15px;line-height:1.3}
+.think-chip{border:1px solid var(--line);border-radius:999px;padding:4px 9px;color:var(--amber-hi);font-size:11px;background:rgba(251,191,36,.07);white-space:nowrap}
+.think-summary{font-size:13.5px;line-height:1.48;color:var(--text);margin-top:8px}
+.think-summary b{color:var(--amber-hi)}
+.think-map{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:12px}
+.think-step{border:1px solid var(--line);border-radius:12px;padding:10px;background:rgba(0,0,0,.15);min-width:0}
+.think-step.answer{border-color:rgba(251,191,36,.38);background:rgba(251,191,36,.075)}
+.think-step b{display:block;color:var(--dim);font-size:10px;letter-spacing:1.3px;text-transform:uppercase;margin-bottom:5px}
+.think-step span{display:block;color:var(--text);font-size:12.5px;line-height:1.42;overflow-wrap:anywhere}
+.think-practice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
+.think-practice div{border:1px dashed rgba(251,191,36,.32);border-radius:11px;padding:10px;background:rgba(251,191,36,.045)}
+.think-practice b{display:block;color:var(--amber-hi);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.think-practice span{display:block;color:var(--text);font-size:12.5px;line-height:1.42}
 @keyframes pulse-sheen{0%,55%{transform:translateX(-120%)}78%,100%{transform:translateX(120%)}}
 @keyframes reward-pop{from{opacity:0;transform:translateY(7px) scale(.98)}to{opacity:1;transform:none}}
-@media (max-width:680px){.visual-card{grid-template-columns:1fr}.visual-frame{max-width:260px}.stick-grid{grid-template-columns:1fr}}
+@media (max-width:680px){.think-map,.think-practice{grid-template-columns:1fr}.think-chip{white-space:normal}}
 @media (max-width:640px){.pulse-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mission-strip{grid-template-columns:1fr}.mission-strip .btn{width:100%}}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 `;
@@ -461,54 +458,6 @@ a.back{text-decoration:none}
       })
       .slice(0,4);
   }
-  function visualId(q){
-    return `viz_${String(q._arcadeId || Math.random()).replace(/[^a-z0-9_]/gi,"_")}`;
-  }
-  function renderGeneratedVisual(q, correctText){
-    const theme = learningTheme(q);
-    const profile = THEME_PROFILES[theme] || THEME_PROFILES.general;
-    const id = visualId(q);
-    const terms = cueTerms(q, correctText);
-    const cue = clipText(terms.slice(0,2).join(" + ") || MODE_TAGS[q.m] || "Stem cue", 26);
-    const answer = clipText(correctText, 26);
-    const outcome = firstSentence(q.why, 42);
-    const accent = profile.color;
-    return `<div class="visual-card">
-      <div class="visual-frame">
-        <svg viewBox="0 0 180 132" role="img" aria-label="${escapeHTML(profile.label)}">
-          <defs>
-            <linearGradient id="${id}" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0" stop-color="${accent}" stop-opacity=".95"/>
-              <stop offset="1" stop-color="#fde047" stop-opacity=".82"/>
-            </linearGradient>
-          </defs>
-          <rect x="4" y="5" width="172" height="122" rx="18" fill="#090d19" stroke="rgba(255,255,255,.18)"/>
-          <circle cx="42" cy="52" r="25" fill="${accent}" opacity=".2" stroke="${accent}" stroke-width="2"/>
-          <circle cx="90" cy="52" r="31" fill="url(#${id})" opacity=".88"/>
-          <circle cx="138" cy="52" r="25" fill="#fde047" opacity=".18" stroke="#fde047" stroke-width="2"/>
-          <path d="M64 52 C70 38 75 38 82 52" fill="none" stroke="rgba(255,255,255,.72)" stroke-width="2.5"/>
-          <path d="M112 52 C118 38 123 38 130 52" fill="none" stroke="rgba(255,255,255,.72)" stroke-width="2.5"/>
-          <text x="90" y="35" text-anchor="middle" fill="#08111f" font-size="13" font-weight="800">${escapeHTML(profile.glyph)}</text>
-          <text x="90" y="56" text-anchor="middle" fill="#08111f" font-size="9" font-weight="800">${escapeHTML(clipText(answer, 18))}</text>
-          <text x="42" y="91" text-anchor="middle" fill="#e6edfa" font-size="8" font-weight="700">${escapeHTML(clipText(cue, 18))}</text>
-          <text x="90" y="105" text-anchor="middle" fill="#fde047" font-size="8" font-weight="700">answer anchor</text>
-          <text x="138" y="91" text-anchor="middle" fill="#e6edfa" font-size="8" font-weight="700">${escapeHTML(clipText(outcome, 18))}</text>
-        </svg>
-      </div>
-      <div>
-        <div class="visual-title">${escapeHTML(profile.label)}</div>
-        <div class="visual-caption">Original generated visual: connect the stem cue to the answer, then to the consequence that makes it testable.</div>
-        <div class="visual-tags">
-          ${terms.slice(0,3).map(term=>`<span>${escapeHTML(term)}</span>`).join("")}
-        </div>
-      </div>
-    </div>`;
-  }
-  function bigPictureMessage(q, correctText){
-    const profile = THEME_PROFILES[learningTheme(q)] || THEME_PROFILES.general;
-    const answer = clipText(correctText, 44);
-    return `${profile.big} Here, <b>${escapeHTML(answer)}</b> is the anchor that turns the stem into a mechanism instead of a loose fact.`;
-  }
   function complexityScore(q){
     const text = stripHTML(`${q.q || ""} ${q.why || ""} ${q.p || ""} ${q.v || ""}`).toLowerCase();
     let score = 0;
@@ -523,33 +472,67 @@ a.back{text-decoration:none}
     const alt = (q.c || []).find(choice=>stripHTML(choice) !== stripHTML(correctText));
     return alt || "the closest distractor";
   }
-  function renderReinforcement(q, selectedText, correctText){
+  function domainAsk(profile, correctText, cue){
+    const anchor = escapeHTML(clipText(correctText, 54));
+    const clue = escapeHTML(clipText(cue, 54));
+    return `This is testing ${escapeHTML(profile.label.toLowerCase())}: recognize <b>${clue}</b> as the clue for <b>${anchor}</b>, then explain why that answer fits the finding.`;
+  }
+  function transferPrompt(theme){
+    const prompts = {
+      biochem:"What would accumulate, be deficient, or change location if this pathway step failed?",
+      path:"What injury pattern, mediator, or morphology would prove this mechanism?",
+      immune:"Which cell, cytokine, antibody, or hypersensitivity type explains the presentation?",
+      genetics:"What inheritance clue, chromosome, repeat, or parent-of-origin pattern is being tested?",
+      cardio:"What pressure, flow, valve, or vessel change explains the symptom?",
+      renal:"Which nephron site, electrolyte shift, or compensation pattern is being tested?",
+      pulm:"Is the question about airflow, diffusion, perfusion, or lung mechanics?",
+      gi:"Which layer, region, epithelial change, or liver-processing step is the key?",
+      heme:"Which cell line, lab pattern, clotting step, or translocation anchors the diagnosis?",
+      endocrine:"Is the primary issue the gland, hormone signal, receptor, or target tissue?",
+      neuro:"Which tract, nucleus, nerve, side, or artery localizes the finding?",
+      anatomy:"What is over, under, lateral, medial, anterior, posterior, or passing through?",
+      micro:"What exposure, host risk, organism trait, or virulence factor points to the bug?",
+      pharm:"What target explains both the intended effect and the toxicity?",
+      psych:"Which duration, impairment, exclusion, or symptom cluster separates this from mimics?",
+      stats:"What are the numerator, denominator, comparison group, or time direction?",
+      ethics:"What is the safest next step after checking capacity, autonomy, confidentiality, and harm?",
+      rapid:"What mechanism or risk context makes this association testable?"
+    };
+    return prompts[theme] || "What clue points to the answer, and what changed detail would make another answer better?";
+  }
+  function renderLearningStack(q, selectedText, correctText, correct, compact){
+    if (!q) return "";
+    const theme = learningTheme(q);
+    const profile = THEME_PROFILES[theme] || THEME_PROFILES.general;
     const terms = cueTerms(q, correctText);
     const cue = terms.slice(0,2).join(" + ") || MODE_TAGS[q.m] || "the stem clue";
     const why = firstSentence(q.why, 108);
     const contrast = clipText(contrastTarget(q, selectedText, correctText), 42);
     const complex = complexityScore(q) >= 3;
-    return `<div class="stick-card">
-      <div class="learning-label">Make It Stick</div>
-      <div class="stick-grid">
-        <div class="stick-step"><b>Retrieve</b><span>Cover the rationale and name the clue that points to ${escapeHTML(clipText(correctText, 36))}.</span></div>
-        <div class="stick-step"><b>Explain</b><span>Say the mechanism out loud: ${escapeHTML(why)}</span></div>
-        <div class="stick-step"><b>Contrast</b><span>Why is this not ${escapeHTML(contrast)}?</span></div>
-        <div class="stick-step"><b>Transfer</b><span>Change one patient detail and predict whether the answer still holds.</span></div>
+    const chip = MODE_TAGS[q.m] || profile.label;
+    const title = `${profile.label}: ${clipText(correctText, 58)}`;
+    const practice = compact ? "" : `<div class="think-practice">
+        <div><b>Do Not Confuse</b><span>Compare against ${escapeHTML(contrast)} and name the one clue that rules it out.</span></div>
+        <div><b>Next Time Ask</b><span>${escapeHTML(transferPrompt(theme))}</span></div>
+      </div>`;
+    return `<section class="think-card">
+      <div class="think-head">
+        <div>
+          <div class="think-label">How to Think About This Question</div>
+          <div class="think-title">${escapeHTML(title)}</div>
+        </div>
+        <div class="think-chip">${escapeHTML(chip)}</div>
       </div>
-      <div class="memory-chain"><b>${complex ? "Mechanism ladder" : "Memory hook"}:</b> ${escapeHTML(clipText(cue, 34))} &rarr; ${escapeHTML(clipText(correctText, 34))} &rarr; ${escapeHTML(firstSentence(q.why, 64))}</div>
-    </div>`;
-  }
-  function renderLearningStack(q, selectedText, correctText, correct, compact){
-    if (!q) return "";
-    return `<div class="learning-stack">
-      ${renderGeneratedVisual(q, correctText)}
-      <div class="lightbulb-card">
-        <div class="learning-label"><span class="bulb-dot"></span>Lightbulb</div>
-        <p>${bigPictureMessage(q, correctText)}</p>
+      <div class="think-summary"><b>What it is asking:</b> ${domainAsk(profile, correctText, cue)}</div>
+      <div class="think-map" aria-label="Question reasoning map">
+        <div class="think-step"><b>1. Spot the clue</b><span>${escapeHTML(clipText(cue, 64))}</span></div>
+        <div class="think-step answer"><b>2. Name the anchor</b><span>${escapeHTML(clipText(correctText, 74))}</span></div>
+        <div class="think-step"><b>3. Explain why</b><span>${escapeHTML(why)}</span></div>
       </div>
-      ${compact ? "" : renderReinforcement(q, selectedText, correctText)}
-    </div>`;
+      <div class="think-summary"><b>Bigger picture:</b> ${escapeHTML(profile.big)}</div>
+      <div class="think-summary"><b>${complex ? "Mechanism ladder" : "Memory hook"}:</b> ${escapeHTML(clipText(cue, 38))} &rarr; ${escapeHTML(clipText(correctText, 38))} &rarr; ${escapeHTML(firstSentence(q.why, 78))}</div>
+      ${practice}
+    </section>`;
   }
   function answerText(q, answerIdx){
     const found = (session.order || []).find(o=>o.idx === answerIdx);

@@ -1,9 +1,9 @@
 /* --- Step 1 Arcade upgrade layer: adaptive review, timed blocks, accessibility --- */
 (function(){
   if (window.__STEP1_ARCADE_UPGRADE__) return;
-  window.__STEP1_ARCADE_UPGRADE__ = "2026-06-22-insights";
+  window.__STEP1_ARCADE_UPGRADE__ = "2026-06-22-quests";
 
-  const QUICK_KEYS = new Set(["daily","block","clinical","interpret","endless","missed","cards"]);
+  const QUICK_KEYS = new Set(["daily","block","clinical","interpret","boss","endless","missed","cards"]);
   const rawTitle = (document.title || "Step 1 Game").replace(/\s+/g, " ").trim();
   const titleParts = rawTitle.split(/\s+[—-]\s+/);
   const GAME_TITLE = (titleParts[0] || "Step 1 Game").trim();
@@ -96,9 +96,18 @@ a.back{text-decoration:none}
 .interpret-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:7px;align-items:center;margin:11px 0}
 .interpret-flow span{border:1px solid var(--line);border-radius:10px;padding:8px;color:var(--text);font-size:12.5px;min-width:0}
 .interpret-flow i{color:var(--amber-hi);font-style:normal;text-align:center}
+.boss-case{border-left:3px solid var(--red);background:linear-gradient(135deg,rgba(248,113,113,.075),rgba(255,255,255,.025))}
+.boss-kicker{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);font-weight:800;margin-bottom:7px}
+.boss-kicker span:last-child{color:var(--amber-hi);letter-spacing:1px}
+.boss-stage-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:11px}
+.boss-stage{border:1px solid var(--line);border-radius:11px;padding:10px;background:rgba(0,0,0,.14);min-width:0}
+.boss-stage b{display:block;color:var(--amber-hi);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.boss-stage span{display:block;color:var(--text);font-size:12.5px;line-height:1.4}
+.comeback-toast{margin:14px 0 0;border:1px solid rgba(52,211,153,.45);border-radius:13px;padding:11px 13px;background:rgba(52,211,153,.08);color:var(--text)}
+.comeback-toast b{color:var(--green)}
 @keyframes pulse-sheen{0%,55%{transform:translateX(-120%)}78%,100%{transform:translateX(120%)}}
 @keyframes reward-pop{from{opacity:0;transform:translateY(7px) scale(.98)}to{opacity:1;transform:none}}
-@media (max-width:680px){.think-map,.think-practice,.interpret-flow{grid-template-columns:1fr}.think-chip{white-space:normal}.interpret-flow i{display:none}}
+@media (max-width:680px){.think-map,.think-practice,.interpret-flow,.boss-stage-grid{grid-template-columns:1fr}.think-chip{white-space:normal}.interpret-flow i{display:none}}
 @media (max-width:640px){.pulse-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mission-strip{grid-template-columns:1fr}.mission-strip .btn{width:100%}}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 `;
@@ -260,12 +269,19 @@ a.back{text-decoration:none}
     }
     return `<div class="coach-strip"><b>${escapeHTML(title)}</b><span>${escapeHTML(detail)}</span></div>`;
   }
-  function rewardMarkup(correct, amount, streak){
+  function rewardMarkup(correct, amount, streak, meta){
+    meta = meta || {};
     if (correct) {
+      if (meta.recovered) {
+        return `<div class="reward-toast good"><b>Recovered miss</b> | +${amount} XP | Weak spot converted</div>`;
+      }
+      if (meta.boss) {
+        return `<div class="reward-toast good"><b>Boss hit</b> | +${amount} XP | Mechanism held under pressure</div>`;
+      }
       const combo = streak > 1 ? `Combo x${streak}` : "Clean hit";
-      return `<div class="reward-toast good"><b>+${amount} XP</b> · ${combo}</div>`;
+      return `<div class="reward-toast good"><b>+${amount} XP</b> | ${combo}</div>`;
     }
-    return `<div class="reward-toast miss"><b>+${amount} XP</b> · Saved to review</div>`;
+    return `<div class="reward-toast miss"><b>+${amount} XP</b> | ${meta.boss ? "Boss clue saved" : "Saved to review"}</div>`;
   }
 
   function ensureSave(){
@@ -410,6 +426,34 @@ a.back{text-decoration:none}
   function interpretMeta(){
     return `${Math.min(12,QBANK.length)} reps`;
   }
+  function bossPlan(q, index){
+    const theme = learningTheme(q);
+    const profile = THEME_PROFILES[theme] || THEME_PROFILES.general;
+    const terms = stemCueTerms(q);
+    const cue = terms.slice(0,3).join(" + ") || MODE_TAGS[q.m] || "core clue";
+    const focus = transferPrompt(theme);
+    return {
+      title:`Boss Case ${index + 1}: ${profile.label}`,
+      cue,
+      focus,
+      stages:[
+        ["Orient", "Find the patient context, timing, lab direction, or visual clue before looking at choices."],
+        ["Predict", focus],
+        ["Decide", "Pick the answer that explains the whole pattern, then rule out the closest trap."]
+      ]
+    };
+  }
+  function bossQuestions(){
+    const clinical = clinicalQuestions();
+    const source = clinical.length ? clinical : QBANK;
+    return shuffle(source.map(q=>Object.assign({}, q)))
+      .sort((a,b)=>complexityScore(b) - complexityScore(a))
+      .slice(0,Math.min(6,source.length))
+      .map((q,index)=>Object.assign({}, q, {_boss:true, boss:bossPlan(q,index)}));
+  }
+  function bossMeta(){
+    return `${Math.min(6,QBANK.length)} cases`;
+  }
   function clinicalMeta(){
     const n = QBANK.filter(q=>q.v).length;
     return n ? `${n} vignettes` : "Add vignettes";
@@ -434,7 +478,19 @@ a.back{text-decoration:none}
     if (save.missed[q._arcadeId]) {
       delete save.missed[q._arcadeId];
       persist();
+      return true;
     }
+    return false;
+  }
+  function recordComeback(q){
+    ensureSave();
+    save.comebacks = Number(save.comebacks || 0) + 1;
+    save.lastComeback = {
+      id:q._arcadeId,
+      at:new Date().toISOString(),
+      title:clipText(q.c && q.c[q.a] ? q.c[q.a] : q.q, 80)
+    };
+    persist();
   }
   function recordAttempt(q, correct){
     ensureSave();
@@ -488,6 +544,7 @@ a.back{text-decoration:none}
   }
   function renderSupport(q){
     let out = "";
+    if (q.boss) out += renderBossPrompt(q.boss);
     if (q.interpret) out += renderInterpretPrompt(q.interpret);
     if (q.figure) out += `<div class="study-visual"><b>Figure prompt:</b> ${q.figure}</div>`;
     if (q.table && Array.isArray(q.table.rows)) {
@@ -505,6 +562,22 @@ a.back{text-decoration:none}
         <span>Clue pattern</span><i>&rarr;</i><span>Answer choice</span><i>&rarr;</i><span>Mechanism</span>
       </div>
       <table><tbody>${rows.map(row=>`<tr><th>${escapeHTML(row[0])}</th><td>${escapeHTML(row[1])}</td></tr>`).join("")}</tbody></table>
+    </div>`;
+  }
+  function renderBossPrompt(data){
+    const stages = Array.isArray(data.stages) ? data.stages : [];
+    return `<div class="study-visual boss-case">
+      <div class="boss-kicker"><span>Boss Case</span><span>Slow read, high transfer</span></div>
+      <b>${escapeHTML(data.title || "Boss Case")}</b>
+      <div class="think-summary"><b>Case lens:</b> ${escapeHTML(data.cue || "core clue")}</div>
+      <div class="boss-stage-grid">
+        ${stages.map(stage=>`<div class="boss-stage"><b>${escapeHTML(stage[0])}</b><span>${escapeHTML(stage[1])}</span></div>`).join("")}
+      </div>
+    </div>`;
+  }
+  function renderComebackNote(q, correctText){
+    return `<div class="comeback-toast">
+      <b>Comeback unlocked.</b> This used to live in your miss bank. Now anchor it as ${escapeHTML(clipText(correctText, 62))}: ${escapeHTML(firstSentence(q.why, 96))}
     </div>`;
   }
   const THEME_BY_TAG = {
@@ -712,6 +785,13 @@ a.back{text-decoration:none}
     interpret:true,
     pick:()=>shuffle(interpretationQuestions()).slice(0,Math.min(12,QBANK.length))
   };
+  MODES.boss = {
+    name:"Boss Cases",
+    ic:"BOSS",
+    desc:"Short high-transfer cases that force clue, mechanism, and trap reasoning.",
+    boss:true,
+    pick:()=>bossQuestions()
+  };
   MODES.missed = {
     name:"Missed Items",
     ic:"!",
@@ -738,6 +818,7 @@ a.back{text-decoration:none}
       key === "cards" ? cardMeta() :
       key === "clinical" ? clinicalMeta() :
       key === "interpret" ? interpretMeta() :
+      key === "boss" ? bossMeta() :
       (key === "endless" ? `Best streak: ${best}` : `Best: ${best}`);
     return `<button type="button" class="tile ${cls || ""}" onclick="start('${key}')" ${disabled ? "disabled" : ""}>
       <div class="ic">${mode.ic}</div>
@@ -765,6 +846,7 @@ a.back{text-decoration:none}
         ${tile("block",MODES.block,"special")}
         ${tile("clinical",MODES.clinical,"")}
         ${tile("interpret",MODES.interpret,"")}
+        ${tile("boss",MODES.boss,"special")}
         ${MODES.endless ? tile("endless",MODES.endless,"amber") : ""}
         ${tile("missed",MODES.missed,"amber")}
         ${tile("cards",MODES.cards,"amber")}
@@ -842,10 +924,16 @@ a.back{text-decoration:none}
   window.gradeCard = function(grade){
     if (!session || !session.mode.flashcards) return;
     const q = session.qs[session.i];
+    const recovered = grade === "good" && !!(save.missed && save.missed[q._arcadeId]);
     addCard(q,grade);
-    if (grade === "good") clearMissed(q);
+    if (grade === "good") {
+      if (clearMissed(q) || recovered) {
+        recordComeback(q);
+        session.recovered = (session.recovered || 0) + 1;
+      }
+    }
     addXP(grade === "good" ? 12 : (grade === "hard" ? 6 : 3));
-    session.responses.push({q, selectedText:grade, correctText:q.c[q.a], correct:grade === "good"});
+    session.responses.push({q, selectedText:grade, correctText:q.c[q.a], correct:grade === "good", recovered});
     session.correct += grade === "good" ? 1 : 0;
     session.i++;
     session.revealed = false;
@@ -892,6 +980,7 @@ a.back{text-decoration:none}
     s.answered = true;
     const q = s.qs[s.i];
     const correct = pos === s.correctPos;
+    const wasMissed = !!(save.missed && save.missed[q._arcadeId]);
     const selectedText = s.order[pos] ? s.order[pos].t : "";
     const correctText = answerText(q,q.a);
     document.querySelectorAll(".choice").forEach((n,i)=>{
@@ -904,30 +993,38 @@ a.back{text-decoration:none}
         if (i === pos && !correct) n.classList.add("wrong");
       }
     });
+    let recovered = false;
     if (correct) {
       s.correct++;
       s.streak++;
-      if (s.key === "missed") clearMissed(q);
+      if (wasMissed || s.key === "missed") {
+        recovered = clearMissed(q) || wasMissed;
+        if (recovered) {
+          addCard(q,"good");
+          recordComeback(q);
+          s.recovered = (s.recovered || 0) + 1;
+        }
+      }
     } else {
       s.streak = 0;
       addMissed(q);
     }
     recordAttempt(q, correct);
     const xpGain = addXP(correct ? 12 + Math.min(s.streak, 8) : 3);
-    s.responses.push({q, selectedText, correctText, correct});
+    s.responses.push({q, selectedText, correctText, correct, recovered});
     const post = document.getElementById("post");
     if (s.mode.deferReview) {
-      post.innerHTML = `${rewardMarkup(correct, xpGain, s.streak)}<div class="explain"><div class="lab">Answer saved</div><div class="why">Review is held until the end of this timed block.</div></div>
+      post.innerHTML = `${rewardMarkup(correct, xpGain, s.streak, {recovered, boss:s.mode.boss})}<div class="explain"><div class="lab">Answer saved</div><div class="why">Review is held until the end of this timed block.</div></div>
         <button class="btn btn-next" onclick="nextQ()">${s.i+1>=s.qs.length ? "FINISH BLOCK" : "NEXT ›"}</button>`;
       return;
     }
     const pearl = q.p ? `<div class="pearl"><b>Pearl:</b> ${q.p}</div>` : "";
     const selected = correct ? "" : `<div class="mini"><b>Selected:</b> ${selectedText}<br><b>Correct:</b> ${correctText}</div>`;
     const confidence = correct ? `<div class="confidence-row"><button class="btn btn-ghost" onclick="markUnsureCurrent(this)">MARK UNSURE</button></div>` : reasonButtons(q);
-    post.innerHTML = `${rewardMarkup(correct, xpGain, s.streak)}<div class="explain ${correct ? "" : "miss"}">
+    post.innerHTML = `${rewardMarkup(correct, xpGain, s.streak, {recovered, boss:s.mode.boss})}<div class="explain ${correct ? "" : "miss"}">
         <div class="lab">${correct ? "Correct" : "Review"}</div>
         <div class="why">${q.why}</div>${selected}${pearl}${confidence}
-      </div>${renderLearningStack(q, selectedText, correctText, correct, false)}`;
+      </div>${recovered ? renderComebackNote(q, correctText) : ""}${renderLearningStack(q, selectedText, correctText, correct, false)}`;
     if (s.mode.endless && !correct) {
       if (s.correct > (save.endlessBest || 0)) { save.endlessBest = s.correct; persist(); }
       post.innerHTML += `<button class="btn btn-ghost" onclick="results()">End Run — Streak ${s.correct}</button>`;
@@ -977,7 +1074,7 @@ a.back{text-decoration:none}
     const list = responses.filter(r=>!onlyMisses || !r.correct);
     if (!list.length) return `<div class="review-card"><b>No misses.</b><div class="mini">Clean block. Anything you felt shaky on can still be marked during ordinary review mode.</div></div>`;
     return list.map((r,idx)=>`<div class="review-card">
-      <b>${idx+1}. ${r.correct ? "Correct" : "Missed"}</b>
+      <b>${idx+1}. ${r.recovered ? "Recovered" : (r.correct ? "Correct" : "Missed")}</b>
       <div class="mini">${r.q.q}</div>
       <div class="mini"><b>Your answer:</b> ${r.selectedText || "—"}<br><b>Best answer:</b> ${r.correctText}</div>
       <div class="mini">${r.q.why}</div>
@@ -1008,10 +1105,15 @@ a.back{text-decoration:none}
     const cardsButton = cardPool().length ? `<button class="btn btn-ghost" style="max-width:300px;margin:14px auto 0" onclick="start('cards')">FLASHCARDS (${cardMeta()})</button>` : "";
     const review = s.mode.deferReview ? `<div class="section-label">Block Review</div><div class="review-list">${renderReviewCards(s.responses,false)}</div>` : "";
     const info = levelInfo();
+    const recovered = s.recovered || s.responses.filter(r=>r.recovered).length;
+    const comebackSummary = recovered ? `<div class="comeback-toast" style="max-width:520px;margin:0 auto 18px;text-align:left"><b>${plural(recovered,"miss recovered","misses recovered")}.</b> That is the good kind of progress: old errors turning into durable recall.</div>` : "";
+    const bossSummary = s.mode.boss ? `<div class="mini" style="max-width:520px;margin:0 auto 18px">Boss Case reps train the exam skill that matters most: extracting a clue, predicting a mechanism, and resisting the attractive distractor.</div>` : "";
     app.innerHTML = `
       ${renderGameNav()}
       <div class="result">
         <div class="xp-summary"><b>+${s.xpEarned || 0} XP</b><span>Level ${info.level} · ${info.xp} total XP</span></div>
+        ${comebackSummary}
+        ${bossSummary}
         <div class="score-big" style="color:${col}">${s.mode.endless ? got : pctNum+"%"}</div>
         <div class="rank" style="color:${col}">${s.mode.endless ? "STREAK: "+got : rank}</div>
         <div class="statrow">
@@ -1043,5 +1145,22 @@ a.back{text-decoration:none}
   window.start = start;
   window.menu = menu;
   window.vault = vault;
+
+  function requestedStartMode(){
+    const params = new URLSearchParams(window.location.search || "");
+    const raw = params.get("start") || params.get("mode") || (window.location.hash || "").replace(/^#\/?/,"");
+    const key = String(raw || "").toLowerCase().replace(/[^a-z0-9_]+/g,"");
+    return key && MODES[key] ? key : "";
+  }
+  let deepStartDone = false;
+  function launchRequestedStart(){
+    if (deepStartDone) return;
+    const key = requestedStartMode();
+    if (!key) return;
+    deepStartDone = true;
+    start(key);
+  }
+  window.addEventListener("load",()=>setTimeout(launchRequestedStart,0), {once:true});
+  setTimeout(launchRequestedStart,120);
 })();
 window.__STEP1_ARCADE_UPGRADE_APPLIED__ = true;

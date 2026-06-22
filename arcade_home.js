@@ -86,6 +86,17 @@
 .command-tile b{display:block;font-family:'Unbounded';font-size:24px;line-height:1.05}
 .command-tile span{display:block;color:var(--dim);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-top:5px}
 .command-tile a{display:inline-flex;margin-top:12px;color:#08080c;background:linear-gradient(135deg,#22d3ee,#a78bfa);border-radius:9px;padding:8px 10px;text-decoration:none;font-weight:800;font-size:12px}
+.quest-board{margin:14px -20px 6px;padding:18px 20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(135deg,rgba(251,191,36,.07),rgba(34,211,238,.045) 48%,rgba(167,139,250,.045))}
+.quest-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.quest-head h2{font-family:'Unbounded';font-size:18px;line-height:1.15}
+.quest-head span{color:var(--dim);font-size:12px;line-height:1.4}
+.quest-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.quest-card{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:12px;background:rgba(8,8,12,.5);padding:13px;min-width:0;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.quest-card:hover{transform:translateY(-2px);border-color:rgba(251,191,36,.4);background:rgba(255,255,255,.055)}
+.quest-card b{display:block;color:var(--amber-hi);font-size:11px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px}
+.quest-card strong{display:block;font-size:15px;line-height:1.2;color:var(--text)}
+.quest-card span{display:block;color:var(--dim);font-size:12px;line-height:1.4;margin-top:7px}
+.quest-card em{display:inline-flex;margin-top:10px;font-style:normal;color:#08080c;background:linear-gradient(135deg,#fbbf24,#22d3ee);border-radius:9px;padding:7px 9px;font-weight:800;font-size:12px}
 .card-meter{position:relative;margin-top:13px;padding-top:11px;border-top:1px solid var(--line)}
 .card-meter .meter-row{display:flex;justify-content:space-between;gap:8px;font-family:'JetBrains Mono';font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase}
 .card-meter .meter-row b{color:var(--text);font-weight:800}
@@ -108,9 +119,10 @@
 .coach-card b{display:block;color:var(--amber-hi);font-size:12px;letter-spacing:1.1px;text-transform:uppercase;margin-bottom:5px}
 .coach-card span{display:block;color:var(--text);font-size:13px;line-height:1.45}
 .coach-card a{display:inline-flex;margin-top:10px;color:#08080c;background:linear-gradient(135deg,#22d3ee,#a78bfa);border-radius:9px;padding:8px 10px;text-decoration:none;font-weight:800;font-size:12px}
+@media (max-width:980px){.quest-grid{grid-template-columns:1fr 1fr}}
 @media (max-width:820px){.command-grid{grid-template-columns:1fr 1fr}.command-main{grid-column:1/-1}}
 @media (max-width:820px){.coverage-grid{grid-template-columns:1fr 1fr}.coach-grid{grid-template-columns:1fr}}
-@media (max-width:560px){.arcade-command,.coverage-band,.coach-panel{margin-left:-14px;margin-right:-14px}.command-grid,.coverage-grid{grid-template-columns:1fr}.command-rank{font-size:19px}}
+@media (max-width:560px){.arcade-command,.quest-board,.coverage-band,.coach-panel{margin-left:-14px;margin-right:-14px}.command-grid,.quest-grid,.coverage-grid{grid-template-columns:1fr}.command-rank{font-size:19px}}
 `;
     document.head.appendChild(style);
   }
@@ -144,6 +156,57 @@
         <div class="command-tile"><b>${escapeHTML(weakLabel)}</b><span>Weak Spot</span><a href="${weakHref}">Attack</a></div>
       </div>`;
     hero.insertAdjacentElement("afterend", command);
+    return command;
+  }
+  function gameModeHref(pulse, mode){
+    return `${pulse.game.file}?start=${encodeURIComponent(mode)}`;
+  }
+  function weakestPulse(pulses){
+    return pulses.slice().sort((a,b)=>weakScore(b) - weakScore(a))[0] || pulses[0];
+  }
+  function leastPlayedPulse(pulses, exclude){
+    return pulses
+      .filter(pulse=>!exclude || pulse.game.file !== exclude.game.file)
+      .slice()
+      .sort((a,b)=>a.played - b.played || weakScore(b) - weakScore(a))[0] || pulses[0];
+  }
+  function reviewTargetPulse(pulses){
+    return pulses.find(pulse=>pulse.due || pulse.missed) || weakestPulse(pulses);
+  }
+  function renderDailyQuestBoard(pulses, afterNode){
+    const weak = weakestPulse(pulses);
+    const warm = leastPlayedPulse(pulses, weak);
+    const comeback = reviewTargetPulse(pulses);
+    const flex = leastPlayedPulse(pulses, warm);
+    const totalDue = pulses.reduce((sum,pulse)=>sum + pulse.due, 0);
+    const totalMisses = pulses.reduce((sum,pulse)=>sum + pulse.missed, 0);
+    const comebackHref = totalDue || totalMisses ? "review_hub.html" : gameModeHref(comeback,"missed");
+    const comebackDetail = totalDue
+      ? `${totalDue} due card${totalDue === 1 ? "" : "s"} waiting`
+      : (totalMisses ? `${totalMisses} saved miss${totalMisses === 1 ? "" : "es"} to convert` : "Seed the miss bank, then come back stronger");
+    const quests = [
+      {k:"Warm-up", title:`5-minute start: ${warm.game.title}`, detail:"Start moving before your brain negotiates.", href:gameModeHref(warm,"daily"), action:"Warm up"},
+      {k:"Boss", title:`Boss case: ${weak.game.title}`, detail:"One harder case for transfer, mechanism, and trap control.", href:gameModeHref(weak,"boss"), action:"Enter boss"},
+      {k:"Comeback", title:totalDue || totalMisses ? "Recover old misses" : `Build comeback fuel: ${comeback.game.title}`, detail:comebackDetail, href:comebackHref, action:totalDue || totalMisses ? "Review now" : "Create reps"},
+      {k:"Flex", title:`Image/table rep: ${flex.game.title}`, detail:"Interpret first, answer second. Great for multimodal memory.", href:gameModeHref(flex,"interpret"), action:"Run lab"}
+    ];
+    const board = document.createElement("section");
+    board.className = "quest-board";
+    board.id = "daily-quests";
+    board.innerHTML = `
+      <div class="quest-head">
+        <div><h2>Today's Quest Board</h2><span>Four small wins: warm up, fight a boss, recover something, then add one flexible rep.</span></div>
+      </div>
+      <div class="quest-grid">
+        ${quests.map(item=>`<a class="quest-card" href="${item.href}">
+          <b>${escapeHTML(item.k)}</b>
+          <strong>${escapeHTML(item.title)}</strong>
+          <span>${escapeHTML(item.detail)}</span>
+          <em>${escapeHTML(item.action)}</em>
+        </a>`).join("")}
+      </div>`;
+    afterNode.insertAdjacentElement("afterend", board);
+    return board;
   }
   function reasonLabel(reason){
     const labels = {
@@ -170,7 +233,7 @@
     });
     return [...map.values()];
   }
-  function renderCoverageHeatmap(pulses){
+  function renderCoverageHeatmap(pulses, afterNode){
     const summaries = sectionSummaries(pulses);
     const band = document.createElement("section");
     band.className = "coverage-band";
@@ -192,7 +255,7 @@
         }).join("")}
       </div>`;
     const command = document.querySelector(".arcade-command");
-    (command || hero).insertAdjacentElement("afterend", band);
+    (afterNode || command || hero).insertAdjacentElement("afterend", band);
     return band;
   }
   function topReason(pulses){
@@ -254,8 +317,9 @@
 
   installStyles();
   const pulses = games.map(gamePulse);
-  renderCommandCenter(pulses);
-  const coverage = renderCoverageHeatmap(pulses);
+  const command = renderCommandCenter(pulses);
+  const quests = renderDailyQuestBoard(pulses, command);
+  const coverage = renderCoverageHeatmap(pulses, quests);
   renderCoachPanel(pulses, coverage);
   enhanceCards(pulses);
 })();

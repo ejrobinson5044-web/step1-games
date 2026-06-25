@@ -37,7 +37,6 @@ h1{font-family:'Unbounded';font-size:clamp(30px,6vw,50px);line-height:1;color:va
   function seedFrom(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
   function seededShuffle(items, seed){const arr=items.slice();let s=seed||1;function rand(){s=(s*1664525+1013904223)>>>0;return s/4294967296}for(let i=arr.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
   function escapeHTML(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
-  function stripScripts(html){return html.replace(/<script[\s\S]*?<\/script>/gi,"")}
   function extractArraySource(html, name){
     const start = html.indexOf(`const ${name}=`);
     if (start < 0) return "[]";
@@ -54,7 +53,7 @@ h1{font-family:'Unbounded';font-size:clamp(30px,6vw,50px);line-height:1;color:va
     return "[]";
   }
   function parseQbank(html){
-    const src = extractArraySource(stripScripts(html), "QBANK");
+    const src = extractArraySource(html, "QBANK");
     try { return Function(`"use strict"; return (${src});`)(); }
     catch(err){ console.warn("QBANK parse failed", err); return []; }
   }

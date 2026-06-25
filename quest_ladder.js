@@ -3,6 +3,14 @@
   function appVersionLabel(){
     return (window.STEP1_APP_VERSION && window.STEP1_APP_VERSION.label) || "Push 004";
   }
+  function syncVersionSource(){
+    if (window.STEP1_APP_VERSION || document.querySelector('script[data-step1-version]')) return;
+    const script = document.createElement("script");
+    script.src = "app_version.js?v=push-004";
+    script.dataset.step1Version = "true";
+    script.onload = renderVersion;
+    document.head.appendChild(script);
+  }
   function installStyles(){
     if (document.getElementById("questLadderStyles")) return;
     const style = document.createElement("style");
@@ -36,6 +44,16 @@
     badge.textContent = appVersionLabel();
     document.body.appendChild(badge);
   }
+  function relabelAdaptiveQuestBoard(){
+    const board = document.getElementById("daily-quests");
+    if (!board) return;
+    const title = board.querySelector("h2");
+    const subtitle = board.querySelector(".quest-head span");
+    if (title) title.textContent = "Adaptive Quest Board";
+    if (subtitle) subtitle.textContent = "Use this after your 10Q blocks: weak spot, boss case, comeback review, and interpretation reps.";
+    const link = document.querySelector('.hero-actions a[href="#daily-quests"]');
+    if (link) link.textContent = "Adaptive Quests";
+  }
   function renderLadder(){
     const hero = document.querySelector(".hero");
     if (!hero || document.getElementById("question-ladder")) return;
@@ -57,9 +75,14 @@
       </div>`;
     hero.insertAdjacentElement("afterend", section);
   }
-  installStyles();
-  renderVersion();
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", renderLadder, {once:true});
-  else renderLadder();
-  window.addEventListener("load",()=>{ renderLadder(); renderVersion(); }, {once:true});
+  function boot(){
+    installStyles();
+    syncVersionSource();
+    renderVersion();
+    renderLadder();
+    relabelAdaptiveQuestBoard();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, {once:true});
+  else boot();
+  window.addEventListener("load", boot, {once:true});
 })();

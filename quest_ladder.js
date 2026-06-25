@@ -4,6 +4,7 @@
   const BLOCK_SIZE = 10;
   const DAILY_GOAL = TOTAL_BLOCKS * BLOCK_SIZE;
   const STORAGE_KEY = "step1_daily_blocks_v1";
+  const ACCORDION_KEY = "step1_landing_accordion_v1";
 
   function todayKey(){
     const now = new Date();
@@ -23,6 +24,14 @@
     script.dataset.step1Version = "true";
     script.onload = renderVersion;
     document.head.appendChild(script);
+  }
+  function readAccordionState(){
+    try { return JSON.parse(localStorage.getItem(ACCORDION_KEY)) || {}; }
+    catch(error){ return {}; }
+  }
+  function writeAccordionState(state){
+    try { localStorage.setItem(ACCORDION_KEY, JSON.stringify(state || {})); }
+    catch(error){}
   }
   function readDaily(){
     try {
@@ -87,11 +96,91 @@
 .quest-ladder-card span{display:block;color:var(--dim);font-size:11.5px;line-height:1.35;margin-top:7px}
 .quest-ladder-card em{display:inline-flex;margin-top:10px;font-style:normal;color:#08080c;background:linear-gradient(135deg,#22d3ee,#a78bfa);border-radius:9px;padding:7px 8px;font-weight:900;font-size:11px}
 .quest-ladder-card.done em{background:#34d399}
+.landing-accordion{position:relative}
+.landing-accordion-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;padding:0}
+.landing-accordion-toggle:focus-visible{outline:3px solid #fbbf24;outline-offset:4px;border-radius:10px}
+.landing-accordion-title{min-width:0}
+.landing-accordion-icon{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.045);color:#22d3ee;font-family:'JetBrains Mono';font-size:16px;transition:transform .18s ease,background .18s ease}
+.landing-accordion.is-collapsed .landing-accordion-icon{transform:rotate(-90deg);background:rgba(255,255,255,.025);color:var(--dim)}
+.landing-accordion-content{overflow:hidden;transition:max-height .24s ease,opacity .18s ease,margin-top .18s ease;max-height:2200px;opacity:1}
+.landing-accordion.is-collapsed .landing-accordion-content{max-height:0!important;opacity:0;margin-top:0!important;pointer-events:none}
+.command-center-v5 .landing-accordion-content{margin-top:0}
+.quest-ladder .landing-accordion-content{margin-top:0}
+.sec.landing-accordion,.how.landing-accordion{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.022);padding:16px;margin-top:18px}
+.sec.landing-accordion .sec-head,.how.landing-accordion h2{margin-bottom:0}
+.sec.landing-accordion .grid,.how.landing-accordion .row{margin-top:16px}
+.how.landing-accordion h2{width:100%}
 .version-badge{position:fixed;right:10px;bottom:10px;z-index:50;border:1px solid var(--line);border-radius:999px;background:rgba(8,8,12,.76);backdrop-filter:blur(10px);color:var(--dim);font-family:'JetBrains Mono';font-size:10px;letter-spacing:1px;padding:5px 9px}
 @media (max-width:980px){.command-v5-grid{grid-template-columns:1fr}.quest-ladder-path{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:560px){.command-center-v5,.quest-ladder{margin-left:-14px;margin-right:-14px}.command-v5-side{grid-template-columns:1fr 1fr}.command-v5-stat.signal{grid-column:1/-1}.quest-ladder-path{grid-template-columns:1fr}.version-badge{font-size:9px;right:8px;bottom:8px}}
+@media (prefers-reduced-motion: reduce){.landing-accordion-content,.landing-accordion-icon{transition:none!important}}
 `;
     document.head.appendChild(style);
+  }
+  function accordionHeader(titleHTML, subtitleHTML){
+    return `<button class="landing-accordion-toggle" type="button" aria-expanded="true">
+      <span class="landing-accordion-title">${titleHTML}${subtitleHTML || ""}</span>
+      <span class="landing-accordion-icon" aria-hidden="true">⌄</span>
+    </button>`;
+  }
+  function applyAccordion(section, key, defaultOpen){
+    if (!section || section.dataset.accordionReady) return;
+    section.classList.add("landing-accordion");
+    section.dataset.accordionKey = key;
+    const state = readAccordionState();
+    const isOpen = Object.prototype.hasOwnProperty.call(state,key) ? !!state[key] : !!defaultOpen;
+    const toggle = section.querySelector(".landing-accordion-toggle");
+    const content = section.querySelector(".landing-accordion-content");
+    if (!toggle || !content) return;
+    function setOpen(open, persist){
+      section.classList.toggle("is-collapsed", !open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (persist){
+        const next = readAccordionState();
+        next[key] = open;
+        writeAccordionState(next);
+      }
+    }
+    toggle.addEventListener("click",()=>setOpen(section.classList.contains("is-collapsed"), true));
+    section.dataset.accordionReady = "true";
+    setOpen(isOpen, false);
+  }
+  function makeExistingSectionAccordion(section, key, defaultOpen){
+    if (!section || section.dataset.accordionReady) return;
+    const head = section.querySelector(".sec-head");
+    if (!head) return;
+    const contentNodes = [];
+    let node = head.nextElementSibling;
+    while (node){ contentNodes.push(node); node = node.nextElementSibling; }
+    const content = document.createElement("div");
+    content.className = "landing-accordion-content";
+    contentNodes.forEach(child=>content.appendChild(child));
+    const titleHTML = head.innerHTML;
+    head.innerHTML = accordionHeader(titleHTML, "");
+    head.insertAdjacentElement("afterend", content);
+    applyAccordion(section, key, defaultOpen);
+  }
+  function makeHowAccordion(){
+    const section = document.querySelector(".how");
+    if (!section || section.dataset.accordionReady) return;
+    const h2 = section.querySelector("h2");
+    const row = section.querySelector(".row");
+    if (!h2 || !row) return;
+    const content = document.createElement("div");
+    content.className = "landing-accordion-content";
+    content.appendChild(row);
+    h2.innerHTML = accordionHeader(`<span>${h2.textContent}</span>`, "");
+    h2.insertAdjacentElement("afterend", content);
+    applyAccordion(section, "how-it-works", false);
+  }
+  function installLandingAccordions(){
+    applyAccordion(document.getElementById("command-center-v5"), "command-center", true);
+    applyAccordion(document.getElementById("question-ladder"), "question-board", true);
+    applyAccordion(document.getElementById("daily-quests"), "coach-recommendations", false);
+    applyAccordion(document.querySelector(".coverage-band"), "coverage-heatmap", false);
+    applyAccordion(document.querySelector(".coach-panel"), "coach-readout", false);
+    document.querySelectorAll(".sec").forEach((section, index)=>makeExistingSectionAccordion(section, `game-section-${index}`, false));
+    makeHowAccordion();
   }
   function renderVersion(){
     const existing = document.querySelector(".version-badge");
@@ -131,19 +220,19 @@
     section.className = "command-center-v5";
     section.id = "command-center-v5";
     section.innerHTML = `
-      <div class="command-v5-grid">
-        <div class="command-v5-main">
-          <div class="command-v5-kicker">Step 1 Arcade · Command Center</div>
-          <div class="command-v5-title">${rankTitle(questions)}</div>
-          <div class="command-v5-sub">${questions} / ${DAILY_GOAL} questions today · ${status}</div>
-          <div class="command-v5-meter"><span style="width:${pct}%"></span></div>
-          <a class="command-v5-action" href="${href}">${action}</a>
-        </div>
-        <div class="command-v5-side">
-          <div class="command-v5-stat"><b>${questions}</b><span>Questions</span></div>
-          <div class="command-v5-stat"><b>${pct}%</b><span>Daily Goal</span></div>
-          <div class="command-v5-stat"><b>${complete}/8</b><span>Blocks</span></div>
-          <div class="command-v5-stat signal"><b>${last}</b><span>Signal</span></div>
+      ${accordionHeader(`<div class="command-v5-kicker">Step 1 Arcade · Command Center</div><div class="command-v5-title">${rankTitle(questions)}</div><div class="command-v5-sub">${questions} / ${DAILY_GOAL} questions today · ${status}</div>`, "")}
+      <div class="landing-accordion-content">
+        <div class="command-v5-grid">
+          <div class="command-v5-main">
+            <div class="command-v5-meter"><span style="width:${pct}%"></span></div>
+            <a class="command-v5-action" href="${href}">${action}</a>
+          </div>
+          <div class="command-v5-side">
+            <div class="command-v5-stat"><b>${questions}</b><span>Questions</span></div>
+            <div class="command-v5-stat"><b>${pct}%</b><span>Daily Goal</span></div>
+            <div class="command-v5-stat"><b>${complete}/8</b><span>Blocks</span></div>
+            <div class="command-v5-stat signal"><b>${last}</b><span>Signal</span></div>
+          </div>
         </div>
       </div>`;
     hero.insertAdjacentElement("afterend", section);
@@ -159,21 +248,23 @@
     section.id = "question-ladder";
     section.innerHTML = `
       <div class="quest-ladder-head">
-        <div><h2>Today's Question Board</h2><span>Eight mixed 10-question blocks. Clear the path to reach 80 questions today.</span></div>
+        ${accordionHeader(`<div><h2>Today's Question Board</h2><span>Eight mixed 10-question blocks. Clear the path to reach 80 questions today.</span></div>`, "")}
       </div>
-      <div class="quest-ladder-path">
-        ${blocks.map(n=>{
-          const done = !!(state.completed && state.completed[n]);
-          const cls = done ? "done" : (n === current ? "current" : "locked");
-          const label = done ? "Complete" : (n === current ? "Continue" : "Start");
-          const title = n === 1 ? "Warmup" : n === 4 ? "Rounds" : n === 6 ? "Chief" : n === 8 ? "Attending" : "Mixed Rep";
-          return `<a class="quest-ladder-card ${cls}" href="random_10_block.html?block=${n}">
-            <b>${done ? "✓" : (n === current ? "▶" : "○")} Block ${n}</b>
-            <strong>${title}</strong>
-            <span>${(n-1)*10 + 1}–${n*10} of ${DAILY_GOAL} daily questions</span>
-            <em>${label}</em>
-          </a>`;
-        }).join("")}
+      <div class="landing-accordion-content">
+        <div class="quest-ladder-path">
+          ${blocks.map(n=>{
+            const done = !!(state.completed && state.completed[n]);
+            const cls = done ? "done" : (n === current ? "current" : "locked");
+            const label = done ? "Complete" : (n === current ? "Continue" : "Start");
+            const title = n === 1 ? "Warmup" : n === 4 ? "Rounds" : n === 6 ? "Chief" : n === 8 ? "Attending" : "Mixed Rep";
+            return `<a class="quest-ladder-card ${cls}" href="random_10_block.html?block=${n}">
+              <b>${done ? "✓" : (n === current ? "▶" : "○")} Block ${n}</b>
+              <strong>${title}</strong>
+              <span>${(n-1)*10 + 1}–${n*10} of ${DAILY_GOAL} daily questions</span>
+              <em>${label}</em>
+            </a>`;
+          }).join("")}
+        </div>
       </div>`;
     command.insertAdjacentElement("afterend", section);
   }
@@ -184,6 +275,7 @@
     renderCommandCenter();
     renderLadder();
     relabelAdaptiveQuestBoard();
+    installLandingAccordions();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, {once:true});
   else boot();

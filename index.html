@@ -32,68 +32,25 @@ body::before{
   mask-image:radial-gradient(ellipse at center,#000 40%,transparent 95%);
 }
 .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 20px 60px}
-
-/* hero */
 .hero{text-align:center;padding:28px 0 30px;border-bottom:1px solid var(--line);margin-bottom:14px}
 .kicker{font-family:'JetBrains Mono';font-size:11px;letter-spacing:5px;color:var(--dim);text-transform:uppercase;margin-bottom:18px;animation:fade .6s ease}
-h1{font-family:'Unbounded';font-weight:800;font-size:clamp(34px,7vw,68px);line-height:.98;letter-spacing:-1px;
-  background:linear-gradient(120deg,#fff 20%,#a78bfa 50%,#22d3ee 80%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  animation:fade .7s ease}
+h1{font-family:'Unbounded';font-weight:800;font-size:clamp(34px,7vw,68px);line-height:.98;letter-spacing:-1px;background:linear-gradient(120deg,#fff 20%,#a78bfa 50%,#22d3ee 80%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:fade .7s ease}
 .tagline{font-size:clamp(15px,2.4vw,19px);color:var(--dim);margin-top:18px;font-weight:500;animation:fade .8s ease}
 .chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:26px;animation:fade .9s ease}
 .chip{font-family:'JetBrains Mono';font-size:12px;letter-spacing:1px;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:30px;padding:8px 16px}
-.chip b{color:#a78bfa}
-.chip.b b{color:#22d3ee}
-.chip.c b{color:#fb923c}
+.chip b{color:#a78bfa}.chip.b b{color:#22d3ee}.chip.c b{color:#fb923c}
 .hero-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}
 .hero-actions a{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border:1px solid var(--line);border-radius:12px;padding:12px 16px;color:var(--text);background:var(--panel);font-weight:800}
-.hero-actions a.primary{background:linear-gradient(135deg,#22d3ee,#a78bfa);color:#08080c;border:0}
-.hero-actions a:hover{border-color:#22d3ee}
-
-/* sections */
-.sec{margin-top:42px}
-.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
-.sec-head h2{font-family:'Unbounded';font-weight:700;font-size:17px;letter-spacing:.5px;text-transform:uppercase}
-.sec-head .ln{flex:1;height:1px;background:var(--line)}
-.sec-head .ct{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:1px}
-
+.hero-actions a.primary{background:linear-gradient(135deg,#22d3ee,#a78bfa);color:#08080c;border:0}.hero-actions a:hover{border-color:#22d3ee}
+.sec{margin-top:42px}.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}.sec-head h2{font-family:'Unbounded';font-weight:700;font-size:17px;letter-spacing:.5px;text-transform:uppercase}.sec-head .ln{flex:1;height:1px;background:var(--line)}.sec-head .ct{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:1px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px}
-.card{
-  display:block;text-decoration:none;color:inherit;position:relative;overflow:hidden;
-  background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;
-  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease;
-  opacity:0;transform:translateY(12px);animation:rise .5s ease forwards;
-}
-@keyframes rise{to{opacity:1;transform:none}}
-@keyframes fade{from{opacity:0}to{opacity:1}}
-.card::before{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--ac);opacity:.85}
-.card::after{content:'';position:absolute;inset:0;border-radius:16px;pointer-events:none;
-  background:radial-gradient(120% 80% at 0% 0%,color-mix(in srgb,var(--ac) 14%,transparent),transparent 60%);opacity:0;transition:opacity .2s}
-.card:hover{transform:translateY(-4px);border-color:var(--ac);background:var(--panel-hi);
-  box-shadow:0 14px 36px rgba(0,0,0,.5),0 0 0 1px color-mix(in srgb,var(--ac) 40%,transparent),0 8px 30px color-mix(in srgb,var(--ac) 22%,transparent)}
-.card:hover::after{opacity:1}
-.card .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
-.ic{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;
-  background:color-mix(in srgb,var(--ac) 16%,var(--panel-hi));border:1px solid color-mix(in srgb,var(--ac) 35%,transparent)}
-.disc{font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ac);
-  border:1px solid color-mix(in srgb,var(--ac) 35%,transparent);border-radius:20px;padding:4px 9px;white-space:nowrap;font-weight:600}
-.card h3{font-family:'Hanken Grotesk';font-weight:800;font-size:19px;letter-spacing:.1px;margin-bottom:5px;line-height:1.15}
-.card p{font-size:13px;line-height:1.5;color:var(--dim)}
-.card .go{margin-top:12px;font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:1.5px;color:var(--ac);text-transform:uppercase;display:flex;align-items:center;gap:6px;font-weight:600}
-.card .go span{transition:transform .18s}
-.card:hover .go span{transform:translateX(4px)}
-
-/* how it works */
-.how{margin-top:46px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 24px}
-.how h2{font-family:'Unbounded';font-weight:700;font-size:15px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px}
-.how .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
-.how .it{display:flex;gap:11px;align-items:flex-start}
-.how .it .e{font-size:20px;line-height:1.2;flex-shrink:0}
-.how .it b{font-family:'Hanken Grotesk';font-weight:700;font-size:14px;display:block;margin-bottom:2px}
-.how .it p{font-size:12.5px;color:var(--dim);line-height:1.45}
-
-footer{text-align:center;margin-top:40px;font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:1px;line-height:1.7}
-footer .hl{color:var(--text)}
+.card{display:block;text-decoration:none;color:inherit;position:relative;overflow:hidden;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease;opacity:0;transform:translateY(12px);animation:rise .5s ease forwards}
+@keyframes rise{to{opacity:1;transform:none}}@keyframes fade{from{opacity:0}to{opacity:1}}
+.card::before{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--ac);opacity:.85}.card::after{content:'';position:absolute;inset:0;border-radius:16px;pointer-events:none;background:radial-gradient(120% 80% at 0% 0%,color-mix(in srgb,var(--ac) 14%,transparent),transparent 60%);opacity:0;transition:opacity .2s}
+.card:hover{transform:translateY(-4px);border-color:var(--ac);background:var(--panel-hi);box-shadow:0 14px 36px rgba(0,0,0,.5),0 0 0 1px color-mix(in srgb,var(--ac) 40%,transparent),0 8px 30px color-mix(in srgb,var(--ac) 22%,transparent)}.card:hover::after{opacity:1}
+.card .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}.ic{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;background:color-mix(in srgb,var(--ac) 16%,var(--panel-hi));border:1px solid color-mix(in srgb,var(--ac) 35%,transparent)}.disc{font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 35%,transparent);border-radius:20px;padding:4px 9px;white-space:nowrap;font-weight:600}.card h3{font-family:'Hanken Grotesk';font-weight:800;font-size:19px;letter-spacing:.1px;margin-bottom:5px;line-height:1.15}.card p{font-size:13px;line-height:1.5;color:var(--dim)}.card .go{margin-top:12px;font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:1.5px;color:var(--ac);text-transform:uppercase;display:flex;align-items:center;gap:6px;font-weight:600}.card .go span{transition:transform .18s}.card:hover .go span{transform:translateX(4px)}
+.how{margin-top:46px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 24px}.how h2{font-family:'Unbounded';font-weight:700;font-size:15px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px}.how .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}.how .it{display:flex;gap:11px;align-items:flex-start}.how .it .e{font-size:20px;line-height:1.2;flex-shrink:0}.how .it b{font-family:'Hanken Grotesk';font-weight:700;font-size:14px;display:block;margin-bottom:2px}.how .it p{font-size:12.5px;color:var(--dim);line-height:1.45}
+footer{text-align:center;margin-top:40px;font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:1px;line-height:1.7}footer .hl{color:var(--text)}
 </style>
 </head>
 <body>
@@ -102,36 +59,13 @@ footer .hl{color:var(--text)}
     <div class="kicker">USMLE · Step 1 · Active Recall</div>
     <h1>THE STEP&nbsp;1 ARCADE</h1>
     <div class="tagline">Twenty games covering every system &mdash; built for recall, transfer, and timed Step-style reps.</div>
-    <div class="chips">
-      <div class="chip"><b>20</b> games</div>
-      <div class="chip b"><b>800</b> questions</div>
-      <div class="chip c"><b>Cloud</b> sync-ready</div>
-    </div>
-    <div class="hero-actions">
-      <a class="primary" href="#question-ladder">10Q Blocks</a>
-      <a href="#daily-quests">Today's Quests</a>
-      <a href="review_hub.html">Review Hub</a>
-      <a href="author.html">Author Mode</a>
-    </div>
+    <div class="chips"><div class="chip"><b>20</b> games</div><div class="chip b"><b>800</b> questions</div><div class="chip c"><b>Cloud</b> sync-ready</div></div>
+    <div class="hero-actions"><a class="primary" href="#question-ladder">Continue</a><a href="#daily-quests">Coach</a><a href="review_hub.html">Review Hub</a><a href="author.html">Author Mode</a></div>
   </div>
   <div id="lib"></div>
-
-  <div class="how">
-    <h2>Every game now has the upgraded engine</h2>
-    <div class="row">
-      <div class="it"><div class="e">⚡</div><div><b>Daily Quests</b><p>Warm-ups, boss cases, comeback reps, clinical transfer, and timed blocks.</p></div></div>
-      <div class="it"><div class="e">🔟</div><div><b>Random 10Q Blocks</b><p>Eight short mixed blocks let you build toward an 80-question day without doing it all at once.</p></div></div>
-      <div class="it"><div class="e">💎</div><div><b>Dirty Medicine Vault</b><p>The catchy mnemonics, all in one place per game.</p></div></div>
-      <div class="it"><div class="e">💾</div><div><b>Smart review</b><p>Missed and shaky items become lightweight flashcards with simple due dates and optional account sync.</p></div></div>
-    </div>
-  </div>
-
-  <footer>
-    <div class="hl">Shuffled answers · keyboard 1&ndash;4 or A&ndash;D · clinical transfer · timed blocks · flashcards · optional sync</div>
-    <div>Built for one exam. Pick a card and start drilling.</div>
-  </footer>
+  <div class="how"><h2>Every game now has the upgraded engine</h2><div class="row"><div class="it"><div class="e">🎮</div><div><b>Command Center</b><p>One clear daily workflow: continue, complete 10Q blocks, then review what needs attention.</p></div></div><div class="it"><div class="e">🔟</div><div><b>Random 10Q Blocks</b><p>Eight short mixed blocks let you build toward an 80-question day without doing it all at once.</p></div></div><div class="it"><div class="e">💎</div><div><b>Dirty Medicine Vault</b><p>The catchy mnemonics, all in one place per game.</p></div></div><div class="it"><div class="e">💾</div><div><b>Smart review</b><p>Missed and shaky items become lightweight flashcards with simple due dates and optional account sync.</p></div></div></div></div>
+  <footer><div class="hl">Shuffled answers · keyboard 1&ndash;4 or A&ndash;D · clinical transfer · timed blocks · flashcards · optional sync</div><div>Built for one exam. Pick a card and start drilling.</div></footer>
 </div>
-
 <script>
 const GAMES=[
   {sec:"Foundations",items:[
@@ -165,30 +99,12 @@ const GAMES=[
     {f:"name_that_risk.html",t:"Name That Risk",d:"HY Risk Factors",e:"🎯",c:"#94a3b8",p:"The classic 'most likely' risk-factor associations."}
   ]}
 ];
-
-const lib=document.getElementById("lib");
-let idx=0;
-GAMES.forEach(group=>{
-  const sec=document.createElement("div");sec.className="sec";
-  sec.innerHTML=`<div class="sec-head"><h2>${group.sec}</h2><div class="ln"></div><div class="ct">${group.items.length} ${group.items.length===1?"game":"games"}</div></div>`;
-  const grid=document.createElement("div");grid.className="grid";
-  group.items.forEach(g=>{
-    const a=document.createElement("a");
-    a.className="card";a.href=g.f;
-    a.style.cssText=`--ac:${g.c};animation-delay:${idx*0.035}s`;idx++;
-    a.innerHTML=`
-      <div class="top"><div class="ic">${g.e}</div><div class="disc">${g.d}</div></div>
-      <h3>${g.t}</h3>
-      <p>${g.p}</p>
-      <div class="go">Play <span>→</span></div>`;
-    grid.appendChild(a);
-  });
-  sec.appendChild(grid);lib.appendChild(sec);
-});
+const lib=document.getElementById("lib");let idx=0;GAMES.forEach(group=>{const sec=document.createElement("div");sec.className="sec";sec.innerHTML=`<div class="sec-head"><h2>${group.sec}</h2><div class="ln"></div><div class="ct">${group.items.length} ${group.items.length===1?"game":"games"}</div></div>`;const grid=document.createElement("div");grid.className="grid";group.items.forEach(g=>{const a=document.createElement("a");a.className="card";a.href=g.f;a.style.cssText=`--ac:${g.c};animation-delay:${idx*0.035}s`;idx++;a.innerHTML=`<div class="top"><div class="ic">${g.e}</div><div class="disc">${g.d}</div></div><h3>${g.t}</h3><p>${g.p}</p><div class="go">Play <span>→</span></div>`;grid.appendChild(a)});sec.appendChild(grid);lib.appendChild(sec)});
 </script>
+<script src="app_version.js?v=push-005"></script>
 <script src="games_manifest.js"></script>
 <script src="arcade_home.js?v=20260622-quests"></script>
-<script src="quest_ladder.js?v=20260625-random10"></script>
+<script src="quest_ladder.js?v=push-005"></script>
 <script src="supabase_config.js"></script>
 <script src="cloud_sync.js?v=20260620-auth-debug"></script>
 </body>

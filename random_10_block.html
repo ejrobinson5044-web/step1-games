@@ -21,11 +21,15 @@ h1{font-family:'Unbounded';font-size:clamp(30px,6vw,50px);line-height:1;color:va
 </head>
 <body>
 <div class="wrap" id="app"><div class="loading">Loading block...</div></div>
-<div class="version">v2026.06.25-random10</div>
+<div class="version" id="versionBadge">Push 004</div>
+<script src="app_version.js?v=push-004"></script>
 <script src="games_manifest.js"></script>
 <script>
 (function(){
-  const VERSION = "v2026.06.25-random10";
+  function appVersionLabel(){ return (window.STEP1_APP_VERSION && window.STEP1_APP_VERSION.label) || "Push 004"; }
+  function syncVersionBadge(){ const badge=document.getElementById("versionBadge"); if(badge) badge.textContent=appVersionLabel(); }
+  syncVersionBadge();
+  const VERSION = appVersionLabel();
   const BLOCK_SIZE = 10;
   const TOTAL_BLOCKS = 8;
   const app = document.getElementById("app");
@@ -62,12 +66,7 @@ h1{font-family:'Unbounded';font-size:clamp(30px,6vw,50px);line-height:1;color:va
     const chunks = await Promise.all(games.map(async game=>{
       try{
         const html = await fetch(game.file, {cache:"no-store"}).then(r=>r.text());
-        return parseQbank(html).map((q,i)=>Object.assign({}, q, {
-          _sourceGame:game.title,
-          _sourceDeck:game.deck,
-          _sourceFile:game.file,
-          _sourceId:`${game.file}#${i}`
-        }));
+        return parseQbank(html).map((q,i)=>Object.assign({}, q, {_sourceGame:game.title,_sourceDeck:game.deck,_sourceFile:game.file,_sourceId:`${game.file}#${i}`}));
       }catch(err){ console.warn("Failed to load", game.file, err); return []; }
     }));
     return chunks.flat().filter(q=>q && q.q && Array.isArray(q.c) && q.c.length && Number.isInteger(q.a));
@@ -79,9 +78,7 @@ h1{font-family:'Unbounded';font-size:clamp(30px,6vw,50px);line-height:1;color:va
     return selected.length === BLOCK_SIZE ? selected : seededShuffle(pool, seedFrom(`${day}|fallback|${block}`)).slice(0, Math.min(BLOCK_SIZE, pool.length));
   }
   function renderShell(){
-    app.innerHTML = `<div class="nav"><a class="back" href="index.html">&lsaquo; ALL GAMES</a><span class="mini">${escapeHTML(day)} · Block ${block} of ${TOTAL_BLOCKS}</span></div>
-      <div class="hdr"><div class="badge">${block}</div><h1>Random 10Q Block</h1><div class="sub">A 10-question mixed Step 1 block. Finish Blocks 1–8 to hit 80 questions for the day.</div></div>
-      <div id="stage" class="panel"><div class="loading">Building your block...</div></div>`;
+    app.innerHTML = `<div class="nav"><a class="back" href="index.html">&lsaquo; ALL GAMES</a><span class="mini">${escapeHTML(day)} · Block ${block} of ${TOTAL_BLOCKS}</span></div><div class="hdr"><div class="badge">${block}</div><h1>Random 10Q Block</h1><div class="sub">A 10-question mixed Step 1 block. Finish Blocks 1–8 to hit 80 questions for the day.</div></div><div id="stage" class="panel"><div class="loading">Building your block...</div></div>`;
   }
   function start(qs){session={qs,i:0,correct:0,answered:false,responses:[],order:[],correctPos:-1,startedAt:Date.now()};renderQ()}
   function answerText(q){return q.c[q.a]||""}
@@ -92,13 +89,7 @@ h1{font-family:'Unbounded';font-size:clamp(30px,6vw,50px);line-height:1;color:va
     const order=seededShuffle(q.c.map((t,idx)=>({t,idx})), seedFrom(`${day}|${block}|${s.i}|choices|${q._sourceId}`));
     s.order=order; s.correctPos=order.findIndex(o=>o.idx===q.a); s.answered=false;
     const pct=(s.i/s.qs.length)*100;
-    document.getElementById("stage").innerHTML = `<div class="topline"><span class="mini">Q ${s.i+1} / ${s.qs.length}</span><span class="mini">${escapeHTML(q._sourceGame)} · ${escapeHTML(q._sourceDeck || "Mixed")}</span></div>
-      <div class="bar"><span style="width:${pct}%"></span></div>
-      <span class="tag">${escapeHTML(q.m || "mixed")}</span>
-      <div class="stem">${q.q}</div>
-      ${q.v ? `<div class="panel" style="margin:0 0 14px;padding:13px"><b>Vignette variant:</b><br>${q.v}</div>` : ""}
-      <div class="choices">${order.map((o,i)=>`<button class="choice" onclick="answer(${i})"><span class="key">${String.fromCharCode(65+i)}</span><span>${o.t}</span></button>`).join("")}</div>
-      <div id="post"></div>`;
+    document.getElementById("stage").innerHTML = `<div class="topline"><span class="mini">Q ${s.i+1} / ${s.qs.length}</span><span class="mini">${escapeHTML(q._sourceGame)} · ${escapeHTML(q._sourceDeck || "Mixed")}</span></div><div class="bar"><span style="width:${pct}%"></span></div><span class="tag">${escapeHTML(q.m || "mixed")}</span><div class="stem">${q.q}</div>${q.v ? `<div class="panel" style="margin:0 0 14px;padding:13px"><b>Vignette variant:</b><br>${q.v}</div>` : ""}<div class="choices">${order.map((o,i)=>`<button class="choice" onclick="answer(${i})"><span class="key">${String.fromCharCode(65+i)}</span><span>${o.t}</span></button>`).join("")}</div><div id="post"></div>`;
   }
   window.answer = function(pos){
     const s=session; if (!s || s.answered) return; s.answered=true;
@@ -106,8 +97,7 @@ h1{font-family:'Unbounded';font-size:clamp(30px,6vw,50px);line-height:1;color:va
     document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled"); if(i===s.correctPos)n.classList.add("correct"); if(i===pos&&!correct)n.classList.add("wrong")});
     if (correct) s.correct++;
     s.responses.push({q,selected,best,correct});
-    document.getElementById("post").innerHTML = `<div class="explain ${correct?"":"miss"}"><b>${correct?"Correct":"Review"}</b><br>${q.why || "No explanation provided."}${correct?"":`<br><br><b>Your answer:</b> ${selected}<br><b>Best answer:</b> ${best}`}${q.p?`<div class="pearl"><b>Pearl:</b> ${q.p}</div>`:""}</div>
-      <button class="btn" onclick="nextQ()">${s.i+1>=s.qs.length?"SEE RESULTS":"NEXT ›"}</button>`;
+    document.getElementById("post").innerHTML = `<div class="explain ${correct?"":"miss"}"><b>${correct?"Correct":"Review"}</b><br>${q.why || "No explanation provided."}${correct?"":`<br><br><b>Your answer:</b> ${selected}<br><b>Best answer:</b> ${best}`}${q.p?`<div class="pearl"><b>Pearl:</b> ${q.p}</div>`:""}</div><button class="btn" onclick="nextQ()">${s.i+1>=s.qs.length?"SEE RESULTS":"NEXT ›"}</button>`;
   }
   window.nextQ = function(){session.i++; renderQ()}
   function results(){
@@ -115,9 +105,7 @@ h1{font-family:'Unbounded';font-size:clamp(30px,6vw,50px);line-height:1;color:va
     let rank="MS1 — drill again", color="var(--red)";
     if (pct>=90){rank="ATTENDING — dominated";color="var(--green)"} else if (pct>=75){rank="RESIDENT — solid";color="var(--cyan)"} else if (pct>=55){rank="INTERN — getting there";color="var(--amber)"}
     const nextBlock = block < TOTAL_BLOCKS ? `<a class="btn" href="random_10_block.html?block=${block+1}">NEXT 10Q BLOCK</a>` : `<a class="btn" href="index.html">BACK TO QUEST BOARD</a>`;
-    document.getElementById("stage").innerHTML = `<div class="score" style="color:${color}">${pct}%</div><div class="rank">${rank}</div>
-      <div class="statrow"><div><b>${s.correct}</b>correct</div><div><b>${missed}</b>missed</div><div><b>${block*10}</b>daily pace</div></div>
-      <button class="btn ghost" onclick="reviewMisses()">REVIEW MISSES</button>${nextBlock}<a class="btn ghost" href="random_10_block.html?block=${block}">RUN THIS BLOCK AGAIN</a>`;
+    document.getElementById("stage").innerHTML = `<div class="score" style="color:${color}">${pct}%</div><div class="rank">${rank}</div><div class="statrow"><div><b>${s.correct}</b>correct</div><div><b>${missed}</b>missed</div><div><b>${block*10}</b>daily pace</div></div><button class="btn ghost" onclick="reviewMisses()">REVIEW MISSES</button>${nextBlock}<a class="btn ghost" href="random_10_block.html?block=${block}">RUN THIS BLOCK AGAIN</a>`;
   }
   window.reviewMisses = function(){
     const misses=(session.responses||[]).filter(r=>!r.correct);

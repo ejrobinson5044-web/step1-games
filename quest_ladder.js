@@ -65,9 +65,12 @@
 .command-v5-meter{height:11px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:16px}
 .command-v5-meter span{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#a78bfa,#fbbf24);transition:width .35s ease}
 .command-v5-side{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.command-v5-stat{border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.035);padding:12px;min-width:0}
+.command-v5-stat{border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.035);padding:12px;min-width:0;min-height:84px}
 .command-v5-stat b{display:block;font-family:'Unbounded';font-size:24px;line-height:1;color:var(--text)}
 .command-v5-stat span{display:block;color:var(--dim);font-family:'JetBrains Mono';font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-top:6px}
+.command-v5-stat.signal{grid-column:1/-1;min-height:92px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(135deg,rgba(34,211,238,.055),rgba(167,139,250,.04))}
+.command-v5-stat.signal b{font-size:clamp(18px,2.3vw,25px);line-height:1.1;letter-spacing:-.5px;max-width:100%}
+.command-v5-stat.signal span{margin-top:9px}
 .quest-ladder{margin:14px -20px 6px;padding:18px 20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(255,255,255,.025)}
 .quest-ladder-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .quest-ladder-head h2{font-family:'Unbounded';font-size:18px;line-height:1.15}
@@ -86,7 +89,7 @@
 .quest-ladder-card.done em{background:#34d399}
 .version-badge{position:fixed;right:10px;bottom:10px;z-index:50;border:1px solid var(--line);border-radius:999px;background:rgba(8,8,12,.76);backdrop-filter:blur(10px);color:var(--dim);font-family:'JetBrains Mono';font-size:10px;letter-spacing:1px;padding:5px 9px}
 @media (max-width:980px){.command-v5-grid{grid-template-columns:1fr}.quest-ladder-path{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media (max-width:560px){.command-center-v5,.quest-ladder{margin-left:-14px;margin-right:-14px}.command-v5-side{grid-template-columns:1fr 1fr}.quest-ladder-path{grid-template-columns:1fr}.version-badge{font-size:9px;right:8px;bottom:8px}}
+@media (max-width:560px){.command-center-v5,.quest-ladder{margin-left:-14px;margin-right:-14px}.command-v5-side{grid-template-columns:1fr 1fr}.command-v5-stat.signal{grid-column:1/-1}.quest-ladder-path{grid-template-columns:1fr}.version-badge{font-size:9px;right:8px;bottom:8px}}
 `;
     document.head.appendChild(style);
   }
@@ -140,7 +143,7 @@
           <div class="command-v5-stat"><b>${questions}</b><span>Questions</span></div>
           <div class="command-v5-stat"><b>${pct}%</b><span>Daily Goal</span></div>
           <div class="command-v5-stat"><b>${complete}/8</b><span>Blocks</span></div>
-          <div class="command-v5-stat"><b>${last}</b><span>Signal</span></div>
+          <div class="command-v5-stat signal"><b>${last}</b><span>Signal</span></div>
         </div>
       </div>`;
     hero.insertAdjacentElement("afterend", section);

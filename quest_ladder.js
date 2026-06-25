@@ -1,6 +1,8 @@
 /* 80-question daily ladder for Step 1 Arcade home. */
 (function(){
-  const APP_VERSION = "v2026.06.25-random10";
+  function appVersionLabel(){
+    return (window.STEP1_APP_VERSION && window.STEP1_APP_VERSION.label) || "Push 004";
+  }
   function installStyles(){
     if (document.getElementById("questLadderStyles")) return;
     const style = document.createElement("style");
@@ -24,22 +26,26 @@
     document.head.appendChild(style);
   }
   function renderVersion(){
-    if (document.querySelector(".version-badge")) return;
+    const existing = document.querySelector(".version-badge");
+    if (existing) {
+      existing.textContent = appVersionLabel();
+      return;
+    }
     const badge = document.createElement("div");
     badge.className = "version-badge";
-    badge.textContent = APP_VERSION;
+    badge.textContent = appVersionLabel();
     document.body.appendChild(badge);
   }
   function renderLadder(){
-    const target = document.getElementById("daily-quests") || document.querySelector(".arcade-command") || document.querySelector(".hero");
-    if (!target || document.getElementById("question-ladder")) return;
+    const hero = document.querySelector(".hero");
+    if (!hero || document.getElementById("question-ladder")) return;
     const section = document.createElement("section");
     section.className = "quest-ladder";
     section.id = "question-ladder";
     const blocks = Array.from({length:8}, (_,i)=>i+1);
     section.innerHTML = `
       <div class="quest-ladder-head">
-        <div><h2>Random 10Q Blocks</h2><span>Eight mixed 10-question blocks. Complete Blocks 1–8 to build toward an 80-question day.</span></div>
+        <div><h2>Today's Question Board</h2><span>Start here. Eight mixed 10-question blocks let you build toward an 80-question day without doing it all at once.</span></div>
       </div>
       <div class="quest-ladder-grid">
         ${blocks.map(n=>`<a class="quest-ladder-card" href="random_10_block.html?block=${n}">
@@ -49,11 +55,11 @@
           <em>Start 10Q</em>
         </a>`).join("")}
       </div>`;
-    target.insertAdjacentElement("afterend", section);
+    hero.insertAdjacentElement("afterend", section);
   }
   installStyles();
   renderVersion();
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", renderLadder, {once:true});
   else renderLadder();
-  window.addEventListener("load", renderLadder, {once:true});
+  window.addEventListener("load",()=>{ renderLadder(); renderVersion(); }, {once:true});
 })();

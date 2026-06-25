@@ -11,109 +11,56 @@
 html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Hanken Grotesk',sans-serif;overflow-x:hidden}
 body{background:radial-gradient(ellipse 70% 45% at 50% -10%,rgba(34,211,238,.12),transparent 60%),radial-gradient(ellipse 55% 40% at 95% 85%,rgba(167,139,250,.10),transparent 55%),linear-gradient(180deg,#08080c,#0e0e16)}
 .wrap{max-width:900px;margin:0 auto;padding:18px 18px 54px;position:relative;z-index:1}
-.nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
-a{color:inherit}.back{font-family:'JetBrains Mono';font-size:11px;letter-spacing:1px;color:var(--dim);text-decoration:none}.back:hover{color:var(--cyan)}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}.back{font-family:'JetBrains Mono';font-size:11px;letter-spacing:1px;color:var(--dim);text-decoration:none}.back:hover{color:var(--cyan)}
 .hdr{text-align:center;padding:18px 0 20px;border-bottom:1px solid var(--line);margin-bottom:18px}.badge{display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:15px;background:linear-gradient(135deg,var(--cyan),#a78bfa);color:#08080c;font-family:'Unbounded';font-weight:800;font-size:22px;margin-bottom:10px;box-shadow:0 0 28px rgba(34,211,238,.22)}
 h1{font-family:'Unbounded';font-size:clamp(30px,6vw,50px);line-height:1;color:var(--text)}.sub{color:var(--dim);font-size:14px;line-height:1.45;margin-top:10px}.mini{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:1px;text-transform:uppercase}
-.panel{background:rgba(21,21,31,.72);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px}.bar{height:7px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin:14px 0 18px}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),#a78bfa,var(--amber));transition:.2s}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.tag{display:inline-flex;font-family:'JetBrains Mono';font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);border:1px solid rgba(34,211,238,.32);border-radius:999px;padding:4px 10px;margin:10px 0 12px}.stem{font-size:19px;line-height:1.5;margin-bottom:18px}.choices{display:grid;gap:10px}.choice{width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px;color:var(--text);font:inherit;cursor:pointer;display:flex;gap:12px}.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}.choice.disabled{pointer-events:none;opacity:.9}.choice.correct{border-color:var(--green);background:rgba(52,211,153,.12)}.choice.wrong{border-color:var(--red);background:rgba(248,113,113,.12)}.key{font-family:'JetBrains Mono';color:var(--cyan);font-size:13px;flex:0 0 auto}.explain{margin-top:16px;border-left:3px solid var(--cyan);background:rgba(255,255,255,.045);border-radius:12px;padding:14px 15px;line-height:1.5}.explain.miss{border-left-color:var(--red)}.explain b{color:var(--amber)}.pearl{margin-top:10px;border:1px dashed rgba(251,191,36,.45);border-radius:10px;padding:10px 12px;background:rgba(251,191,36,.07)}.btn{display:inline-flex;align-items:center;justify-content:center;width:100%;border:0;border-radius:12px;padding:13px 16px;margin-top:14px;background:linear-gradient(135deg,var(--cyan),#a78bfa);color:#08080c;font-weight:900;font-family:'Hanken Grotesk';cursor:pointer;text-decoration:none}.btn.ghost{background:transparent;color:var(--dim);border:1px solid var(--line)}.statrow{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:20px 0}.statrow div{min-width:105px;border:1px solid var(--line);border-radius:12px;padding:11px;background:rgba(255,255,255,.035);font-family:'JetBrains Mono';font-size:11px;color:var(--dim)}.statrow b{display:block;color:var(--text);font-size:24px;font-family:'Unbounded';line-height:1.1}.score{font-family:'Unbounded';font-size:64px;line-height:1;text-align:center}.rank{text-align:center;font-family:'JetBrains Mono';letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-top:10px}.loading{text-align:center;color:var(--dim);padding:34px 10px}.version{position:fixed;right:10px;bottom:10px;z-index:20;border:1px solid var(--line);border-radius:999px;background:rgba(8,8,12,.76);backdrop-filter:blur(10px);color:var(--dim);font-family:'JetBrains Mono';font-size:10px;letter-spacing:1px;padding:5px 9px}
+.panel{background:rgba(21,21,31,.72);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px}.bar{height:7px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin:14px 0 18px}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),#a78bfa,var(--amber));transition:.2s}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.tag{display:inline-flex;font-family:'JetBrains Mono';font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);border:1px solid rgba(34,211,238,.32);border-radius:999px;padding:4px 10px;margin:10px 0 12px}.stem{font-size:19px;line-height:1.5;margin-bottom:18px}.choices{display:grid;gap:10px}.choice{width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px;color:var(--text);font:inherit;cursor:pointer;display:flex;gap:12px}.choice:hover{border-color:var(--cyan);background:var(--panel-hi)}.choice.disabled{pointer-events:none;opacity:.9}.choice.correct{border-color:var(--green);background:rgba(52,211,153,.12)}.choice.wrong{border-color:var(--red);background:rgba(248,113,113,.12)}.key{font-family:'JetBrains Mono';color:var(--cyan);font-size:13px;flex:0 0 auto}.explain{margin-top:16px;border-left:3px solid var(--cyan);background:rgba(255,255,255,.045);border-radius:12px;padding:14px 15px;line-height:1.5}.explain.miss{border-left-color:var(--red)}.explain b{color:var(--amber)}.pearl{margin-top:10px;border:1px dashed rgba(251,191,36,.45);border-radius:10px;padding:10px 12px;background:rgba(251,191,36,.07)}.btn{display:inline-flex;align-items:center;justify-content:center;width:100%;border:0;border-radius:12px;padding:13px 16px;margin-top:14px;background:linear-gradient(135deg,var(--cyan),#a78bfa);color:#08080c;font-weight:900;font-family:'Hanken Grotesk';cursor:pointer;text-decoration:none}.btn.ghost{background:transparent;color:var(--dim);border:1px solid var(--line)}.statrow{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:20px 0}.statrow div{min-width:105px;border:1px solid var(--line);border-radius:12px;padding:11px;background:rgba(255,255,255,.035);font-family:'JetBrains Mono';font-size:11px;color:var(--dim)}.statrow b{display:block;color:var(--text);font-size:24px;font-family:'Unbounded';line-height:1.1}.score{font-family:'Unbounded';font-size:64px;line-height:1;text-align:center}.rank{text-align:center;font-family:'JetBrains Mono';letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-top:10px}.loading{text-align:center;color:var(--dim);padding:34px 10px}.completion{border:1px solid rgba(52,211,153,.35);background:rgba(52,211,153,.08);border-radius:14px;padding:13px;margin:0 auto 16px;max-width:460px;text-align:left}.completion b{color:var(--green)}.version{position:fixed;right:10px;bottom:10px;z-index:20;border:1px solid var(--line);border-radius:999px;background:rgba(8,8,12,.76);backdrop-filter:blur(10px);color:var(--dim);font-family:'JetBrains Mono';font-size:10px;letter-spacing:1px;padding:5px 9px}
 @media(max-width:560px){.wrap{padding:14px}.stem{font-size:17px}.score{font-size:50px}}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"><div class="loading">Loading block...</div></div>
-<div class="version" id="versionBadge">Push 004</div>
-<script src="app_version.js?v=push-004"></script>
+<div class="version" id="versionBadge">Push 005</div>
+<script src="app_version.js?v=push-005"></script>
 <script src="games_manifest.js"></script>
 <script>
 (function(){
-  function appVersionLabel(){ return (window.STEP1_APP_VERSION && window.STEP1_APP_VERSION.label) || "Push 004"; }
-  function syncVersionBadge(){ const badge=document.getElementById("versionBadge"); if(badge) badge.textContent=appVersionLabel(); }
-  syncVersionBadge();
-  const VERSION = appVersionLabel();
+  const STORAGE_KEY = "step1_daily_blocks_v1";
   const BLOCK_SIZE = 10;
   const TOTAL_BLOCKS = 8;
+  const DAILY_GOAL = BLOCK_SIZE * TOTAL_BLOCKS;
   const app = document.getElementById("app");
   const params = new URLSearchParams(location.search || "");
   const block = Math.max(1, Math.min(TOTAL_BLOCKS, Number(params.get("block") || 1)));
   const day = todayKey();
   let session = null;
+  function appVersion(){ return window.STEP1_APP_VERSION || {label:"Push 005", slug:"push-005", name:"Command Center"}; }
+  function appVersionLabel(){ const v=appVersion(); return v.name ? `${v.label} · ${v.name}` : v.label; }
+  function syncVersionBadge(){ const badge=document.getElementById("versionBadge"); if(badge) badge.textContent=appVersionLabel(); }
+  syncVersionBadge();
+  const VERSION = appVersion().slug || appVersionLabel();
   function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+  function readDaily(){try{const raw=JSON.parse(localStorage.getItem(STORAGE_KEY))||{};if(raw.day!==day)return {day,completed:{},lastBlock:0,lastScore:null,lastCompletedAt:null};raw.completed=raw.completed||{};return raw}catch(e){return {day,completed:{},lastBlock:0,lastScore:null,lastCompletedAt:null}}}
+  function writeDaily(state){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+  function markBlockComplete(score){const state=readDaily();state.completed=state.completed||{};state.completed[block]={score,completedAt:new Date().toISOString()};state.lastBlock=block;state.lastScore=score;state.lastCompletedAt=new Date().toISOString();writeDaily(state);return state}
+  function completedCount(state){return Object.keys(state.completed||{}).filter(k=>state.completed[k]).length}
   function seedFrom(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
   function seededShuffle(items, seed){const arr=items.slice();let s=seed||1;function rand(){s=(s*1664525+1013904223)>>>0;return s/4294967296}for(let i=arr.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
   function escapeHTML(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
-  function extractArraySource(html, name){
-    const start = html.indexOf(`const ${name}=`);
-    if (start < 0) return "[]";
-    const open = html.indexOf("[", start);
-    if (open < 0) return "[]";
-    let depth=0, inStr="", esc=false;
-    for (let i=open;i<html.length;i++){
-      const ch=html[i];
-      if (inStr){ if (esc) esc=false; else if (ch==="\\") esc=true; else if (ch===inStr) inStr=""; continue; }
-      if (ch==='"' || ch==="'" || ch==="`") { inStr=ch; continue; }
-      if (ch==="[") depth++;
-      if (ch==="]") { depth--; if (!depth) return html.slice(open,i+1); }
-    }
-    return "[]";
-  }
-  function parseQbank(html){
-    const src = extractArraySource(html, "QBANK");
-    try { return Function(`"use strict"; return (${src});`)(); }
-    catch(err){ console.warn("QBANK parse failed", err); return []; }
-  }
-  async function loadPool(){
-    const games = window.STEP1_GAMES || [];
-    const chunks = await Promise.all(games.map(async game=>{
-      try{
-        const html = await fetch(game.file, {cache:"no-store"}).then(r=>r.text());
-        return parseQbank(html).map((q,i)=>Object.assign({}, q, {_sourceGame:game.title,_sourceDeck:game.deck,_sourceFile:game.file,_sourceId:`${game.file}#${i}`}));
-      }catch(err){ console.warn("Failed to load", game.file, err); return []; }
-    }));
-    return chunks.flat().filter(q=>q && q.q && Array.isArray(q.c) && q.c.length && Number.isInteger(q.a));
-  }
-  function chooseBlock(pool){
-    const shuffled = seededShuffle(pool, seedFrom(`${day}|block-${block}|${VERSION}`));
-    const offset = (block - 1) * BLOCK_SIZE;
-    const selected = shuffled.slice(offset, offset + BLOCK_SIZE);
-    return selected.length === BLOCK_SIZE ? selected : seededShuffle(pool, seedFrom(`${day}|fallback|${block}`)).slice(0, Math.min(BLOCK_SIZE, pool.length));
-  }
-  function renderShell(){
-    app.innerHTML = `<div class="nav"><a class="back" href="index.html">&lsaquo; ALL GAMES</a><span class="mini">${escapeHTML(day)} · Block ${block} of ${TOTAL_BLOCKS}</span></div><div class="hdr"><div class="badge">${block}</div><h1>Random 10Q Block</h1><div class="sub">A 10-question mixed Step 1 block. Finish Blocks 1–8 to hit 80 questions for the day.</div></div><div id="stage" class="panel"><div class="loading">Building your block...</div></div>`;
-  }
-  function start(qs){session={qs,i:0,correct:0,answered:false,responses:[],order:[],correctPos:-1,startedAt:Date.now()};renderQ()}
+  function extractArraySource(html, name){const start=html.indexOf(`const ${name}=`);if(start<0)return "[]";const open=html.indexOf("[",start);if(open<0)return "[]";let depth=0,inStr="",esc=false;for(let i=open;i<html.length;i++){const ch=html[i];if(inStr){if(esc)esc=false;else if(ch==="\\")esc=true;else if(ch===inStr)inStr="";continue}if(ch==='"'||ch==="'"||ch==="`"){inStr=ch;continue}if(ch==="[")depth++;if(ch==="]"){depth--;if(!depth)return html.slice(open,i+1)}}return "[]"}
+  function parseQbank(html){const src=extractArraySource(html,"QBANK");try{return Function(`"use strict"; return (${src});`)()}catch(err){console.warn("QBANK parse failed",err);return []}}
+  async function loadPool(){const games=window.STEP1_GAMES||[];const chunks=await Promise.all(games.map(async game=>{try{const html=await fetch(game.file,{cache:"no-store"}).then(r=>r.text());return parseQbank(html).map((q,i)=>Object.assign({},q,{_sourceGame:game.title,_sourceDeck:game.deck,_sourceFile:game.file,_sourceId:`${game.file}#${i}`}))}catch(err){console.warn("Failed to load",game.file,err);return []}}));return chunks.flat().filter(q=>q&&q.q&&Array.isArray(q.c)&&q.c.length&&Number.isInteger(q.a))}
+  function chooseBlock(pool){const shuffled=seededShuffle(pool,seedFrom(`${day}|block-${block}|${VERSION}`));const offset=(block-1)*BLOCK_SIZE;const selected=shuffled.slice(offset,offset+BLOCK_SIZE);return selected.length===BLOCK_SIZE?selected:seededShuffle(pool,seedFrom(`${day}|fallback|${block}`)).slice(0,Math.min(BLOCK_SIZE,pool.length))}
+  function renderShell(){app.innerHTML=`<div class="nav"><a class="back" href="index.html">&lsaquo; COMMAND CENTER</a><span class="mini">${escapeHTML(day)} · Block ${block} of ${TOTAL_BLOCKS}</span></div><div class="hdr"><div class="badge">${block}</div><h1>Random 10Q Block</h1><div class="sub">A 10-question mixed Step 1 block. Finish Blocks 1–8 to hit 80 questions for the day.</div></div><div id="stage" class="panel"><div class="loading">Building your block...</div></div>`}
+  function start(qs){session={qs,i:0,correct:0,answered:false,responses:[],order:[],correctPos:-1,startedAt:Date.now(),saved:false};renderQ()}
   function answerText(q){return q.c[q.a]||""}
-  function renderQ(){
-    const s=session; if (!s) return;
-    if (s.i>=s.qs.length) return results();
-    const q=s.qs[s.i];
-    const order=seededShuffle(q.c.map((t,idx)=>({t,idx})), seedFrom(`${day}|${block}|${s.i}|choices|${q._sourceId}`));
-    s.order=order; s.correctPos=order.findIndex(o=>o.idx===q.a); s.answered=false;
-    const pct=(s.i/s.qs.length)*100;
-    document.getElementById("stage").innerHTML = `<div class="topline"><span class="mini">Q ${s.i+1} / ${s.qs.length}</span><span class="mini">${escapeHTML(q._sourceGame)} · ${escapeHTML(q._sourceDeck || "Mixed")}</span></div><div class="bar"><span style="width:${pct}%"></span></div><span class="tag">${escapeHTML(q.m || "mixed")}</span><div class="stem">${q.q}</div>${q.v ? `<div class="panel" style="margin:0 0 14px;padding:13px"><b>Vignette variant:</b><br>${q.v}</div>` : ""}<div class="choices">${order.map((o,i)=>`<button class="choice" onclick="answer(${i})"><span class="key">${String.fromCharCode(65+i)}</span><span>${o.t}</span></button>`).join("")}</div><div id="post"></div>`;
-  }
-  window.answer = function(pos){
-    const s=session; if (!s || s.answered) return; s.answered=true;
-    const q=s.qs[s.i]; const correct=pos===s.correctPos; const selected=s.order[pos] ? s.order[pos].t : ""; const best=answerText(q);
-    document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled"); if(i===s.correctPos)n.classList.add("correct"); if(i===pos&&!correct)n.classList.add("wrong")});
-    if (correct) s.correct++;
-    s.responses.push({q,selected,best,correct});
-    document.getElementById("post").innerHTML = `<div class="explain ${correct?"":"miss"}"><b>${correct?"Correct":"Review"}</b><br>${q.why || "No explanation provided."}${correct?"":`<br><br><b>Your answer:</b> ${selected}<br><b>Best answer:</b> ${best}`}${q.p?`<div class="pearl"><b>Pearl:</b> ${q.p}</div>`:""}</div><button class="btn" onclick="nextQ()">${s.i+1>=s.qs.length?"SEE RESULTS":"NEXT ›"}</button>`;
-  }
-  window.nextQ = function(){session.i++; renderQ()}
-  function results(){
-    const s=session; const pct=Math.round((s.correct/s.qs.length)*100); const missed=s.qs.length-s.correct;
-    let rank="MS1 — drill again", color="var(--red)";
-    if (pct>=90){rank="ATTENDING — dominated";color="var(--green)"} else if (pct>=75){rank="RESIDENT — solid";color="var(--cyan)"} else if (pct>=55){rank="INTERN — getting there";color="var(--amber)"}
-    const nextBlock = block < TOTAL_BLOCKS ? `<a class="btn" href="random_10_block.html?block=${block+1}">NEXT 10Q BLOCK</a>` : `<a class="btn" href="index.html">BACK TO QUEST BOARD</a>`;
-    document.getElementById("stage").innerHTML = `<div class="score" style="color:${color}">${pct}%</div><div class="rank">${rank}</div><div class="statrow"><div><b>${s.correct}</b>correct</div><div><b>${missed}</b>missed</div><div><b>${block*10}</b>daily pace</div></div><button class="btn ghost" onclick="reviewMisses()">REVIEW MISSES</button>${nextBlock}<a class="btn ghost" href="random_10_block.html?block=${block}">RUN THIS BLOCK AGAIN</a>`;
-  }
-  window.reviewMisses = function(){
-    const misses=(session.responses||[]).filter(r=>!r.correct);
-    document.getElementById("stage").innerHTML = misses.length ? misses.map((r,i)=>`<div class="explain miss"><b>${i+1}. ${escapeHTML(r.q._sourceGame)}</b><br>${r.q.q}<br><br><b>Your answer:</b> ${r.selected}<br><b>Best answer:</b> ${r.best}<br><br>${r.q.why || ""}${r.q.p?`<div class="pearl"><b>Pearl:</b> ${r.q.p}</div>`:""}</div>`).join("") + `<button class="btn" onclick="results()">BACK TO RESULTS</button>` : `<div class="explain"><b>No misses.</b><br>Clean block.</div><button class="btn" onclick="results()">BACK TO RESULTS</button>`;
-  }
-  document.addEventListener("keydown", e=>{if(!session||session.answered)return;const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};const k=e.key.toLowerCase();if(map[k]!=null&&map[k]<4)answer(map[k])});
-  renderShell();
-  loadPool().then(pool=>{const qs=chooseBlock(pool); if(!qs.length){document.getElementById("stage").innerHTML=`<div class="loading">No questions loaded.</div>`; return;} start(qs);});
+  function renderQ(){const s=session;if(!s)return;if(s.i>=s.qs.length)return results();const q=s.qs[s.i];const order=seededShuffle(q.c.map((t,idx)=>({t,idx})),seedFrom(`${day}|${block}|${s.i}|choices|${q._sourceId}`));s.order=order;s.correctPos=order.findIndex(o=>o.idx===q.a);s.answered=false;const pct=(s.i/s.qs.length)*100;document.getElementById("stage").innerHTML=`<div class="topline"><span class="mini">Q ${s.i+1} / ${s.qs.length}</span><span class="mini">${escapeHTML(q._sourceGame)} · ${escapeHTML(q._sourceDeck||"Mixed")}</span></div><div class="bar"><span style="width:${pct}%"></span></div><span class="tag">${escapeHTML(q.m||"mixed")}</span><div class="stem">${q.q}</div>${q.v?`<div class="panel" style="margin:0 0 14px;padding:13px"><b>Vignette variant:</b><br>${q.v}</div>`:""}<div class="choices">${order.map((o,i)=>`<button class="choice" onclick="answer(${i})"><span class="key">${String.fromCharCode(65+i)}</span><span>${o.t}</span></button>`).join("")}</div><div id="post"></div>`}
+  window.answer=function(pos){const s=session;if(!s||s.answered)return;s.answered=true;const q=s.qs[s.i];const correct=pos===s.correctPos;const selected=s.order[pos]?s.order[pos].t:"";const best=answerText(q);document.querySelectorAll(".choice").forEach((n,i)=>{n.classList.add("disabled");if(i===s.correctPos)n.classList.add("correct");if(i===pos&&!correct)n.classList.add("wrong")});if(correct)s.correct++;s.responses.push({q,selected,best,correct});document.getElementById("post").innerHTML=`<div class="explain ${correct?"":"miss"}"><b>${correct?"Correct":"Review"}</b><br>${q.why||"No explanation provided."}${correct?"":`<br><br><b>Your answer:</b> ${selected}<br><b>Best answer:</b> ${best}`}${q.p?`<div class="pearl"><b>Pearl:</b> ${q.p}</div>`:""}</div><button class="btn" onclick="nextQ()">${s.i+1>=s.qs.length?"SEE RESULTS":"NEXT ›"}</button>`}
+  window.nextQ=function(){session.i++;renderQ()}
+  function results(){const s=session;const pct=Math.round((s.correct/s.qs.length)*100);const missed=s.qs.length-s.correct;const state=s.saved?readDaily():markBlockComplete(pct);s.saved=true;const done=completedCount(state);const questions=done*BLOCK_SIZE;let rank="MS1 — drill again",color="var(--red)";if(pct>=90){rank="ATTENDING — dominated";color="var(--green)"}else if(pct>=75){rank="RESIDENT — solid";color="var(--cyan)"}else if(pct>=55){rank="INTERN — getting there";color="var(--amber)"}const nextBlock=block<TOTAL_BLOCKS?`<a class="btn" href="random_10_block.html?block=${block+1}">NEXT 10Q BLOCK</a>`:`<a class="btn" href="index.html">BACK TO COMMAND CENTER</a>`;document.getElementById("stage").innerHTML=`<div class="completion"><b>Block ${block} saved.</b><br>${questions} / ${DAILY_GOAL} questions logged today.</div><div class="score" style="color:${color}">${pct}%</div><div class="rank">${rank}</div><div class="statrow"><div><b>${s.correct}</b>correct</div><div><b>${missed}</b>missed</div><div><b>${questions}</b>daily total</div></div><button class="btn ghost" onclick="reviewMisses()">REVIEW MISSES</button>${nextBlock}<a class="btn ghost" href="index.html">COMMAND CENTER</a>`}
+  window.reviewMisses=function(){const misses=(session.responses||[]).filter(r=>!r.correct);document.getElementById("stage").innerHTML=misses.length?misses.map((r,i)=>`<div class="explain miss"><b>${i+1}. ${escapeHTML(r.q._sourceGame)}</b><br>${r.q.q}<br><br><b>Your answer:</b> ${r.selected}<br><b>Best answer:</b> ${r.best}<br><br>${r.q.why||""}${r.q.p?`<div class="pearl"><b>Pearl:</b> ${r.q.p}</div>`:""}</div>`).join("")+`<button class="btn" onclick="results()">BACK TO RESULTS</button>`:`<div class="explain"><b>No misses.</b><br>Clean block.</div><button class="btn" onclick="results()">BACK TO RESULTS</button>`}
+  document.addEventListener("keydown",e=>{if(!session||session.answered)return;const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};const k=e.key.toLowerCase();if(map[k]!=null&&map[k]<4)answer(map[k])});
+  renderShell();loadPool().then(pool=>{const qs=chooseBlock(pool);if(!qs.length){document.getElementById("stage").innerHTML=`<div class="loading">No questions loaded.</div>`;return}start(qs)});
 })();
 </script>
 </body>

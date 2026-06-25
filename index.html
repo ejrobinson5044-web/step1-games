@@ -17,9 +17,9 @@
   --hair:rgba(255,255,255,.05);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;background:var(--bg)}
 body{
-  background:var(--bg);color:var(--text);font-family:'Hanken Grotesk',sans-serif;min-height:100vh;overflow-x:hidden;
+  background:var(--bg);color:var(--text);font-family:'Hanken Grotesk',sans-serif;min-height:100vh;overflow-x:hidden;margin:0;
   background:
     radial-gradient(ellipse 80% 50% at 50% -10%,rgba(124,58,237,.10),transparent 60%),
     radial-gradient(ellipse 60% 40% at 10% 20%,rgba(34,211,238,.06),transparent 55%),
@@ -31,10 +31,10 @@ body::before{
   background-image:radial-gradient(var(--hair) 1px,transparent 1px);background-size:30px 30px;
   mask-image:radial-gradient(ellipse at center,#000 40%,transparent 95%);
 }
-.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:30px 20px 60px}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 20px 60px}
 
 /* hero */
-.hero{text-align:center;padding:40px 0 30px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.hero{text-align:center;padding:28px 0 30px;border-bottom:1px solid var(--line);margin-bottom:14px}
 .kicker{font-family:'JetBrains Mono';font-size:11px;letter-spacing:5px;color:var(--dim);text-transform:uppercase;margin-bottom:18px;animation:fade .6s ease}
 h1{font-family:'Unbounded';font-weight:800;font-size:clamp(34px,7vw,68px);line-height:.98;letter-spacing:-1px;
   background:linear-gradient(120deg,#fff 20%,#a78bfa 50%,#22d3ee 80%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
@@ -108,7 +108,8 @@ footer .hl{color:var(--text)}
       <div class="chip c"><b>Cloud</b> sync-ready</div>
     </div>
     <div class="hero-actions">
-      <a class="primary" href="#daily-quests">Today's Quests</a>
+      <a class="primary" href="#question-ladder">10Q Blocks</a>
+      <a href="#daily-quests">Today's Quests</a>
       <a href="review_hub.html">Review Hub</a>
       <a href="author.html">Author Mode</a>
     </div>
@@ -119,7 +120,7 @@ footer .hl{color:var(--text)}
     <h2>Every game now has the upgraded engine</h2>
     <div class="row">
       <div class="it"><div class="e">⚡</div><div><b>Daily Quests</b><p>Warm-ups, boss cases, comeback reps, clinical transfer, and timed blocks.</p></div></div>
-      <div class="it"><div class="e">🦴</div><div><b>Flagship drill</b><p>A dedicated module for each system's must-know core.</p></div></div>
+      <div class="it"><div class="e">🔟</div><div><b>Random 10Q Blocks</b><p>Eight short mixed blocks let you build toward an 80-question day without doing it all at once.</p></div></div>
       <div class="it"><div class="e">💎</div><div><b>Dirty Medicine Vault</b><p>The catchy mnemonics, all in one place per game.</p></div></div>
       <div class="it"><div class="e">💾</div><div><b>Smart review</b><p>Missed and shaky items become lightweight flashcards with simple due dates and optional account sync.</p></div></div>
     </div>
@@ -187,6 +188,7 @@ GAMES.forEach(group=>{
 </script>
 <script src="games_manifest.js"></script>
 <script src="arcade_home.js?v=20260622-quests"></script>
+<script src="quest_ladder.js?v=20260625-random10"></script>
 <script src="supabase_config.js"></script>
 <script src="cloud_sync.js?v=20260620-auth-debug"></script>
 </body>

@@ -15,6 +15,7 @@ window.STEP1_GAMES = [
   {section:"Microbiology & Pharmacology", file:"microbe_mayhem.html", title:"Microbe Mayhem", deck:"Microbiology", color:"#a855f7", saveKey:"microbe_mayhem_v2"},
   {section:"Microbiology & Pharmacology", file:"pharm_arsenal.html", title:"Pharm Arsenal", deck:"Pharmacology", color:"#7c3aed", saveKey:"pharm_arsenal_v1"},
   {section:"Microbiology & Pharmacology", file:"suffix_showdown.html", title:"Suffix Showdown", deck:"Drug Name to Class", color:"#f97316", saveKey:"suffix_showdown_v2"},
+  {section:"Microbiology & Pharmacology", file:"visual_memory_recall.html", title:"Visual Memory Recall", deck:"Image + content recall", color:"#a78bfa", saveKey:"visual_memory_recall_v1"},
   {section:"Behavioral & Clinical", file:"psych_ward.html", title:"Psych Ward", deck:"Psychiatry", color:"#0d9488", saveKey:"psych_ward_v1"},
   {section:"Behavioral & Clinical", file:"pvalue_panic.html", title:"P-Value Panic", deck:"Biostatistics", color:"#818cf8", saveKey:"pvalue_panic_v1"},
   {section:"Behavioral & Clinical", file:"the_right_call.html", title:"The Right Call", deck:"Ethics / Communication", color:"#3b6ea5", saveKey:"the_right_call_v1"},
